@@ -33,7 +33,7 @@
         },
         {
             "type": "cmake",
-            "label": "Clean and Rebuild",
+            "label": "🟢 | Clean and Rebuild",
             "group": "build",
             "command": "cleanRebuild",
             "preset": "${command:cmake.activeBuildPresetName}",
