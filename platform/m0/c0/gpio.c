@@ -1,6 +1,4 @@
 #include "gpio.h"
-#include "platform_inc_m0.h"
-#include "sys_config_m0.h"
 #include "sys.h"
 
 #define USART_DEBUG_TX_RX_PORT		GPIOB

@@ -2,8 +2,6 @@
 #define __PLATFORM_H
 
 #include "main.h"
-#include "def_settings.h"
-// #include "platform_inc_m0.h"
 
 #ifndef PL_NOP
 #define PL_NOP()			__NOP()

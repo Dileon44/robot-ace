@@ -21,16 +21,6 @@
             }
         },
         {
-            "name": "m0r0c1",
-            "inherits": "default",
-            "cacheVariables": {
-                "FW_PLATFORM": "m0r0c1",
-                "FW_PLATFORM_MCU": "m0",
-                "FW_PLATFORM_REV": "r0",
-                "FW_PLATFORM_CFG": "c1"
-            }
-        },
-        {
             "name": "Custom configure preset",
             "displayName": "Custom configure preset",
             "description": "Sets Ninja generator, build and install directory",
@@ -64,11 +54,6 @@
             "name": "m0r0c0",
             "inherits": "base",
             "configurePreset": "m0r0c0"
-        },
-        {
-            "name": "m0r0c1",
-            "inherits": "base",
-            "configurePreset": "m0r0c1"
         }
     ]
 }

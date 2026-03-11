@@ -3,9 +3,8 @@
     "windows": {
         "options": {
             "shell": {
-                "executable": "cmd.exe",
+                "executable": "sh",
                 "args": [
-                    "/C", "sh"
                 ]
             }
         }
@@ -20,9 +19,7 @@
             "command": "build",
             "preset": "${command:cmake.activeBuildPresetName}",
             "detail": "Build target with current configured preset",
-            "dependsOn": [
-                "Generate Doxygen"
-            ]
+            "dependsOn": []
         },
         {
             "type": "cmake",
@@ -33,14 +30,12 @@
         },
         {
             "type": "cmake",
-            "label": "Clean and Rebuild",
+            "label": "🟢 | Clean and Rebuild",
             "group": "build",
             "command": "cleanRebuild",
             "preset": "${command:cmake.activeBuildPresetName}",
             "detail": "Clean and rebuild target with current configured preset",
-            "dependsOn": [
-                "Generate Doxygen"
-            ]
+            "dependsOn": []
         },
         {
             "label": "Select Configure Preset",

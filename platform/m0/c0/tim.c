@@ -1,6 +1,4 @@
 #include "tim.h"
-#include "platform_inc_m0.h"
-#include "sys_config_m0.h"
 #include "sys.h"
 #include "gpio.h"
 

@@ -2,7 +2,6 @@
 #define __DMA_H
 
 #include "main.h"
-#include "platform_inc_m0.h"
 #include "platform.h"
 
 #define DMA_DEBUG_TX				DMA1
