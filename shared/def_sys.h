@@ -3,8 +3,8 @@
 #define __DEF_SYS_H
 
 #include "delay.h"
-#define PL_DELAY_MS(a)			(Delay_WaitTime_MilliSec(a))	//HAL_Delay(a)
-#define PL_GET_MS_CNT()			(Delay_TimeMilliSec_Get())		//(HAL_GetTick())
+#define PL_DELAY_MS(a)			(Delay_WaitTime_MilliSec(a))
+#define PL_GET_MS_CNT()			(Delay_TimeMilliSec_Get())
 #define PL_GET_US_CNT()			(Delay_TimeMicroSec_Get())
 
 #if USE_OS_DELAY

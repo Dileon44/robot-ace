@@ -1,5 +1,6 @@
 #include "platform.h"
-#include "sys_config_m0.h"
+#include "platform_inc_m0.h"
+#include "platform_int_cfg_m0.h"
 #include "sys.h"
 #include "int.h"
 #include "gpio.h"

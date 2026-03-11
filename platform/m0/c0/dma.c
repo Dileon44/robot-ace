@@ -1,5 +1,4 @@
 #include "dma.h"
-#include "sys_config_m0.h"
 #include "sys.h"
 #include "adc.h"
 #include "usart.h"

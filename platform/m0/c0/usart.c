@@ -1,5 +1,4 @@
 #include "usart.h"
-#include "sys_config_m0.h"
 #include "sys.h"
 
 static Pl_USART_ClbkRx_t USART_Debug_RxClbk = Pl_Stub_CommonClbk;
