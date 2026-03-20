@@ -20,7 +20,6 @@ set(FW_VER_APP ${PROJECT_VERSION})
 set(FW_VER_BOOT 1.0.0)
 
 # set(PLATFORM m3)
-set(FW_TYPE prd)
 # set(FW_PLATFORM m3r0c0)
 set(FW_BSP 0)
 
@@ -55,6 +54,16 @@ if(FW_OPT EQUAL 1)
 	set(OPT_FLAG -O1)
 else()
 	set(OPT_FLAG -O0)
+endif()
+
+# Debug mode: tag=dev → DEBUG_ENABLE=1; tag=prd → macro not defined
+if(NOT DEFINED FW_TYPE)
+	set(FW_TYPE prd)
+endif()
+if(FW_TYPE STREQUAL "dev")
+	set(DEBUG_ENABLE_DEF DEBUG_ENABLE=1)
+else()
+	set(DEBUG_ENABLE_DEF "")
 endif()
 
 add_compile_options(
@@ -95,6 +104,7 @@ add_compile_definitions(
 	FLASH_APP_ADDR=${FLASH_APP_ADDR}
 	FLASH_APP_SIZE=${FLASH_APP_SIZE}
 	FW_OPT=${FW_OPT}
+	${DEBUG_ENABLE_DEF}
 )
 # PLATFORM SPECIFIC
 
