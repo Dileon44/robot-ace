@@ -219,7 +219,7 @@ static void vTask_SensorsProcess(void* pvParameters) {
 
 void Sensors_TaskCreate(void) {
     if(!Sensors_Handle) {
-		string taskName = "Sensors control";
+			const char* taskName = "Sensors control";
 		xTaskCreate(
 			vTask_SensorsProcess,
 			taskName,

@@ -17,7 +17,7 @@ typedef enum
 	SYS_RESET_FLAG_BOR,
 } SYS_RESET_FLAG_t;
 
-string Sys_ResetFlag_GetStr(void);
+const char* Sys_ResetFlag_GetStr(void);
 SYS_RESET_FLAG_t Sys_ResetFlag_Get(void);
 void Sys_ResetFlag_Clear(void);
 
