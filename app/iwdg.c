@@ -41,7 +41,7 @@ static void vTask_WatchDogProcess(void* pvParameters) {
 
 void IWDG_TaskCreate(void) {
 	if(!WatchDog_Handle) {
-		string taskName = "Watchdog Driver";
+			const char* taskName = "Watchdog Driver";
 		xTaskCreate(
 			vTask_WatchDogProcess,
 			taskName,

@@ -23,7 +23,6 @@ set(FW_VER_BOOT 1.0.0)
 set(FW_TYPE prd)
 # set(FW_PLATFORM m3r0c0)
 set(FW_BSP 0)
-set(FW_ADEQ ffffff)
 
 execute_process(
 	COMMAND git rev-parse --short=6 HEAD
@@ -48,8 +47,18 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/bsp
 )
 
+# Optimization level: set via -DFW_OPT=0|1 (fw_builder.py), default 0
+if(NOT DEFINED FW_OPT)
+	set(FW_OPT 0)
+endif()
+if(FW_OPT EQUAL 1)
+	set(OPT_FLAG -O1)
+else()
+	set(OPT_FLAG -O0)
+endif()
+
 add_compile_options(
-	-O0
+	${OPT_FLAG}
 	-g
 	-specs=nosys.specs
 	-ffunction-sections
@@ -85,6 +94,7 @@ add_compile_definitions(
 	FLASH_BOOT_SIZE=${FLASH_BOOT_SIZE}
 	FLASH_APP_ADDR=${FLASH_APP_ADDR}
 	FLASH_APP_SIZE=${FLASH_APP_SIZE}
+	FW_OPT=${FW_OPT}
 )
 # PLATFORM SPECIFIC
 
@@ -96,14 +106,14 @@ FetchContent_Declare( freertos_kernel
 )
 
 add_library(freertos_config INTERFACE)
-include_directories(freertos_config SYSTEM
+target_include_directories(freertos_config SYSTEM
 	INTERFACE
 	${CMAKE_SOURCE_DIR}/app
 	${CMAKE_SOURCE_DIR}/app/conf
 	${CMAKE_SOURCE_DIR}/app/motor
 )
 
-add_compile_definitions(freertos_config
+target_compile_definitions(freertos_config
 	INTERFACE
 	projCOVERAGE_TEST=0
 )
@@ -116,7 +126,7 @@ FetchContent_MakeAvailable(freertos_kernel)
 
 # APP
 set(TARGET_APP app)
-set(APP_FULL_NAME ${FW_VER_APP}.${PROJECT_NAME}.app.${FW_TYPE}.${FW_PLATFORM}.${FW_BSP}.${FW_ADEQ}.${FW_GIT_HASH})
+set(APP_FULL_NAME ${FW_VER_APP}.${PROJECT_NAME}.app.${FW_TYPE}.${FW_PLATFORM}.${FW_BSP}.${FW_GIT_HASH})
 add_executable(${TARGET_APP}.elf ${SOURCES})
 set_target_properties(${TARGET_APP}.elf PROPERTIES VERSION ${FW_VER_APP})
 target_link_libraries(${TARGET_APP}.elf freertos_kernel)
@@ -145,7 +155,7 @@ add_custom_command(TARGET ${TARGET_APP}.elf POST_BUILD
 
 # BOOT
 set(TARGET_BOOT boot)
-set(BOOT_FULL_NAME ${FW_VER_BOOT}.${PROJECT_NAME}.boot.${FW_TYPE}.${FW_PLATFORM}.${FW_BSP}.${FW_ADEQ}.${FW_GIT_HASH})
+set(BOOT_FULL_NAME ${FW_VER_BOOT}.${PROJECT_NAME}.boot.${FW_TYPE}.${FW_PLATFORM}.${FW_BSP}.${FW_GIT_HASH})
 add_executable(${TARGET_BOOT}.elf ${SOURCES})
 set_target_properties(${TARGET_APP}.elf PROPERTIES VERSION ${FW_VER_BOOT})
 file(GLOB_RECURSE SOURCES_BOOT

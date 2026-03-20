@@ -13,35 +13,27 @@
 
     "tasks": [
         {
-            "type": "cmake",
-            "label": "Build",
-            "group": "build",
-            "command": "build",
-            "preset": "${command:cmake.activeBuildPresetName}",
-            "detail": "Build target with current configured preset",
-            "dependsOn": []
-        },
-        {
-            "type": "cmake",
-            "label": "Clean",
-            "command": "clean",
-            "preset": "${command:cmake.activeBuildPresetName}",
-            "detail": "Clean current configured preset"
-        },
-        {
-            "type": "cmake",
-            "label": "🟢 | Clean and Rebuild",
-            "group": "build",
-            "command": "cleanRebuild",
-            "preset": "${command:cmake.activeBuildPresetName}",
-            "detail": "Clean and rebuild target with current configured preset",
-            "dependsOn": []
-        },
-        {
-            "label": "Select Configure Preset",
-            "group": "build",
-            "command": "cmake --preset ${input:CMakeConfigurePreset}",
+            "label": "🟢 | Rebuild app [opt:0]",
             "type": "shell",
+            "command": "./scripts/builder.sh ${config:app_prd_m0r0c0_o0}",
+            "group": "build",
+            "options": { "cwd": "${workspaceFolder}" },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "🟢 | Rebuild app [opt:1]",
+            "type": "shell",
+            "command": "./scripts/builder.sh ${config:app_prd_m0r0c0_o1}",
+            "group": "build",
+            "options": { "cwd": "${workspaceFolder}" },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "🧹 | Clean [m0r0c0]",
+            "type": "shell",
+            "command": "./scripts/builder.sh clean preset=m0r0c0",
+            "group": "build",
+            "options": { "cwd": "${workspaceFolder}" },
             "problemMatcher": []
         }
     ],

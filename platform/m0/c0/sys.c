@@ -6,7 +6,7 @@
 
 #define SYS_CORE_CLOCK    170000000
 
-static const string ResetSrcList[] = {
+static const char* ResetSrcList[] = {
 	"UNKNOWN",
 	"IWDG",
 	"LOW_POWER",
@@ -18,7 +18,7 @@ static const string ResetSrcList[] = {
 	"SBF"
 };
 
-string Sys_ResetFlag_GetStr(void)
+const char* Sys_ResetFlag_GetStr(void)
 {
 	return ResetSrcList[Sys_ResetFlag_Get()];
 }

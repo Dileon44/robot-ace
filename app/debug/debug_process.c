@@ -15,7 +15,7 @@ static void vTask_DebugProcess(void* pvParameters) {
 
 void DebugProcess_TaskCreate(void) {
 	if(!DebugProcess_HandleRx) {
-		string taskName = "Debug Process";
+		const char* taskName = "Debug Process";
 		xTaskCreate(
 			vTask_DebugProcess,
 			taskName,
