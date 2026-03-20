@@ -679,7 +679,7 @@ static void vTask_MotorUartProcessRecieve(void* pvParameters) {
 
 void Uart_Process_Rx_TaskCreate(void) {
 	if(!UartProcess_HandleRx) {
-		string taskName = "Motor UART Rx process";
+		const char* taskName = "Motor UART Rx process";
 		xTaskCreate(
 			vTask_MotorUartProcessRecieve,
 			taskName,
@@ -836,7 +836,7 @@ static void vTask_MotorUartProcessTransmit(void* pvParameters) {
 
 void Uart_Process_Tx_TaskCreate(void) {
 	if(!UartProcess_HandleTx) {
-		string taskName = "Motor UART Tx process";
+		const char* taskName = "Motor UART Tx process";
 		xTaskCreate(
 			vTask_MotorUartProcessTransmit,
 			taskName,
