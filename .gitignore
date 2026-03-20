@@ -2,6 +2,10 @@
 build
 *.original
 
+# Python bytecode cache
+__pycache__/
+*.pyc
+
 # Object files
 *.o
 *.ko

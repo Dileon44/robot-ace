@@ -6,22 +6,14 @@ BUILD_ACTION="$1"
 
 set -e
 
-log_error() {
-    echo "❌ Error: $1"
-    exit 1
-}
+BOLD="\033[1m"
+GREEN="\033[32m"
+RED="\033[31m"
+RESET="\033[0m"
 
-run_step() {
-    local description="$1"
-    local cmd="$2"
-    echo
-    echo "▶️  $cmd"
-    if eval "$cmd"; then
-        echo "✅ $description completed successfully"
-    else
-        echo "❌ $description failed"
-        exit 1
-    fi
+log_error() {
+    echo -e "${BOLD}${RED}❌ Error: $1${RESET}"
+    exit 1
 }
 
 # Detect OS
@@ -64,5 +56,13 @@ echo "Use $PYTHON_VER"
 
 # Run Python build script, passing all arguments
 FW_BUILDER="$SCRIPTS_DIR/fw_builder.py"
-build_cmd="$VENV_PYTHON $FW_BUILDER $*"
-run_step "Build" "$build_cmd"
+BUILD_START=$SECONDS
+"$VENV_PYTHON" "$FW_BUILDER" $*
+BUILD_RET=$?
+BUILD_ELAPSED=$(( SECONDS - BUILD_START ))
+if [ $BUILD_RET -eq 0 ]; then
+    echo -e "${BOLD}${GREEN}\n✅ Build completed successfully (${BUILD_ELAPSED}s)${RESET}"
+else
+    echo -e "${BOLD}${RED}\n❌ Build failed (${BUILD_ELAPSED}s)${RESET}"
+    exit 1
+fi

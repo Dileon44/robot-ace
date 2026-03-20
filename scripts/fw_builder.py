@@ -11,15 +11,33 @@ Usage:
 """
 
 import logging
-import os
+import re
 import subprocess
 import sys
 from pathlib import Path
+from time import time
+
+from tqdm import tqdm
+
+from memory_table import RE_DATA as _RE_MEMORY_DATA
+from memory_table import render as _render_memory
 
 log = logging.getLogger(__name__)
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 BUILD_BASE_DIR = ROOT_DIR / "build"
+
+# ANSI color codes
+class C:
+    RED    = "\033[31m"
+    YELLOW = "\033[33m"
+    CYAN   = "\033[36m"
+    GREEN  = "\033[32m"
+    BLUE   = "\033[34m"
+    WHITE  = "\033[37m"
+    DIM    = "\033[2m"
+    BOLD   = "\033[1m"
+    RESET  = "\033[0m"
 
 # Mapping: build-arg key -> CMake cache variable name that will be
 # passed via -D and will appear as a preprocessor macro in C code.
@@ -31,10 +49,55 @@ ARG_TO_CMAKE_DEFINE: dict[str, str] = {
     "opt":      "FW_OPT",     # 0 = -O0 (debug), 1 = -O1
 }
 
+_RE_ERROR   = re.compile(r"\berror:", re.IGNORECASE)
+_RE_WARNING = re.compile(r"\bwarning:", re.IGNORECASE)
+_RE_NOTE    = re.compile(r"\bnote:", re.IGNORECASE)
+_RE_FAILED  = re.compile(r"^FAILED:")
+_RE_BUILD   = re.compile(r"^\[[\d ]+/[\d ]+\] Building")
+_RE_LINK    = re.compile(r"^\[[\d ]+/[\d ]+\] Linking")
+_RE_PROGRESS= re.compile(r"^\[[\d ]+/[\d ]+\]")
+
+
+def colorize_line(line: str) -> str:
+    if _RE_FAILED.match(line):
+        return C.BOLD + C.RED + line + C.RESET
+    if _RE_ERROR.search(line):
+        return C.RED + line + C.RESET
+    if _RE_WARNING.search(line):
+        return C.YELLOW + line + C.RESET
+    if _RE_NOTE.search(line):
+        return C.DIM + line + C.RESET
+    if _RE_LINK.match(line):
+        return C.BOLD + C.BLUE + line + C.RESET
+    if _RE_BUILD.match(line):
+        return C.DIM + line + C.RESET
+    if _RE_PROGRESS.match(line):
+        return C.CYAN + line + C.RESET
+    return line
+
+
+class _ColoredFormatter(logging.Formatter):
+    _COLORS = {
+        logging.DEBUG:    C.DIM,
+        logging.INFO:     C.CYAN,
+        logging.WARNING:  C.YELLOW,
+        logging.ERROR:    C.RED,
+        logging.CRITICAL: C.BOLD + C.RED,
+    }
+
+    def format(self, record: logging.LogRecord) -> str:
+        color = self._COLORS.get(record.levelno, "")
+        msg = super().format(record)
+        return color + msg + C.RESET
+
 
 def setup_logging() -> None:
     fmt = "%(asctime)s [%(levelname)-7s] %(message)s"
-    logging.basicConfig(level=logging.DEBUG, format=fmt, stream=sys.stdout)
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(_ColoredFormatter(fmt))
+    root = logging.getLogger()
+    root.setLevel(logging.DEBUG)
+    root.addHandler(handler)
 
 
 def parse_args(raw: list[str]) -> dict[str, str]:
@@ -49,11 +112,78 @@ def parse_args(raw: list[str]) -> dict[str, str]:
     return result
 
 
-def run(cmd: list[str], cwd: Path) -> int:
-    """Run a subprocess command, stream output, return exit code."""
+def run(cmd: list[str], cwd: Path, show_progress: bool = False) -> int:
+    """Run a subprocess command, stream and colorize output, return exit code."""
     log.info("Run: " + " ".join(cmd))
-    result = subprocess.run(cmd, cwd=cwd)
-    return result.returncode
+    process = subprocess.Popen(
+        cmd,
+        cwd=cwd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        errors="replace",
+    )
+
+    pbar: tqdm | None = None
+    memory_lines: list[str] = []
+    in_memory_section = False
+
+    for line in process.stdout:
+        line = line.rstrip()
+
+        # Intercept memory-region output for table rendering after build
+        if line.lstrip().startswith("Memory region"):
+            in_memory_section = True
+            continue
+        if in_memory_section:
+            if _RE_MEMORY_DATA.match(line):
+                memory_lines.append(line)
+                continue
+            in_memory_section = False
+
+        m = re.match(r"^\[(\s*\d+)/(\s*\d+)\]", line)
+        if m and show_progress:
+            current, t = int(m.group(1)), int(m.group(2))
+
+            if pbar is None:
+                bar_fmt = "{l_bar}{bar:60}{r_bar}"
+                pbar = tqdm(
+                    total=t,
+                    bar_format=bar_fmt,
+                    colour="cyan",
+                    file=sys.stdout,
+                    dynamic_ncols=True,
+                )
+                pbar.n = current - 1
+                pbar.refresh()
+
+            # Building lines → update bar silently
+            if _RE_BUILD.match(line):
+                fname = line.split("/")[-1] if "/" in line else line
+                pbar.set_postfix_str(fname, refresh=False)
+                pbar.update(1)
+                continue
+
+            # Linking / other [X/Y] → update bar, print above it (strip prefix)
+            pbar.update(1)
+            pbar.write(colorize_line(re.sub(r"^\[\s*\d+/\s*\d+\]\s*", "", line)))
+            continue
+
+        # Non-progress line: print above bar (if open) or directly
+        stripped = re.sub(r"^\[\s*\d+/\s*\d+\]\s*", "", line)
+        if pbar is not None:
+            pbar.write(colorize_line(stripped))
+        else:
+            print(colorize_line(stripped))
+
+    if pbar is not None:
+        pbar.close()
+
+    if memory_lines:
+        _render_memory(memory_lines)
+
+    process.wait()
+    return process.returncode
 
 
 def build_cmake_defines(args: dict[str, str]) -> list[str]:
@@ -81,7 +211,6 @@ def get_preset(args: dict[str, str]) -> str:
 def cmd_configure(args: dict[str, str]) -> int:
     preset = get_preset(args)
     extra_defines = build_cmake_defines(args)
-
     cmake_args = ["cmake", "--preset", preset] + extra_defines
     return run(cmake_args, ROOT_DIR)
 
@@ -92,7 +221,6 @@ def cmd_build(args: dict[str, str]) -> int:
     target_name = args.get("target", "app")
     cmake_target = f"{target_name}.elf"
 
-    # Configure first if build directory doesn't have CMakeCache.txt
     if not (build_dir / "CMakeCache.txt").exists():
         log.info("CMakeCache.txt not found — running configure first")
         ret = cmd_configure(args)
@@ -100,7 +228,7 @@ def cmd_build(args: dict[str, str]) -> int:
             return ret
 
     cmake_args = ["cmake", "--build", str(build_dir), "--target", cmake_target]
-    return run(cmake_args, ROOT_DIR)
+    return run(cmake_args, ROOT_DIR, show_progress=True)
 
 
 def cmd_clean(args: dict[str, str]) -> int:
@@ -139,19 +267,28 @@ def main() -> int:
     log.info(f"Command : {command}")
     log.info(f"Args    : {args}")
 
+    start = time()
+
     match command:
         case "configure":
-            return cmd_configure(args)
+            ret = cmd_configure(args)
         case "build":
-            return cmd_build(args)
+            ret = cmd_build(args)
         case "clean":
-            return cmd_clean(args)
+            ret = cmd_clean(args)
         case "rebuild":
-            return cmd_rebuild(args)
+            ret = cmd_rebuild(args)
         case _:
             log.error(f"Unknown command: {command!r}. Use: configure | build | clean | rebuild")
             return 1
 
+    elapsed = time() - start
+    if ret != 0:
+        print(C.BOLD + C.RED + f"\n❌ Build failed ({elapsed:.1f}s)" + C.RESET)
+
+    return ret
+
 
 if __name__ == "__main__":
     sys.exit(main())
+

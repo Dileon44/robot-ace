@@ -1,3 +1,2 @@
-# No external dependencies required for the current fw_builder.py.
-# Add packages here if needed in the future, e.g.:
-# coloredlogs==15.0.1
+coloredlogs==15.0.1
+tqdm==4.67.1
