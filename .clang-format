@@ -1,0 +1,42 @@
+---
+# DisableFormat: true
+BasedOnStyle: LLVM
+Language: Cpp
+UseTab: Always
+TabWidth: 4
+IndentWidth: 4
+SpacesBeforeTrailingComments: 2
+SortIncludes: true
+ColumnLimit: 100
+
+IndentCaseLabels: true # case labels shift to the right
+PointerAlignment: Left # pointer (*) symbol near with type, not var
+
+ReflowComments: false # do not reflow long comments into new lines
+
+AllowShortBlocksOnASingleLine: false # do not place short {blocks} on the single line
+AllowShortFunctionsOnASingleLine: false 
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+
+AlignConsecutiveAssignments: AcrossComments # Style of aligning consecutive assignments
+AlignConsecutiveMacros: AcrossComments # Style of aligning consecutive macro definitions
+AlignEscapedNewlinesLeft: true # '\'' symbol near the macro
+# AlignTrailingComments: false
+AlignAfterOpenBracket: Align
+
+AlwaysBreakBeforeMultilineStrings: true
+
+BinPackArguments: true 
+BinPackParameters: true
+AllowAllParametersOfDeclarationOnNextLine: true
+
+BreakBeforeTernaryOperators: true # ternary operator on the left side
+BreakAdjacentStringLiterals: true
+BreakArrays: false
+
+# PenaltyBreakAssignment: 100
+# PenaltyBreakBeforeFirstCallParameter: 1000
+
+...

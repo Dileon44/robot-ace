@@ -11,10 +11,11 @@
         "*.in": "c"
     },
 
-    // // C/C++
-    // "[c]": {
-    //     "editor.formatOnSave": true,
-    // },
+    // C/C++
+    "[c]": {
+        "editor.defaultFormatter": "ms-vscode.cpptools",
+        "editor.formatOnSave": true,
+    },
 
     // Python
     "[python]": {
