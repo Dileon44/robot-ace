@@ -1,9 +1,9 @@
 #include "main.h"
-#include "platform.h"
-#include "iwdg.h"
-#include "delay.h"
 #include "debug_interface.h"
 #include "debug_process.h"
+#include "delay.h"
+#include "iwdg.h"
+#include "platform.h"
 
 #if DEBUG_ENABLE
 #warning DEBUG_ENABLE
@@ -16,18 +16,18 @@ void HardFault_Clbk(u32 pcVal) {
 	__NOP();
 }
 
-void ErrorHandler(char *pFile, int line) {
+void ErrorHandler(char* pFile, int line) {
 	DISCARD_UNUSED(pFile);
 	DISCARD_UNUSED(line);
 
 	Pl_IrqOff();
 	PL_SET_BKPT();
-	while(true) {
+	while (true) {
 	};
 }
 
-void assert_failed(uint8_t *file, uint32_t line) {
-  	DISCARD_UNUSED(file);
+void assert_failed(uint8_t* file, uint32_t line) {
+	DISCARD_UNUSED(file);
 	DISCARD_UNUSED(line);
 	PANIC();
 }
@@ -53,8 +53,8 @@ int main(void) {
 
 	FreeRTOS_InitComponents(false, true);
 	vTaskStartScheduler();
-	
-	for(;;) {
+
+	for (;;) {
 		PANIC();
 	}
 

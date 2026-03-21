@@ -14,9 +14,6 @@
  * Debug features
  * All macro in production release must be zeroes
  */
-#ifndef DEBUG_ENABLE
-#define DEBUG_ENABLE			1
-#endif
 #define PANIC_CHECK_ENABLE		1
 #if DEBUG_ENABLE
 //------------------------------------------------------------------------------------------------------------
