@@ -4,6 +4,6 @@
 static const char* retStateBuff[] = {RET_STATE_TABLE()};
 #undef X
 
-const char* RetStateStr_Get(RET_STATE_t retState) {
+const char* RetState_GetStr(RET_STATE_t retState) {
 	return retStateBuff[retState];
 }

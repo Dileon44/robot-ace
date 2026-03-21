@@ -40,6 +40,6 @@ typedef enum { STATE_DISABLE = 0, STATE_ENABLE = !STATE_DISABLE } FUNCTIONAL_STA
 typedef enum { RET_STATE_TABLE() } RET_STATE_t;
 #undef X
 
-const char* RetStateStr_Get(RET_STATE_t retState);
+const char* RetState_GetStr(RET_STATE_t retState);
 
 #endif /* __DEF_TYPES_H */

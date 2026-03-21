@@ -110,6 +110,7 @@ add_compile_definitions(
 
 # FREERTOS SETTINGS
 include(FetchContent)
+set(FETCHCONTENT_BASE_DIR ${CMAKE_SOURCE_DIR}/lib/rtos CACHE PATH "FetchContent base dir" FORCE)
 FetchContent_Declare( freertos_kernel
   GIT_REPOSITORY	https://github.com/FreeRTOS/FreeRTOS-Kernel.git
   GIT_TAG			V11.2.0 #Note: Best practice to use specific git-hash or tagged version
@@ -131,6 +132,7 @@ target_compile_definitions(freertos_config
 set(FREERTOS_HEAP "4" CACHE STRING "FreeRTOS Heap Model" FORCE)
 set(FREERTOS_PORT "GCC_ARM_CM4F" CACHE STRING "FreeRTOS Cross Compile Port" FORCE)
 
+set(FREERTOS_KERNEL_PATH ${CMAKE_SOURCE_DIR}/lib/rtos/freertos_kernel-src)
 FetchContent_MakeAvailable(freertos_kernel)
 # FREERTOS SETTINGS
 
@@ -140,10 +142,11 @@ set(APP_FULL_NAME ${FW_VER_APP}.${PROJECT_NAME}.app.${FW_TYPE}.${FW_PLATFORM}.${
 add_executable(${TARGET_APP}.elf ${SOURCES})
 set_target_properties(${TARGET_APP}.elf PROPERTIES VERSION ${FW_VER_APP})
 target_link_libraries(${TARGET_APP}.elf freertos_kernel)
+file(GLOB SOURCES_LIB "lib/*.c")
 file(GLOB_RECURSE SOURCES_APP
-	"lib/*.c"
 	"app/*.c"
 )
+list(APPEND SOURCES_APP ${SOURCES_LIB})
 target_sources(${TARGET_APP}.elf PRIVATE ${SOURCES_APP})
 target_include_directories(${TARGET_APP}.elf PRIVATE
 	${CMAKE_SOURCE_DIR}/app
