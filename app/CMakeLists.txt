@@ -29,4 +29,8 @@ add_custom_command(TARGET app.elf POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy
 		$<TARGET_FILE:app.elf>
 		${CMAKE_SOURCE_DIR}/${BUILD_DIR}/fw_${FW_PLATFORM_MCU}.elf
+	COMMAND ${CMAKE_OBJCOPY} -O ihex  $<TARGET_FILE:app.elf>
+		${CMAKE_SOURCE_DIR}/${BUILD_DIR}/fw_${FW_PLATFORM_MCU}.hex
+	COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:app.elf>
+		${CMAKE_SOURCE_DIR}/${BUILD_DIR}/fw_${FW_PLATFORM_MCU}.bin
 )

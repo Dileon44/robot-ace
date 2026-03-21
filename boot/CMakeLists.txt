@@ -21,3 +21,13 @@ set_target_properties(boot.elf PROPERTIES
 	OUTPUT_NAME ${BOOT_FULL_NAME}.elf
 	VERSION     ${FW_VER_BOOT}
 )
+
+add_custom_command(TARGET boot.elf POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy
+		$<TARGET_FILE:boot.elf>
+		${CMAKE_SOURCE_DIR}/${BUILD_DIR}/boot_${FW_PLATFORM_MCU}.elf
+	COMMAND ${CMAKE_OBJCOPY} -O ihex   $<TARGET_FILE:boot.elf>
+		${CMAKE_SOURCE_DIR}/${BUILD_DIR}/boot_${FW_PLATFORM_MCU}.hex
+	COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:boot.elf>
+		${CMAKE_SOURCE_DIR}/${BUILD_DIR}/boot_${FW_PLATFORM_MCU}.bin
+)
