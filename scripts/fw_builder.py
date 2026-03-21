@@ -145,6 +145,13 @@ def run(cmd: list[str], cwd: Path, show_progress: bool = False) -> int:
         if m and show_progress:
             current, t = int(m.group(1)), int(m.group(2))
 
+            # [0/N] is ninja's internal status step (e.g. "Re-checking globbed
+            # directories") — not a real compilation unit; skip from bar tracking
+            if current == 0:
+                stripped = re.sub(r"^\[\s*\d+/\s*\d+\]\s*", "", line)
+                (pbar.write if pbar is not None else print)(colorize_line(stripped))
+                continue
+
             if pbar is None:
                 bar_fmt = "{l_bar}{bar:60}{r_bar}"
                 pbar = tqdm(
@@ -155,6 +162,9 @@ def run(cmd: list[str], cwd: Path, show_progress: bool = False) -> int:
                     dynamic_ncols=True,
                 )
                 pbar.n = current - 1
+                pbar.refresh()
+            elif pbar.total != t:
+                pbar.total = t
                 pbar.refresh()
 
             # Building lines → update bar silently
