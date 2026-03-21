@@ -27,7 +27,9 @@
                 "${workspaceFolder}/platform/m0/core/HAL/inc",
                 "${workspaceFolder}/platform/m0/core/HAL/inc/Legacy",
                 "${workspaceFolder}/platform/m0/core/USB_Device/Core/Inc",
-                "${workspaceFolder}/platform/m0/core/USB_Device/Class/CDC/Inc"
+                "${workspaceFolder}/platform/m0/core/USB_Device/Class/CDC/Inc",
+                "${workspaceFolder}/lib/rtos/freertos_kernel-src/include",
+                "${workspaceFolder}/lib/rtos/freertos_kernel-src/portable/GCC/ARM_CM4F"
             ],
             "defines": [
                 "STM32G431xx",
