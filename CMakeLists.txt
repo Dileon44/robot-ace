@@ -109,13 +109,6 @@ add_compile_definitions(
 # PLATFORM SPECIFIC
 
 # FREERTOS SETTINGS
-include(FetchContent)
-set(FETCHCONTENT_BASE_DIR ${CMAKE_SOURCE_DIR}/lib/rtos CACHE PATH "FetchContent base dir" FORCE)
-FetchContent_Declare( freertos_kernel
-  GIT_REPOSITORY	https://github.com/FreeRTOS/FreeRTOS-Kernel.git
-  GIT_TAG			V11.2.0 #Note: Best practice to use specific git-hash or tagged version
-)
-
 add_library(freertos_config INTERFACE)
 target_include_directories(freertos_config SYSTEM
 	INTERFACE
@@ -132,8 +125,8 @@ target_compile_definitions(freertos_config
 set(FREERTOS_HEAP "4" CACHE STRING "FreeRTOS Heap Model" FORCE)
 set(FREERTOS_PORT "GCC_ARM_CM4F" CACHE STRING "FreeRTOS Cross Compile Port" FORCE)
 
-set(FREERTOS_KERNEL_PATH ${CMAKE_SOURCE_DIR}/lib/rtos/freertos_kernel-src)
-FetchContent_MakeAvailable(freertos_kernel)
+set(FREERTOS_KERNEL_PATH ${CMAKE_SOURCE_DIR}/thirdparty/freertos_kernel)
+add_subdirectory(${FREERTOS_KERNEL_PATH} ${CMAKE_BINARY_DIR}/freertos_kernel)
 # FREERTOS SETTINGS
 
 # APP

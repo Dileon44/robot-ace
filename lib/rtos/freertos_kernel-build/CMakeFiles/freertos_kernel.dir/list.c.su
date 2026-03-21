@@ -1,5 +1,0 @@
-/home/dmitrii/Work/Home/robot-ace/lib/rtos/freertos_kernel-src/list.c:49:6:vListInitialise	16	static
-/home/dmitrii/Work/Home/robot-ace/lib/rtos/freertos_kernel-src/list.c:89:6:vListInitialiseItem	16	static
-/home/dmitrii/Work/Home/robot-ace/lib/rtos/freertos_kernel-src/list.c:105:6:vListInsertEnd	24	static
-/home/dmitrii/Work/Home/robot-ace/lib/rtos/freertos_kernel-src/list.c:139:6:vListInsert	24	static
-/home/dmitrii/Work/Home/robot-ace/lib/rtos/freertos_kernel-src/list.c:217:13:uxListRemove	24	static

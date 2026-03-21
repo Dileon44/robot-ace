@@ -1,6 +1,5 @@
 #include "iwdg.h"
 #include "conf/tasks_stack_and_priority.h"
-#include "debug_interface.h"
 #include "platform.h"
 
 #define IWDG_MAX_TIMEOUT_MS (3 * DELAY_1_SECOND)  // ?

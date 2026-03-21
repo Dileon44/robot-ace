@@ -1,6 +1,4 @@
 #include "main.h"
-#include "debug_interface.h"
-#include "debug_process.h"
 #include "delay.h"
 #include "iwdg.h"
 #include "platform.h"
@@ -33,7 +31,6 @@ void assert_failed(uint8_t* file, uint32_t line) {
 }
 
 void FreeRTOS_InitComponents(bool resources, bool tasks) {
-	FreeRTOS_DebugProcess_InitComponents(resources, tasks);
 }
 
 int main(void) {
@@ -46,10 +43,6 @@ int main(void) {
 	Pl_LedDebug_Init();
 
 	Delay_Init();
-
-#if DEBUG_ENABLE
-	DebugInterface_Init();
-#endif /* DEBUG_ENABLE */
 
 	FreeRTOS_InitComponents(false, true);
 	vTaskStartScheduler();
