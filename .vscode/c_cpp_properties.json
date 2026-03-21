@@ -1,9 +1,44 @@
 {
+    "env": {
+        "allConfigIncludePath": [
+            "${workspaceFolder}/app",
+            "${workspaceFolder}/app/conf",
+            "${workspaceFolder}/app/debug",
+            "${workspaceFolder}/app/motor",
+            "${workspaceFolder}/app/motor/connection",
+            "${workspaceFolder}/app/motor/control",
+            "${workspaceFolder}/boot",
+            "${workspaceFolder}/lib",
+            "${workspaceFolder}/shared"
+        ]
+    },
     "configurations": [
         {
-            "name": "CMake",
-            // "compileCommands": "${config:cmake.buildDirectory}/compile_commands.json",
-            "configurationProvider": "ms-vscode.cmake-tools"
+            "name": "m0r0c0",
+            "compilerPath": "${config:compiler_path}",
+            "includePath": [
+                "${allConfigIncludePath}",
+                "${workspaceFolder}/platform",
+                "${workspaceFolder}/platform/m0",
+                "${workspaceFolder}/platform/m0/c0",
+                "${workspaceFolder}/platform/m0/core",
+                "${workspaceFolder}/platform/m0/core/CMSIS",
+                "${workspaceFolder}/platform/m0/core/LL/inc",
+                "${workspaceFolder}/platform/m0/core/HAL/inc",
+                "${workspaceFolder}/platform/m0/core/HAL/inc/Legacy",
+                "${workspaceFolder}/platform/m0/core/USB_Device/Core/Inc",
+                "${workspaceFolder}/platform/m0/core/USB_Device/Class/CDC/Inc"
+            ],
+            "defines": [
+                "STM32G431xx",
+                "USE_FULL_LL_DRIVER",
+                "USE_FULL_ASSERT",
+                "HSE_VALUE=24000000U",
+                "DEBUG_ENABLE=1"
+            ],
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-arm"
         }
     ],
     "version": 4
