@@ -16,7 +16,7 @@ u32 Delay_TimeMilliSec_Get(void) {
 	return MilliSecAfterStart;
 }
 
-u64 Delay_TimeMicroSec_Get(void) { //one u32 value can hold ~1.19 of an hour
+u64 Delay_TimeMicroSec_Get(void) {	//one u32 value can hold ~1.19 of an hour
 	// return (u64)(MilliSecAfterStart) * (u64)1000 + (u64)Pl_Delay_GetCnt();
 	return 0;
 }

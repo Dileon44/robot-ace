@@ -1,17 +1,19 @@
 #include "platform.h"
+#include "adc.h"
+#include "dma.h"
+#include "gpio.h"
+#include "int.h"
 #include "platform_inc_m0.h"
 #include "platform_int_cfg_m0.h"
 #include "sys.h"
-#include "int.h"
-#include "gpio.h"
 #include "tim.h"
 #include "usart.h"
-#include "dma.h"
-#include "adc.h"
 
-#define NVIC_PRIO_GROUP_4		0x00000003U /*!< 4 bits for pre-emption priority, 0 bits for subpriority (for FreeRTOS)*/
+#define NVIC_PRIO_GROUP_4 \
+	0x00000003U /*!< 4 bits for pre-emption priority, 0 bits for subpriority (for FreeRTOS)*/
 
-void Pl_Stub_CommonClbk(void) {}
+void Pl_Stub_CommonClbk(void) {
+}
 
 void Pl_Stub_HardFaultClbk(u32 pcVal) {
 	DISCARD_UNUSED(pcVal);
@@ -38,7 +40,8 @@ void Pl_Init(Pl_HardFault_Clbk_t pHardFault_Clbk) {
 	LL_FLASH_EnableDataCache();
 	LL_FLASH_EnablePrefetch();
 	LL_FLASH_SetLatency(LL_FLASH_LATENCY_4);
-	while(LL_FLASH_GetLatency() != LL_FLASH_LATENCY_4);
+	while (LL_FLASH_GetLatency() != LL_FLASH_LATENCY_4)
+		;
 	LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE1);
 	NVIC_SetPriorityGrouping(NVIC_PRIO_GROUP_4);
 
@@ -55,37 +58,33 @@ void Pl_JumpToAddr(u32 appAddr) {
 	void (*pGoToApp)(void);
 
 	appJumpAddr = *((volatile u32*)(appAddr + 4));
-	pGoToApp = (void (*)(void))appJumpAddr;
-	SCB->VTOR = appAddr;
-	__set_MSP(*((volatile u32*)appAddr)); //stack pointer (to RAM) for app on this addr
+	pGoToApp	= (void (*)(void))appJumpAddr;
+	SCB->VTOR	= appAddr;
+	__set_MSP(*((volatile u32*)appAddr));  //stack pointer (to RAM) for app on this addr
 	pGoToApp();
 }
 
 /*========================= Platform IWDG functions ==========================*/
 
-void Pl_IWDG_Init(void)
-{
+void Pl_IWDG_Init(void) {
 	LL_IWDG_Enable(IWDG);
 	LL_IWDG_EnableWriteAccess(IWDG);
 	LL_IWDG_SetPrescaler(IWDG, LL_IWDG_PRESCALER_128);
 	LL_IWDG_SetReloadCounter(IWDG, 3500);
-	while (LL_IWDG_IsReady(IWDG) != 1)
-	{
+	while (LL_IWDG_IsReady(IWDG) != 1) {
 	}
 
 	LL_IWDG_ReloadCounter(IWDG);
 }
 
-void Pl_IWDG_ReloadCounter(void)
-{
+void Pl_IWDG_ReloadCounter(void) {
 	LL_IWDG_ReloadCounter(IWDG);
 }
 
 /*========================= Platform USART functions =========================*/
 
-void Pl_USART_Debug_Init(u8* pTxBuff, u16 TxBuffLen, Pl_USART_ClbkTx_t pTxClbk,
-						 u8* pRxBuff, u16 RxBuffLen, Pl_USART_ClbkRx_t pRxClbk)
-{
+void Pl_USART_Debug_Init(u8* pTxBuff, u16 TxBuffLen, Pl_USART_ClbkTx_t pTxClbk, u8* pRxBuff,
+						 u16 RxBuffLen, Pl_USART_ClbkRx_t pRxClbk) {
 	GPIO_USART_Debug_Tx_Init();
 	GPIO_USART_Debug_Rx_Init();
 
@@ -97,56 +96,46 @@ void Pl_USART_Debug_Init(u8* pTxBuff, u16 TxBuffLen, Pl_USART_ClbkTx_t pTxClbk,
 	DMA_Debug_Irq_Enable();
 }
 
-__INLINE RET_STATE_t Pl_USART_Debug_TxData(u8* pBuff, u16 size)
-{
+__INLINE RET_STATE_t Pl_USART_Debug_TxData(u8* pBuff, u16 size) {
 	SYS_CRITICAL_ON();
 	RET_STATE_t retState = USART_Debug_TxData(pBuff, size, PL_USART_DEF_TIMEOUT);
 	SYS_CRITICAL_OFF();
 	return retState;
 }
 
-__INLINE void Pl_USART_Debug_Enable_Tx(void)
-{
+__INLINE void Pl_USART_Debug_Enable_Tx(void) {
 	DMA_Debug_Enable_Tx();
 }
 
-__INLINE void Pl_USART_Debug_Enable_Rx(void)
-{
+__INLINE void Pl_USART_Debug_Enable_Rx(void) {
 	DMA_Debug_Enable_Rx();
 }
 
-__INLINE void Pl_USART_Debug_Disable_Tx(void)
-{
+__INLINE void Pl_USART_Debug_Disable_Tx(void) {
 	DMA_Debug_Disable_Tx();
 }
 
-__INLINE void Pl_USART_Debug_Disable_Rx(void)
-{
+__INLINE void Pl_USART_Debug_Disable_Rx(void) {
 	DMA_Debug_Disable_Rx();
 }
 
-__INLINE void Pl_USART_Debug_SetDataLengthRx(u32 NbData)
-{
+__INLINE void Pl_USART_Debug_SetDataLengthRx(u32 NbData) {
 	DMA_Debug_SetDataLengthRx(NbData);
 }
 
-__INLINE void Pl_USART_Debug_SetDataLengthTx(u32 NbData)
-{
+__INLINE void Pl_USART_Debug_SetDataLengthTx(u32 NbData) {
 	DMA_Debug_SetDataLengthTx(NbData);
 }
 
-__INLINE u32 Pl_USART_Debug_GetDataLengthTx(void)
-{
+__INLINE u32 Pl_USART_Debug_GetDataLengthTx(void) {
 	return DMA_Debug_GetDataLengthTx();
 }
 
-__INLINE u32 Pl_USART_Debug_GetDataLengthRx(void)
-{
+__INLINE u32 Pl_USART_Debug_GetDataLengthRx(void) {
 	return DMA_Debug_GetDataLengthRx();
 }
 
-__INLINE u8 Pl_USART_Debug_GetRxByte(void)
-{
+__INLINE u8 Pl_USART_Debug_GetRxByte(void) {
 	return USART_Debug_GetRxByte();
 }
 
@@ -156,33 +145,27 @@ u32 Pl_Motor_GetStateHalls(void) {
 	return GPIO_Motor_GetStateHalls();
 }
 
-void Pl_Motor_SetKeyAL(void)
-{
+void Pl_Motor_SetKeyAL(void) {
 	GPIO_Motor_SetKeyAL(GPIO_SET);
 }
 
-void Pl_Motor_SetKeyBL(void)
-{
+void Pl_Motor_SetKeyBL(void) {
 	GPIO_Motor_SetKeyBL(GPIO_SET);
 }
 
-void Pl_Motor_SetKeyCL(void)
-{
+void Pl_Motor_SetKeyCL(void) {
 	GPIO_Motor_SetKeyCL(GPIO_SET);
 }
 
-void Pl_Motor_ResetKeyAL(void)
-{
+void Pl_Motor_ResetKeyAL(void) {
 	GPIO_Motor_SetKeyAL(GPIO_RST);
 }
 
-void Pl_Motor_ResetKeyBL(void)
-{
+void Pl_Motor_ResetKeyBL(void) {
 	GPIO_Motor_SetKeyBL(GPIO_RST);
 }
 
-void Pl_Motor_ResetKeyCL(void)
-{
+void Pl_Motor_ResetKeyCL(void) {
 	GPIO_Motor_SetKeyCL(GPIO_RST);
 }
 
@@ -206,8 +189,7 @@ void Pl_Motor_PWMInit(Pl_TIM_PWM_Clbk_t pTimPwmCntTopClbk, Pl_TIM_PWM_Clbk_t pTi
 	TIM_PWM_Enable();
 }
 
-void Pl_Motor_Init(Pl_TIM_PWM_Clbk_t pTimPwmCntTopClbk, 
-				   Pl_TIM_PWM_Clbk_t pTimPwmCntBottomClbk,
+void Pl_Motor_Init(Pl_TIM_PWM_Clbk_t pTimPwmCntTopClbk, Pl_TIM_PWM_Clbk_t pTimPwmCntBottomClbk,
 				   Pl_TIM_Motor_SpeedControlClbk_t pSpeedControlClbk,
 				   Pl_ADC_Motor_SensHighFreqClbk_t pAdcHighFreqClbk) {
 	Pl_Motor_ControlGpioInit();

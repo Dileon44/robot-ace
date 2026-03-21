@@ -34,7 +34,7 @@
 //             float ampl;
 //             float freq;
 //         } Meander;
-        
+
 //         struct Uart_Int_ShapeInSawtooth_t {
 //             float ampl;
 //             float freq;
@@ -49,7 +49,6 @@
 //         bool  rpm;
 //     } PrintParams;
 // } Uart_Int_RxData_t;
-
 
 // // #define UART_INTERFACE_STOP_CMD_SIZE            5
 // // #define UART_INTERFACE_START_CMD_SIZE           6
@@ -122,7 +121,7 @@
 // //             float ampl;
 // //             float freq;
 // //         } Meander;
-        
+
 // //         struct CtrlSrcSawtoothData_t {
 // //             char cmd [UART_INTERFACE_SHAPE_SAW_CMD_SIZE];
 // //             char ampl [UART_INTERFACE_SHAPE_SAW_AMPL_SIZE];

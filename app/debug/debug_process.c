@@ -1,12 +1,12 @@
 #include "debug_process.h"
+#include "conf/tasks_stack_and_priority.h"
 #include "debug_interface.h"
 #include "platform.h"
-#include "conf/tasks_stack_and_priority.h"
 
 static TaskHandle_t DebugProcess_HandleRx = NULL;
 
 static void vTask_DebugProcess(void* pvParameters) {
-    for(;;) {
+	for (;;) {
 		Pl_Led_Toggle();
 		DEBUG_PRINT("Test\r\n");
 		vTaskDelay(1000);
@@ -14,16 +14,10 @@ static void vTask_DebugProcess(void* pvParameters) {
 }
 
 void DebugProcess_TaskCreate(void) {
-	if(!DebugProcess_HandleRx) {
+	if (!DebugProcess_HandleRx) {
 		const char* taskName = "Debug Process";
-		xTaskCreate(
-			vTask_DebugProcess,
-			taskName,
-			DEBUG_PROCESS_TASK_STACK,
-			NULL,
-			DEBUG_PROCESS_TASK_PRIORITY,
-			&DebugProcess_HandleRx
-		);
+		xTaskCreate(vTask_DebugProcess, taskName, DEBUG_PROCESS_TASK_STACK, NULL,
+					DEBUG_PROCESS_TASK_PRIORITY, &DebugProcess_HandleRx);
 	}
 }
 

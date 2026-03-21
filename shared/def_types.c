@@ -1,9 +1,7 @@
 #include "def_types.h"
 
 #define X(a, b) b,
-static const char* retStateBuff[] = {
-	RET_STATE_TABLE()
-};
+static const char* retStateBuff[] = {RET_STATE_TABLE()};
 #undef X
 
 const char* RetStateStr_Get(RET_STATE_t retState) {

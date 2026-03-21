@@ -2,8 +2,8 @@
 #define __ADC_H
 
 #include "main.h"
-#include "platform_inc_m0.h"
 #include "platform.h"
+#include "platform_inc_m0.h"
 
 void ADC_LowFreq_Init(void);
 ADC_TypeDef* ADC_GetLowFreqAdc(void);

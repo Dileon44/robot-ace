@@ -1,8 +1,8 @@
 #ifndef __PLATFORM_INC_M0_H
 #define __PLATFORM_INC_M0_H
 
-#include "stm32g4xx.h"
 #include "platform_int_cfg_m0.h"
+#include "stm32g4xx.h"
 
 #include "stm32g4xx_ll_adc.h"
 #include "stm32g4xx_ll_bus.h"

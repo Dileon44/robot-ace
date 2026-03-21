@@ -1,9 +1,9 @@
 #include "iwdg.h"
-#include "platform.h"
 #include "conf/tasks_stack_and_priority.h"
 #include "debug_interface.h"
+#include "platform.h"
 
-#define IWDG_MAX_TIMEOUT_MS	(3 * DELAY_1_SECOND) // ?
+#define IWDG_MAX_TIMEOUT_MS (3 * DELAY_1_SECOND)  // ?
 
 static TaskHandle_t WatchDog_Handle = NULL;
 
@@ -23,12 +23,12 @@ static void vTask_WatchDogProcess(void* pvParameters) {
 	// 	testDataToSend[i] = i;
 	// }
 	// MX_USB_Device_Init();
-	
-	for(;;) {
+
+	for (;;) {
 		IWDG_ResetCnt();
 		// DEBUG_PRINT("Hello!\r\n");
 		vTaskDelay(1000);
-		
+
 		// CDC_Transmit_FS(testDataToSend, 8);
 
 		// if(xTaskGetTickCount() > timeout)
@@ -40,21 +40,15 @@ static void vTask_WatchDogProcess(void* pvParameters) {
 }
 
 void IWDG_TaskCreate(void) {
-	if(!WatchDog_Handle) {
-			const char* taskName = "Watchdog Driver";
-		xTaskCreate(
-			vTask_WatchDogProcess,
-			taskName,
-			WATCHDOG_TASK_STACK,
-			NULL,
-			WATCHDOG_TASK_PRIORITY,
-			&WatchDog_Handle
-		);
+	if (!WatchDog_Handle) {
+		const char* taskName = "Watchdog Driver";
+		xTaskCreate(vTask_WatchDogProcess, taskName, WATCHDOG_TASK_STACK, NULL,
+					WATCHDOG_TASK_PRIORITY, &WatchDog_Handle);
 	}
 }
 
 void IWDG_TaskDelete(void) {
-	if(WatchDog_Handle) {
+	if (WatchDog_Handle) {
 		vTaskDelete(WatchDog_Handle);
 	}
 }
