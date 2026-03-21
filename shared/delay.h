@@ -1,9 +1,9 @@
 #ifndef __DELAY_H
 #define __DELAY_H
 
-#include "main.h"
+#include "def_types.h"
 
-#define DELAY_MAX_TIME	    0xFFFFFFFFU
+#define DELAY_MAX_TIME 0xFFFFFFFFU
 
 void Delay_Init(void);
 void Delay_WaitTime_MilliSec(u32 time);

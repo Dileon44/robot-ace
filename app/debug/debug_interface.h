@@ -10,15 +10,16 @@
 // 	return len;
 // }
 
-#define DEBUG_PRINT(_f_, ...)						do { \
-														printf((_f_), ##__VA_ARGS__); \
-														fflush(stdout); \
-													} while(0)
+#define DEBUG_PRINT(_f_, ...)         \
+	do {                              \
+		printf((_f_), ##__VA_ARGS__); \
+		fflush(stdout);               \
+	} while (0)
 
-#define USART_TX_BUFF_MAX_SIZE          ((u8)128)
-#define USART_RX_BUFF_MAX_SIZE          ((u8)64)
+#define USART_TX_BUFF_MAX_SIZE ((u8)128)
+#define USART_RX_BUFF_MAX_SIZE ((u8)64)
 
-#define CAPASITY_RING_BUFF_USART_RX     USART_RX_BUFF_MAX_SIZE
+#define CAPASITY_RING_BUFF_USART_RX USART_RX_BUFF_MAX_SIZE
 
 static void DebugInterface_SerialCallbackTx(void);
 static void DebugInterface_SerialCallbackRx(void);

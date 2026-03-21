@@ -5,8 +5,7 @@
 #include "platform.h"
 #include "platform_inc_m0.h"
 
-typedef enum
-{
+typedef enum {
 	SYS_RESET_FLAG_UNKNOWN = 0,
 	SYS_RESET_FLAG_IWDG,
 	SYS_RESET_FLAG_LP,

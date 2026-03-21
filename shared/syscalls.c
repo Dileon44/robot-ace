@@ -3,15 +3,15 @@
  * @brief Implementation of newlib syscall
  */
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include "main.h"
+#include <stdarg.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #undef errno
 extern int errno;
-extern int  _end;
+extern int _end;
 
 // __attribute__ ((used))
 // caddr_t _sbrk(int incr)
@@ -33,36 +33,26 @@ extern int  _end;
 // 	return -1;
 // }
 
-__attribute__ ((used))
-int _close(int file)
-{
+__attribute__((used)) int _close(int file) {
 	PANIC();
 	return -1;
 }
 
-__attribute__ ((used))
-int _fstat(int file, struct stat *st)
-{
+__attribute__((used)) int _fstat(int file, struct stat* st) {
 	st->st_mode = S_IFCHR;
 	return 0;
 }
 
-__attribute__ ((used))
-int _isatty(int file)
-{
+__attribute__((used)) int _isatty(int file) {
 	return 1;
 }
 
-__attribute__ ((used))
-int _lseek(int file, int ptr, int dir)
-{
+__attribute__((used)) int _lseek(int file, int ptr, int dir) {
 	PANIC();
- 	return 0;
+	return 0;
 }
 
-__attribute__ ((used))
-int _read(int file, char *ptr, int len)
-{
+__attribute__((used)) int _read(int file, char* ptr, int len) {
 	PANIC();
 	return 0;
 }
@@ -92,10 +82,10 @@ int _write(int fd, char* ptr, int len) {
 
 int _getpid(void) {
 	PANIC();
- 	return 0;
+	return 0;
 }
 
 int _kill(int pid, int sig) {
 	PANIC();
-    return -1;
+	return -1;
 }

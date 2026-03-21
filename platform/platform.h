@@ -4,14 +4,14 @@
 #include "main.h"
 
 #ifndef PL_NOP
-#define PL_NOP()			__NOP()
+#define PL_NOP() __NOP()
 #endif /* PL_NOP */
 
 #ifndef PL_SET_BKPT
-#define PL_SET_BKPT(v)		__BKPT(v)
+#define PL_SET_BKPT(v) __BKPT(v)
 #endif /* PL_SET_BKPT */
 
-#define PL_USART_DEF_TIMEOUT		50
+#define PL_USART_DEF_TIMEOUT 50
 
 typedef enum { GPIO_RST, GPIO_SET, GPIO_REV } GPIO_ACTION_t;
 
@@ -47,8 +47,8 @@ void Pl_JumpToAddr(u32 appAddr);
 void Pl_IWDG_Init(void);
 void Pl_IWDG_ReloadCounter(void);
 
-void Pl_USART_Debug_Init(u8* pTxBuff, u16 TxBuffLen, Pl_USART_ClbkTx_t pTxClbk,
-						 u8* pRxBuff, u16 RxBuffLen, Pl_USART_ClbkRx_t pRxClbk);
+void Pl_USART_Debug_Init(u8* pTxBuff, u16 TxBuffLen, Pl_USART_ClbkTx_t pTxClbk, u8* pRxBuff,
+						 u16 RxBuffLen, Pl_USART_ClbkRx_t pRxClbk);
 void Pl_USART_Debug_Enable_Tx(void);
 void Pl_USART_Debug_Enable_Rx(void);
 void Pl_USART_Debug_Disable_Tx(void);
@@ -71,12 +71,9 @@ void Pl_Motor_ResetKeyCL(void);
 void Pl_Motor_SensorsInit(Pl_Motor_ClbkHall_t pHallClbk);
 void Pl_Motor_PWMInit(Pl_TIM_PWM_Clbk_t pTimPwmCntTopClbk, Pl_TIM_PWM_Clbk_t pTimPwmCntBottomClbk);
 void Pl_Motor_ControlGpioInit(void);
-void Pl_Motor_Init(
-	Pl_TIM_PWM_Clbk_t pTimPwmCntTopClbk, 
-	Pl_TIM_PWM_Clbk_t pTimPwmCntBottomClbk,
-	Pl_TIM_Motor_SpeedControlClbk_t pSpeedControlClbk,
-	Pl_ADC_Motor_SensHighFreqClbk_t pAdcHighFreqClbk
-);
+void Pl_Motor_Init(Pl_TIM_PWM_Clbk_t pTimPwmCntTopClbk, Pl_TIM_PWM_Clbk_t pTimPwmCntBottomClbk,
+				   Pl_TIM_Motor_SpeedControlClbk_t pSpeedControlClbk,
+				   Pl_ADC_Motor_SensHighFreqClbk_t pAdcHighFreqClbk);
 
 void Pl_Motor_PWMA_Enable(void);
 void Pl_Motor_PWMA_Disable(void);

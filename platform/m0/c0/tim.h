@@ -4,8 +4,6 @@
 #include "main.h"
 #include "platform.h"
 
-
-
 void TIM_Delay_Init(Pl_Common_Clbk_t pDelayTimerClbk);
 void TIM_Delay_Disable(void);
 void TIM_Delay_Enable(void);
