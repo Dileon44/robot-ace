@@ -2,6 +2,8 @@
 	path = thirdparty/freertos_kernel
 	url = https://github.com/FreeRTOS/FreeRTOS-Kernel.git
 	branch = V11.2.0
+
 [submodule "thirdparty/wsh-shell"]
 	path = thirdparty/wsh-shell
 	url = https://github.com/whoosh-bike/wsh-shell.git
+	branch = v2.4
