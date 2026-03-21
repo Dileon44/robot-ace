@@ -144,7 +144,7 @@
             "serverpath": "${config:openocd_path}",
             "interface": "swd",
             "configFiles": [
-                "${workspaceFolder}/cmsis-dap.cfg",
+                "${workspaceFolder}/platform/cmsis-dap.cfg",
                 "${workspaceFolder}/platform/m0/stm32g4x.cfg"
             ],
             "liveWatch": {

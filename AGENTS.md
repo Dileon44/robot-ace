@@ -61,7 +61,7 @@ Output artifact: `build/fw_m0.elf` (symlink to versioned ELF, e.g. `1.0.0.ecu.ap
 Flashing via OpenOCD (CMSIS-DAP adapter):
 
 ```bash
-openocd -f cmsis-dap.cfg -f platform/m0/stm32g4x.cfg \
+openocd -f platform/cmsis-dap.cfg -f platform/m0/stm32g4x.cfg \
   -c "program build/fw_m0.elf verify reset exit"
 ```
 
