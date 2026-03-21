@@ -1,7 +1,13 @@
 #ifndef __RINGBUFF_H
 #define __RINGBUFF_H
 
-#include "main.h"
+#include "wsh_emblib.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
+#if WSH_USE_COLLECTIONS_RING_BUFF
 
 typedef void (*RingBuff_PrintRxDataClbk_t)(void);
 
@@ -59,5 +65,11 @@ RET_STATE_t RingBuff_Str_SetPeek(RingBuff_t* pRingBuff, u32 timeout, char** ppSe
 								 u16 sequenceNum, s16* pMatchStr);
 RET_STATE_t RingBuff_Str_SetPeekFirst(RingBuff_t* pRingBuff, u32 timeout, char** ppSearchSequence,
 									  u16 sequenceNum, s16* pMatchStr);
+
+#endif /* WSH_USE_COLLECTIONS_RING_BUFF */
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* __RINGBUFF_H */

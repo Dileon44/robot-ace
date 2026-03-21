@@ -13,9 +13,9 @@
 
     "tasks": [
         {
-            "label": "🟢 | Rebuild app [prd opt:0]",
+            "label": "🟢 | Rebuild app [prd opt:1]",
             "type": "shell",
-            "command": "./scripts/builder.sh ${config:app_prd_m0r0c0_o0}",
+            "command": "./scripts/builder.sh ${config:app_prd_m0r0c0_o1}",
             "group": "build",
             "options": { "cwd": "${workspaceFolder}" },
             "problemMatcher": "$gcc"
