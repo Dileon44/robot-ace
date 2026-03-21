@@ -54,6 +54,13 @@ VENV_PYTHON="$VENV_DIR/$VENV_SRC/$PYTHON_NAME"
 PYTHON_VER=$("$VENV_PYTHON" --version 2>&1)
 echo "Use $PYTHON_VER"
 
+# Update git submodules (skip for clean — no sources needed)
+if [ "$BUILD_ACTION" != "clean" ]; then
+    echo "Updating submodules..."
+    git submodule sync
+    git submodule update --init --recursive --depth=1 || log_error "Failed to update submodules"
+fi
+
 # Run Python build script, passing all arguments
 FW_BUILDER="$SCRIPTS_DIR/fw_builder.py"
 BUILD_START=$SECONDS
