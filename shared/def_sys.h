@@ -9,7 +9,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#ifdef MAIN_CFG_USE_RTOS
+#ifdef USE_OS
 #define SYS_USE_RTOS 1
 #else
 #define SYS_USE_BAREMETAL 1

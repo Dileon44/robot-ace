@@ -29,7 +29,7 @@ void HardFault_Handler(void) {
 
 	HardFault_Clbk(stack_ptr->pc);
 
-	ERROR_HANDLER();
+	PANIC();
 }
 
 void MemManage_Handler(void) {
