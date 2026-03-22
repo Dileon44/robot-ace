@@ -15,7 +15,7 @@ The full build chain is: **VS Code task → `scripts/builder.sh` → `scripts/fw
 
 `builder.sh` handles OS detection and virtual environment setup (creates `.venv` on first run,
 installs `scripts/requirements.txt`), then delegates to `fw_builder.py` passing all arguments
-through verbatim.
+through verbatim. It also runs `git submodule update --init --recursive` on each build.
 
 **Normal usage — invoke via `builder.sh`:**
 
@@ -26,8 +26,11 @@ bash scripts/builder.sh rebuild preset=m0r0c0 target=app tag=dev bsp=0 opt=0
 # Dev build, -O1                   →  app_dev_m0r0c0_o1
 bash scripts/builder.sh rebuild preset=m0r0c0 target=app tag=dev bsp=0 opt=1
 
-# Production build, -O0            →  app_prd_m0r0c0_o0
-bash scripts/builder.sh rebuild preset=m0r0c0 target=app tag=prd bsp=0 opt=0
+# Production build, -O1            →  app_prd_m0r0c0_o1
+bash scripts/builder.sh rebuild preset=m0r0c0 target=app tag=prd bsp=0 opt=1
+
+# Bootloader build
+bash scripts/builder.sh rebuild preset=m0r0c0 target=boot tag=dev bsp=0 opt=0
 
 # Clean only
 bash scripts/builder.sh clean preset=m0r0c0
@@ -54,7 +57,12 @@ cmake --build build/m0r0c0 --target app
 cmake --build build/m0r0c0 --target boot
 ```
 
-Output artifact: `build/fw_m0.elf` (symlink to versioned ELF, e.g. `1.0.0.ecu.app.dev.m0r0c0.0.a1b2c3.elf`).
+Output artifacts:
+- `build/fw_m0.elf` — app ELF (flat copy of versioned ELF, e.g. `1.0.0.ecu.app.dev.m0r0c0.0.a1b2c3.elf`)
+- `build/fw_m0.hex` / `build/fw_m0.bin` — app HEX and binary
+- `build/boot_m0.elf` / `build/boot_m0.hex` / `build/boot_m0.bin` — bootloader artifacts
+
+The versioned ELF and a symlink to it reside inside `build/m0r0c0/app/`.
 
 **There are no unit tests or linter in this project.** Validation is done by building and flashing to hardware.
 
@@ -72,15 +80,23 @@ openocd -f platform/cmsis-dap.cfg -f platform/m0/stm32g4x.cfg \
 Strict layering — never skip layers:
 
 ```
-app/ (motor control, sensors, UART protocol, debug)
+app/       (motor control, sensors, UART protocol, debug — FreeRTOS tasks)
+boot/      (bootloader — bare-metal, no RTOS, separate CMake target)
   └─► platform/platform.h  (Pl_* API only)
         └─► platform/m0/platform.c
-              └─► platform/m0/c0/*.c  (STM32 LL drivers)
+              └─► platform/m0/c0/*.c     (STM32 LL peripheral drivers)
+              └─► platform/m0/core/      (CMSIS, STM32 LL/HAL headers+src, USB Device stack)
+
+shared/    (MCU-agnostic: types, macros, delay, syscalls — INTERFACE lib)
+lib/       (MCU-agnostic: ring_buff, ring_list — INTERFACE lib, include path only)
+thirdparty/freertos_kernel/   (FreeRTOS V11.2.0 — linked into app only)
+thirdparty/wsh-shell/         (wsh-shell v2.4 STATIC lib — linked into app only)
 ```
 
 - App code calls only `Pl_*` functions. Never call `LL_*`, `TIM_*`, `ADC_*`, `GPIO_*` directly from app.
-- Platform layer uses STM32 LL (Low-Layer) exclusively — no HAL.
+- Platform layer uses STM32 LL (Low-Layer) exclusively — no HAL (HAL subset exists in `core/` only for USB PCD).
 - `shared/` and `lib/` are MCU-agnostic portable code.
+- `boot/` links only `platform` and `shared` — no FreeRTOS, no `libs`, no `wsh_shell`.
 - Global struct instances (`Motor_t motor`, `Sensors_t sensors`) are owned by their `.c` files;
   expose via getter: `Motor_GetMotorPtr()`, `Sensors_GetPtrSensors()`.
 
@@ -207,8 +223,10 @@ Key states: `RET_STATE_SUCCESS`, `RET_STATE_ERROR`, `RET_STATE_ERR_PARAM`,
 
 ```c
 PANIC();           // ErrorHandler → disable IRQ + breakpoint + infinite loop
-ASSERT_CHECK(x);   // calls PANIC() if x == 0 (active when ASSERT_CHECK_ENABLE defined)
+ASSERT_CHECK(x);   // calls PANIC() if x == 0 (active when PANIC_CHECK_ENABLE defined)
 ```
+
+Panic behavior is controlled by `PANIC_CHECK_ENABLE` (app) defined in `app/conf/dbg_cfg.h`.
 
 **Debug-only code:** wrap with `#if DEBUG_ENABLE` / `#if !DEBUG_ENABLE`.
 
@@ -246,7 +264,7 @@ void FreeRTOS_Module_InitComponents(void) {
 }
 ```
 
-Stack sizes and priorities are defined in `app/conf/tasks_stack_and_priority.h`.
+Stack sizes and priorities are defined in `app/conf/rtos_tasks_stack_and_prio.h`.
 Use `configMINIMAL_STACK_SIZE` multiples for stack sizes.
 Use `TASK_PRIORITY_NN` constants for priorities.
 
@@ -300,7 +318,6 @@ DEBUG_PRINT("value: %d\n", val);   // routes to USART via syscalls.c
 |---|---|---|
 | `DEBUG_ENABLE` | `0` / `1` | Enables debug UART, disables IWDG |
 | `FW_OPT` | `0` / `1` | `-O0` / `-O1` |
-| `ASSERT_CHECK_ENABLE` | defined / not | Enables `ASSERT_CHECK()` macro |
-| `ERR_HANDLE_ENABLE` | `0` / `1` | Enables `ERROR_HANDLER()` macro |
+| `PANIC_CHECK_ENABLE` | defined / not | Enables `PANIC()` / `ASSERT_CHECK()` macros (app) |
 | `USE_FULL_LL_DRIVER` | always set | STM32 full LL driver |
 | `HSE_VALUE` | `24000000U` | External crystal frequency |
