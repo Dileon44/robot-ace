@@ -4,6 +4,7 @@
  */
 
 #include "main.h"
+#include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <sys/stat.h>
@@ -13,25 +14,28 @@
 extern int errno;
 extern int _end;
 
-// __attribute__ ((used))
-// caddr_t _sbrk(int incr)
-// {
-// 	static unsigned char *heap = NULL;
-// 	unsigned char *prev_heap;
+__attribute__((used)) caddr_t _sbrk(int incr) {
+	static unsigned char* heap = NULL;
+	unsigned char* prev_heap;
 
-// 	if (heap == NULL)
-// 		heap = (unsigned char *)&_end;
+	if (heap == NULL)
+		heap = (unsigned char*)&_end;
 
-// 	prev_heap = heap;
-// 	heap += incr;
-// 	return (caddr_t) prev_heap;
-// }
+	// Guard: heap must not grow into the stack
+	if ((heap + incr) > (unsigned char*)__get_MSP()) {
+		errno = ENOMEM;
+		return (caddr_t)-1;
+	}
 
-// __attribute__ ((used))
-// int link(char *old, char *new)
-// {
-// 	return -1;
-// }
+	prev_heap = heap;
+	heap += incr;
+	return (caddr_t)prev_heap;
+}
+
+__attribute__((used)) int link(char* old, char* new) {
+	PANIC();
+	return -1;
+}
 
 __attribute__((used)) int _close(int file) {
 	PANIC();
@@ -61,24 +65,10 @@ __attribute__((used)) int _read(int file, char* ptr, int len) {
  * Wrapper for printf() function native using via
  * selected interface in debug.c
  */
-// int _write(int fd, char* ptr, int len)
-// {
-// // 	Debug_TransmitBuff(ptr, len);
-// 	return len;
-// }
-#include "platform.h"
-int _write(int fd, char* ptr, int len) {
-	Pl_USART_Debug_TxData((u8*)ptr, (u16)len);
+__WEAK int _write(int fd, char* ptr, int len) {
+	// Debug_TransmitBuff(ptr, len);
 	return len;
 }
-
-// __attribute__ ((used))
-// void abort(void)
-// {
-// 	PANIC();
-// 	/* Abort called */
-// 	while(1);
-// }
 
 int _getpid(void) {
 	PANIC();
