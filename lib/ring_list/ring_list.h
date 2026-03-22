@@ -1,14 +1,14 @@
 #ifndef __RINGLIST_H
 #define __RINGLIST_H
 
+#include "lib_cfg.h"
 #include "shared_mutex.h"
-#include "wsh_emblib.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-#if WSH_USE_COLLECTIONS_RING_LIST
+#if LIB_USE_RING_LIST
 
 #define RING_LIST_MIN_ELEMENTS_NUM 2
 #define RING_LIST_AVOID_MUTEX	   0
@@ -38,7 +38,7 @@ RET_STATE_t RingList_InsertCell(RingList_t* pRingList, void* pCell, u32 lockKey)
 RET_STATE_t RingList_PeekCell(RingList_t* pRingList, void* pCell, u16 ringIdx);
 RET_STATE_t RingList_CopyToLineBuff(RingList_t* pRingList, void* pLineList, u16 listSize);
 
-#endif /* WSH_USE_COLLECTIONS_RING_LIST */
+#endif /* LIB_USE_RING_LIST */
 
 #ifdef __cplusplus
 }

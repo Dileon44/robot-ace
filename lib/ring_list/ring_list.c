@@ -1,6 +1,6 @@
 #include "ring_list.h"
 
-#if WSH_USE_COLLECTIONS_RING_LIST
+#if LIB_USE_RING_LIST
 
 #define LOCAL_DEBUG_PRINT_ENABLE 0
 
@@ -247,4 +247,4 @@ RET_STATE_t RingList_CopyToLineBuff(RingList_t* pRingList, void* pLineList, u16 
 	return RET_STATE_SUCCESS;
 }
 
-#endif /* WSH_USE_COLLECTIONS_RING_LIST */
+#endif /* LIB_USE_RING_LIST */

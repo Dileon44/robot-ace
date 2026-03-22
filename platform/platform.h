@@ -42,6 +42,9 @@ void Pl_Stub_Motor_AdcHighFreqClbk(u16* buffPtr, u16 buffLen);
 
 void Pl_Init(Pl_HardFault_Clbk_t pHardFault_Clbk);
 
+void Pl_SysCpuCnt_Init(void);
+u32 Pl_SysCpuCnt_Get(void);
+
 bool Pl_DelayMs_Init(Pl_Common_Clbk_t pDelayTimerClbk);
 bool Pl_DelayMs_DeInit(void);
 void Pl_DelayMs_SuspendTimer(void);
