@@ -4,8 +4,8 @@
 /**
  * @brief Enabling RTOS or Bare-Metal
  */
-#ifndef USE_RTOS
-#define USE_RTOS
-#endif /* USE_RTOS */
+#ifndef MAIN_CFG_USE_RTOS
+#define MAIN_CFG_USE_RTOS
+#endif /* MAIN_CFG_USE_RTOS */
 
 #endif /* __MAIN_CFG_H */
