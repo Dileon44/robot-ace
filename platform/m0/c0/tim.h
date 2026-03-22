@@ -8,6 +8,7 @@ void TIM_Delay_Init(Pl_Common_Clbk_t pDelayTimerClbk);
 void TIM_Delay_Disable(void);
 void TIM_Delay_Enable(void);
 u32 TIM_Delay_GetCnt(void);
+u32 TIM_Delay_GetOvrflCnt(void);
 void TIM_Delay_Irq_Enable(void);
 
 void TIM_PWM_Init(Pl_TIM_PWM_Clbk_t pTimPwmCntTopClbk, Pl_TIM_PWM_Clbk_t pTimPwmCntBottomClbk);
