@@ -1,7 +1,6 @@
 #ifndef __DELAY_H
 #define __DELAY_H
 
-// #include "main.h"
 #include "def_types.h"
 
 #define DELAY_MAX_TIME 0xFFFFFFFFU
