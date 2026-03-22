@@ -12,6 +12,7 @@ target_link_libraries(app.elf PRIVATE
 	platform
 	shared
 	libs
+	wsh_shell
 	freertos_kernel
 )
 
