@@ -7,9 +7,17 @@
             "${workspaceFolder}/app/motor",
             "${workspaceFolder}/app/motor/connection",
             "${workspaceFolder}/app/motor/control",
+
             "${workspaceFolder}/boot",
+
             "${workspaceFolder}/lib",
+            "${workspaceFolder}/lib/rand",
+            "${workspaceFolder}/lib/ring_buff",
+            "${workspaceFolder}/lib/ring_list",
+            "${workspaceFolder}/lib/shared_mutex",
+
             "${workspaceFolder}/shared",
+
             "${workspaceFolder}/thirdparty/freertos_kernel/include",
             "${workspaceFolder}/thirdparty/freertos_kernel/portable/GCC/ARM_CM4F",
             "${workspaceFolder}/thirdparty/wsh/src"

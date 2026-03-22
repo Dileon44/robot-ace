@@ -48,6 +48,15 @@ void Pl_Init(Pl_HardFault_Clbk_t pHardFault_Clbk) {
 	Sys_MainClock_Config();
 }
 
+void Pl_SysCpuCnt_Init(void) {
+	// Pl_IsInit.CpuCounter = Sys_CounterCPU_Init();
+	Sys_CounterCPU_Init();
+}
+
+u32 Pl_SysCpuCnt_Get(void) {
+	return Sys_CounterCPU_Get();
+}
+
 bool Pl_DelayMs_Init(Pl_Common_Clbk_t pDelayTimerClbk) {
 	// Pl_IsInit.DelayMs = TIM_Delay_Init(pDelayTimerClbk);
 	// TIM_Delay_Irq_Enable();

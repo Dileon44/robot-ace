@@ -1,6 +1,6 @@
 #include "ring_buff.h"
 
-#if WSH_USE_COLLECTIONS_RING_BUFF
+#if LIB_USE_RING_BUFF
 
 #define RING_BUFF_DEF_TMO_MS 3
 
@@ -299,7 +299,7 @@ RET_STATE_t RingBuff_Buff_Search(RingBuff_t* pRingBuff, u32 timeout, u8* pMatchB
 
 	while (SYS_TICK_GET_MS_CNT() <= endSearchTime) {
 		if (pRingBuff->Count < buffLen) {
-			SYS_DELAY_MS(RING_BUFF_DEF_TMO_MS);  //Wait more data
+			SYS_DELAY_MS(RING_BUFF_DEF_TMO_MS);	 //Wait more data
 			continue;
 		} else {
 			while (*locTail != pMatchBuff[0]) {
@@ -664,4 +664,4 @@ RET_STATE_t RingBuff_Str_SetPeekFirst(RingBuff_t* pRingBuff, u32 timeout, char**
 	return RET_STATE_ERR_TIMEOUT;
 }
 
-#endif /* WSH_USE_COLLECTIONS_RING_BUFF */
+#endif /* LIB_USE_RING_BUFF */

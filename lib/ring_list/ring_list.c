@@ -1,6 +1,6 @@
 #include "ring_list.h"
 
-#if WSH_USE_COLLECTIONS_RING_LIST
+#if LIB_USE_RING_LIST || LIB_USE_RING_LIST_WITH_SHARED_MUTEX
 
 #define LOCAL_DEBUG_PRINT_ENABLE 0
 
@@ -53,7 +53,9 @@ RET_STATE_t RingList_Init(RingList_t* pRingList, void* pLineList, u16 cellSize, 
 	pRingList->IdxTail	 = 0;
 	pRingList->InsertCnt = 0;
 
+#ifdef LIB_USE_RING_LIST_WITH_SHARED_MUTEX
 	SharedMutex_Init(&pRingList->SharedMutex, NULL, NULL, NULL);
+#endif /* LIB_USE_RING_LIST_WITH_SHARED_MUTEX */
 
 	SYS_CRITICAL_OFF();
 	return RET_STATE_SUCCESS;
@@ -136,9 +138,17 @@ bool RingList_IsFull(RingList_t* pRingList) {
  * @retval RET_STATE_ERR_BUSY ring list locked
  * @retval RET_STATE_SUCCESS ring list cleared
  */
+#ifdef LIB_USE_RING_LIST_WITH_SHARED_MUTEX
 RET_STATE_t RingList_Flush(RingList_t* pRingList, u32 lockKey) {
 	if (SharedMutex_IsLocked(&pRingList->SharedMutex, lockKey))
 		return RET_STATE_ERR_BUSY;
+#else
+RET_STATE_t RingList_Flush(RingList_t* pRingList) {
+#endif /* LIB_USE_RING_LIST_WITH_SHARED_MUTEX */
+	if (!pRingList) {
+		PANIC();
+		return RET_STATE_ERR_PARAM;
+	}
 
 	SYS_CRITICAL_ON();
 	pRingList->IdxTail = pRingList->IdxHead = 0;
@@ -156,15 +166,20 @@ RET_STATE_t RingList_Flush(RingList_t* pRingList, u32 lockKey) {
  * @param pCell pointer to the external data needs to be copied
  * @return RET_STATE_t [RET_STATE_ERR_PARAM, RET_STATE_SUCCESS]
  */
-
+#ifdef LIB_USE_RING_LIST_WITH_SHARED_MUTEX
 RET_STATE_t RingList_InsertCell(RingList_t* pRingList, void* pCell, u32 lockKey) {
+#else
+RET_STATE_t RingList_InsertCell(RingList_t* pRingList, void* pCell) {
+#endif /* LIB_USE_RING_LIST_WITH_SHARED_MUTEX */
 	if (!pRingList || !pCell) {
 		PANIC();
 		return RET_STATE_ERR_PARAM;
 	}
 
+#ifdef LIB_USE_RING_LIST_WITH_SHARED_MUTEX
 	if (SharedMutex_IsLocked(&pRingList->SharedMutex, lockKey))
 		return RET_STATE_ERR_BUSY;
+#endif /* LIB_USE_RING_LIST_WITH_SHARED_MUTEX */
 
 	SYS_CRITICAL_ON();
 
@@ -247,4 +262,4 @@ RET_STATE_t RingList_CopyToLineBuff(RingList_t* pRingList, void* pLineList, u16 
 	return RET_STATE_SUCCESS;
 }
 
-#endif /* WSH_USE_COLLECTIONS_RING_LIST */
+#endif /* LIB_USE_RING_LIST || LIB_USE_RING_LIST_WITH_SHARED_MUTEX */
