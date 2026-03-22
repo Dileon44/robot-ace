@@ -48,9 +48,34 @@ void Pl_Init(Pl_HardFault_Clbk_t pHardFault_Clbk) {
 	Sys_MainClock_Config();
 }
 
-void Pl_Delay_Init(Pl_Common_Clbk_t pDelayTimerClbk) {
-	TIM_Delay_Init(pDelayTimerClbk);
-	TIM_Delay_Irq_Enable();
+bool Pl_DelayMs_Init(Pl_Common_Clbk_t pDelayTimerClbk) {
+	// Pl_IsInit.DelayMs = TIM_Delay_Init(pDelayTimerClbk);
+	// TIM_Delay_Irq_Enable();
+	// return Pl_IsInit.DelayMs;
+	return true;
+}
+
+bool Pl_DelayMs_DeInit(void) {
+	// Pl_IsInit.DelayMs = !TIM_Delay_DeInit();
+	// Sys_NVIC_Disable(TIM_DELAY_IRQ);
+	// return !Pl_IsInit.DelayMs;
+	return true;
+}
+
+void Pl_DelayMs_SuspendTimer(void) {
+	TIM_Delay_Disable();
+}
+
+void Pl_DelayMs_ResumeTimer(void) {
+	TIM_Delay_Enable();
+}
+
+u32 Pl_DelayMs_GetUsCnt(void) {
+	return TIM_Delay_GetCnt();
+}
+
+u32 Pl_DelayMs_GetMsCnt(void) {
+	return TIM_Delay_GetOvrflCnt();
 }
 
 void Pl_JumpToAddr(u32 appAddr) {

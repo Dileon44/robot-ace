@@ -9,7 +9,10 @@
             "${workspaceFolder}/app/motor/control",
             "${workspaceFolder}/boot",
             "${workspaceFolder}/lib",
-            "${workspaceFolder}/shared"
+            "${workspaceFolder}/shared",
+            "${workspaceFolder}/thirdparty/freertos_kernel/include",
+            "${workspaceFolder}/thirdparty/freertos_kernel/portable/GCC/ARM_CM4F",
+            "${workspaceFolder}/thirdparty/wsh/src"
         ]
     },
     "configurations": [
@@ -25,11 +28,7 @@
                 "${workspaceFolder}/platform/m0/core/CMSIS",
                 "${workspaceFolder}/platform/m0/core/LL/inc",
                 "${workspaceFolder}/platform/m0/core/HAL/inc",
-                "${workspaceFolder}/platform/m0/core/HAL/inc/Legacy",
-                "${workspaceFolder}/platform/m0/core/USB_Device/Core/Inc",
-                "${workspaceFolder}/platform/m0/core/USB_Device/Class/CDC/Inc",
-                "${workspaceFolder}/lib/rtos/freertos_kernel-src/include",
-                "${workspaceFolder}/lib/rtos/freertos_kernel-src/portable/GCC/ARM_CM4F"
+                "${workspaceFolder}/platform/m0/core/HAL/inc/Legacy"
             ],
             "defines": [
                 "STM32G431xx",
