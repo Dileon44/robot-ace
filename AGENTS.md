@@ -50,8 +50,8 @@ python3 scripts/fw_builder.py clean preset=m0r0c0
 
 ```bash
 cmake --preset m0r0c0 -DFW_TYPE=dev -DFW_OPT=0
-cmake --build build/m0r0c0 --target app.elf
-cmake --build build/m0r0c0 --target boot.elf
+cmake --build build/m0r0c0 --target app
+cmake --build build/m0r0c0 --target boot
 ```
 
 Output artifact: `build/fw_m0.elf` (symlink to versioned ELF, e.g. `1.0.0.ecu.app.dev.m0r0c0.0.a1b2c3.elf`).

@@ -274,7 +274,7 @@ def cmd_build(args: dict[str, str]) -> int:
     preset = get_preset(args)
     build_dir = BUILD_BASE_DIR / preset
     target_name = args.get("target", "app")
-    cmake_target = f"{target_name}.elf"
+    cmake_target = target_name
 
     if not (build_dir / "CMakeCache.txt").exists():
         log.info("CMakeCache.txt not found — running configure first")
