@@ -17,11 +17,10 @@ import sys
 from pathlib import Path
 from time import time
 
-from tqdm import tqdm
-
 from memory_table import RE_DATA as _RE_MEMORY_DATA
 from memory_table import render as _render_memory
 from memory_table import render_sections as _render_sections
+from tqdm import tqdm
 
 log = logging.getLogger(__name__)
 
@@ -282,10 +281,14 @@ def cmd_build(args: dict[str, str]) -> int:
         if ret != 0:
             return ret
 
-    _elf_names = {"app": "fw_m0.elf", "boot": "boot_m0.elf"}
     elf_path: Path | None = None
-    if target_name in _elf_names:
-        elf_path = ROOT_DIR / "build" / _elf_names[target_name]
+    build_dir_root = ROOT_DIR / "build"
+    if target_name == "boot":
+        candidates = sorted(build_dir_root.glob("*.boot.*.elf"))
+    else:
+        candidates = sorted(build_dir_root.glob("*.app.*.elf"))
+    if candidates:
+        elf_path = candidates[-1]
 
     ld_path = BUILD_BASE_DIR / f"{preset}_{target_name}_linker_script.ld"
 
@@ -302,7 +305,21 @@ def cmd_clean(args: dict[str, str]) -> int:
         return 0
 
     cmake_args = ["cmake", "--build", str(build_dir), "--target", "clean"]
-    return run(cmake_args, ROOT_DIR)
+    ret = run(cmake_args, ROOT_DIR)
+
+    # Remove versioned artifacts copied to build/
+    for pattern in ("*.elf", "*.hex", "*.bin", "*.map"):
+        for f in BUILD_BASE_DIR.glob(pattern):
+            f.unlink()
+            log.info(f"Removed: {f}")
+
+    # Remove legacy/accumulated versioned ELF files inside preset subdirs
+    for target_subdir in ("app", "boot"):
+        for f in (build_dir / target_subdir).glob("*.elf*"):
+            f.unlink()
+            log.info(f"Removed: {f}")
+
+    return ret
 
 
 def cmd_rebuild(args: dict[str, str]) -> int:

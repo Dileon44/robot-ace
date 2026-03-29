@@ -17,17 +17,12 @@ target_link_options(boot PRIVATE
 	-T${CMAKE_SOURCE_DIR}/${BUILD_DIR}/${FW_PLATFORM}_boot_linker_script.ld
 )
 
-set_target_properties(boot PROPERTIES
-	OUTPUT_NAME ${BOOT_FULL_NAME}.elf
-	VERSION     ${FW_VER_BOOT}
-)
-
 add_custom_command(TARGET boot POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy
 		$<TARGET_FILE:boot>
-		${CMAKE_SOURCE_DIR}/${BUILD_DIR}/boot_${FW_PLATFORM_MCU}.elf
+		${CMAKE_SOURCE_DIR}/${BUILD_DIR}/${BOOT_FULL_NAME}.elf
 	COMMAND ${CMAKE_OBJCOPY} -O ihex   $<TARGET_FILE:boot>
-		${CMAKE_SOURCE_DIR}/${BUILD_DIR}/boot_${FW_PLATFORM_MCU}.hex
+		${CMAKE_SOURCE_DIR}/${BUILD_DIR}/${BOOT_FULL_NAME}.hex
 	COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:boot>
-		${CMAKE_SOURCE_DIR}/${BUILD_DIR}/boot_${FW_PLATFORM_MCU}.bin
+		${CMAKE_SOURCE_DIR}/${BUILD_DIR}/${BOOT_FULL_NAME}.bin
 )
