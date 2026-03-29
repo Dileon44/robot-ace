@@ -76,8 +76,8 @@ void USART_Debug_Irq_Enable(void) {
 }
 
 void USART_DEBUG_IRQ_HD(void) {
-	if (LL_USART_IsActiveFlag_IDLE(USART_DEBUG)) {
-		LL_USART_ClearFlag_IDLE(USART_DEBUG);
-		USART_Debug_RxClbk();
-	}
+	// if (LL_USART_IsActiveFlag_IDLE(USART_DEBUG)) {
+	// 	LL_USART_ClearFlag_IDLE(USART_DEBUG);
+	// 	USART_Debug_RxClbk();
+	// }
 }

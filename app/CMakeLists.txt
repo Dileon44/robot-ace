@@ -19,6 +19,7 @@ target_link_libraries(app PRIVATE
 target_link_options(app PRIVATE
 	-u _printf_float
 	-T${CMAKE_SOURCE_DIR}/${BUILD_DIR}/${FW_PLATFORM}_app_linker_script.ld
+	-Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/app.map
 )
 
 set_target_properties(app PROPERTIES

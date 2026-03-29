@@ -131,9 +131,9 @@ void Pl_USART_Debug_Init(u8* pTxBuff, u16 TxBuffLen, Pl_USART_ClbkTx_t pTxClbk, 
 }
 
 __INLINE RET_STATE_t Pl_USART_Debug_TxData(u8* pBuff, u16 size) {
-	SYS_CRITICAL_ON();
+	// SYS_CRITICAL_ON();
 	RET_STATE_t retState = USART_Debug_TxData(pBuff, size, PL_USART_DEF_TIMEOUT);
-	SYS_CRITICAL_OFF();
+	// SYS_CRITICAL_OFF();
 	return retState;
 }
 

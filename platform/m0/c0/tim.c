@@ -89,11 +89,11 @@ void TIM_Delay_Irq_Enable(void) {
 }
 
 void TIM_DELAY_IRQ_HDL(void) {
-	if (LL_TIM_IsActiveFlag_UPDATE(TIM_DELAY)) {
-		DelayTimerClbk();
-		TimDelayOverflowsCnt++;
-		LL_TIM_ClearFlag_UPDATE(TIM_DELAY);
-	}
+	// if (LL_TIM_IsActiveFlag_UPDATE(TIM_DELAY)) {
+	// 	DelayTimerClbk();
+	// 	TimDelayOverflowsCnt++;
+	// 	LL_TIM_ClearFlag_UPDATE(TIM_DELAY);
+	// }
 }
 
 void TIM_PWM_Init(Pl_TIM_PWM_Clbk_t pTimPwmCntTopClbk, Pl_TIM_PWM_Clbk_t pTimPwmCntBottomClbk) {
@@ -228,18 +228,18 @@ void TIM_PWM_Irq_Enable(void) {
 }
 
 void TIM_PWM_IRQ_HDL(void) {
-	if (LL_TIM_IsActiveFlag_UPDATE(TIM_PWM)) {
-		if (LL_TIM_GetCounterMode(TIM1) == LL_TIM_COUNTERMODE_CENTER_UP_DOWN) {
-			// Проверка направления счёта: вверх или вниз
-			if (LL_TIM_GetDirection(TIM1) == LL_TIM_COUNTERDIRECTION_UP) {
-				TIM_PwmCntTopClbk();
-			} else {
-				TIM_PwmCntBottomClbk();
-			}
-		}
+	// if (LL_TIM_IsActiveFlag_UPDATE(TIM_PWM)) {
+	// 	if (LL_TIM_GetCounterMode(TIM1) == LL_TIM_COUNTERMODE_CENTER_UP_DOWN) {
+	// 		// Проверка направления счёта: вверх или вниз
+	// 		if (LL_TIM_GetDirection(TIM1) == LL_TIM_COUNTERDIRECTION_UP) {
+	// 			TIM_PwmCntTopClbk();
+	// 		} else {
+	// 			TIM_PwmCntBottomClbk();
+	// 		}
+	// 	}
 
-		LL_TIM_ClearFlag_UPDATE(TIM_PWM);
-	}
+	// 	LL_TIM_ClearFlag_UPDATE(TIM_PWM);
+	// }
 }
 
 void TIM_ADCLowFreq_Init(void) {
@@ -314,10 +314,10 @@ u32 TIM_HallToggleTimeCalc_GetCnt(void) {
 }
 
 void TIM_HALL_TOGGLE_TIME_CALC_IRQ_HDL(void) {
-	if (LL_TIM_IsActiveFlag_UPDATE(TIM_HALL_TOGGLE_TIME_CALC)) {
-		TIM_Motor_HallToggleTimeCalcClbk();
-		LL_TIM_ClearFlag_UPDATE(TIM_HALL_TOGGLE_TIME_CALC);
-	}
+	// if (LL_TIM_IsActiveFlag_UPDATE(TIM_HALL_TOGGLE_TIME_CALC)) {
+	// 	TIM_Motor_HallToggleTimeCalcClbk();
+	// 	LL_TIM_ClearFlag_UPDATE(TIM_HALL_TOGGLE_TIME_CALC);
+	// }
 }
 
 // void TIM_SpeedControl1_Init(Pl_Motor_HallToggleTimeCalcClbk_t pHallToggleTimeCalcClbk) {
@@ -391,8 +391,8 @@ __INLINE u32 TIM_SpeedControl_GetAutoReload(void) {
 }
 
 void TIM_SPEED_CONTROL_IRQ_HDL(void) {
-	if (LL_TIM_IsActiveFlag_UPDATE(TIM_SPEED_CONTROL)) {
-		TIM_Motor_SpeedControlClbk();
-		LL_TIM_ClearFlag_UPDATE(TIM_SPEED_CONTROL);
-	}
+	// if (LL_TIM_IsActiveFlag_UPDATE(TIM_SPEED_CONTROL)) {
+	// 	TIM_Motor_SpeedControlClbk();
+	// 	LL_TIM_ClearFlag_UPDATE(TIM_SPEED_CONTROL);
+	// }
 }

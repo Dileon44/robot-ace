@@ -12,7 +12,8 @@ date:
 3. Добавить launch для stlink, openocd, bmp
 4. Настроить Delay
 5. Подключить shell
-6. Настроить CAN
+6. Добавить agent skills
+7. Настроить CAN
 #### Сделать
 - добавить health_check - led toggle
 - переделать тактирование RTOS - снизить
