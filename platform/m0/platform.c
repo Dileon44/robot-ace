@@ -48,9 +48,43 @@ void Pl_Init(Pl_HardFault_Clbk_t pHardFault_Clbk) {
 	Sys_MainClock_Config();
 }
 
-void Pl_Delay_Init(Pl_Common_Clbk_t pDelayTimerClbk) {
-	TIM_Delay_Init(pDelayTimerClbk);
-	TIM_Delay_Irq_Enable();
+void Pl_SysCpuCnt_Init(void) {
+	// Pl_IsInit.CpuCounter = Sys_CounterCPU_Init();
+	Sys_CounterCPU_Init();
+}
+
+u32 Pl_SysCpuCnt_Get(void) {
+	return Sys_CounterCPU_Get();
+}
+
+bool Pl_DelayMs_Init(Pl_Common_Clbk_t pDelayTimerClbk) {
+	// Pl_IsInit.DelayMs = TIM_Delay_Init(pDelayTimerClbk);
+	// TIM_Delay_Irq_Enable();
+	// return Pl_IsInit.DelayMs;
+	return true;
+}
+
+bool Pl_DelayMs_DeInit(void) {
+	// Pl_IsInit.DelayMs = !TIM_Delay_DeInit();
+	// Sys_NVIC_Disable(TIM_DELAY_IRQ);
+	// return !Pl_IsInit.DelayMs;
+	return true;
+}
+
+void Pl_DelayMs_SuspendTimer(void) {
+	TIM_Delay_Disable();
+}
+
+void Pl_DelayMs_ResumeTimer(void) {
+	TIM_Delay_Enable();
+}
+
+u32 Pl_DelayMs_GetUsCnt(void) {
+	return TIM_Delay_GetCnt();
+}
+
+u32 Pl_DelayMs_GetMsCnt(void) {
+	return TIM_Delay_GetOvrflCnt();
 }
 
 void Pl_JumpToAddr(u32 appAddr) {
@@ -97,9 +131,9 @@ void Pl_USART_Debug_Init(u8* pTxBuff, u16 TxBuffLen, Pl_USART_ClbkTx_t pTxClbk, 
 }
 
 __INLINE RET_STATE_t Pl_USART_Debug_TxData(u8* pBuff, u16 size) {
-	SYS_CRITICAL_ON();
+	// SYS_CRITICAL_ON();
 	RET_STATE_t retState = USART_Debug_TxData(pBuff, size, PL_USART_DEF_TIMEOUT);
-	SYS_CRITICAL_OFF();
+	// SYS_CRITICAL_OFF();
 	return retState;
 }
 

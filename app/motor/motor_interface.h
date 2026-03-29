@@ -1,3 +1,0 @@
-
-
-// struct motor_interface

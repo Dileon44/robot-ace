@@ -41,7 +41,17 @@ void Pl_Stub_Sensors_ADCLowFreqClbk(u16* buffPtr, u16 buffLen);
 void Pl_Stub_Motor_AdcHighFreqClbk(u16* buffPtr, u16 buffLen);
 
 void Pl_Init(Pl_HardFault_Clbk_t pHardFault_Clbk);
-void Pl_Delay_Init(Pl_Common_Clbk_t pDelayTimerClbk);
+
+void Pl_SysCpuCnt_Init(void);
+u32 Pl_SysCpuCnt_Get(void);
+
+bool Pl_DelayMs_Init(Pl_Common_Clbk_t pDelayTimerClbk);
+bool Pl_DelayMs_DeInit(void);
+void Pl_DelayMs_SuspendTimer(void);
+void Pl_DelayMs_ResumeTimer(void);
+u32 Pl_DelayMs_GetUsCnt(void);
+u32 Pl_DelayMs_GetMsCnt(void);
+
 void Pl_JumpToAddr(u32 appAddr);
 
 void Pl_IWDG_Init(void);

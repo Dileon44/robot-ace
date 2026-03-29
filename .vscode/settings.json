@@ -1,9 +1,12 @@
 {
-    // Build arguments: passed to builder.sh → fw_builder.py → CMake
     // Format: "action preset=X target=X tag=X bsp=X opt=X"
-    "app_prd_m0r0c0_o0": "rebuild preset=m0r0c0 target=app tag=prd bsp=0 opt=0",
+    "app_prd_m0r0c0_o1": "rebuild preset=m0r0c0 target=app tag=prd bsp=0 opt=1",
     "app_dev_m0r0c0_o1": "rebuild preset=m0r0c0 target=app tag=dev bsp=0 opt=1",
     "app_dev_m0r0c0_o0": "rebuild preset=m0r0c0 target=app tag=dev bsp=0 opt=0",
+
+    "boot_prd_m0r0c0_o1": "rebuild preset=m0r0c0 target=boot tag=prd bsp=0 opt=1",
+    "boot_dev_m0r0c0_o1": "rebuild preset=m0r0c0 target=boot tag=dev bsp=0 opt=1",
+    "boot_dev_m0r0c0_o0": "rebuild preset=m0r0c0 target=boot tag=dev bsp=0 opt=0",
 
     "files.associations": {
         "*.h": "c",

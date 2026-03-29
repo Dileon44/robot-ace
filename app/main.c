@@ -1,19 +1,12 @@
 #include "main.h"
-#include "debug_interface.h"
-#include "debug_process.h"
-#include "delay.h"
-#include "iwdg.h"
 #include "platform.h"
 
 #if DEBUG_ENABLE
 #warning DEBUG_ENABLE
 #endif /* DEBUG_ENABLE */
 
-u8 ucHeap[configTOTAL_HEAP_SIZE];
-
 void HardFault_Clbk(u32 pcVal) {
 	// BkpStorage_SetRegister(BKP_REG_SYS_FAULT_EXEPTION_ADDR, pcVal);
-	__NOP();
 }
 
 void ErrorHandler(char* pFile, int line) {
@@ -33,23 +26,10 @@ void assert_failed(uint8_t* file, uint32_t line) {
 }
 
 void FreeRTOS_InitComponents(bool resources, bool tasks) {
-	FreeRTOS_DebugProcess_InitComponents(resources, tasks);
 }
 
 int main(void) {
-#if !DEBUG_ENABLE
-	// IWDG_Init();
-#endif /* !DEBUG_ENABLE */
-
 	FreeRTOS_InitComponents(true, false);
-	Pl_Init(HardFault_Clbk);
-	Pl_LedDebug_Init();
-
-	Delay_Init();
-
-#if DEBUG_ENABLE
-	DebugInterface_Init();
-#endif /* DEBUG_ENABLE */
 
 	FreeRTOS_InitComponents(false, true);
 	vTaskStartScheduler();

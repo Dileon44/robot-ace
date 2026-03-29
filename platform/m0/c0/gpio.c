@@ -287,24 +287,24 @@ void GPIO_Hall1_CallIrq(void) {
 }
 
 void GPIO_HALL1_IRQ_HDL(void) {
-	if (GPIO_HALL1_IS_ACTIVE_FLAG()) {
-		GPIO_Motor_HallClbk(1);
-		GPIO_HALL1_CLEAR_FLAG();
-	}
+	// if (GPIO_HALL1_IS_ACTIVE_FLAG()) {
+	// 	GPIO_Motor_HallClbk(1);
+	// 	GPIO_HALL1_CLEAR_FLAG();
+	// }
 }
 
 void GPIO_HALL2_IRQ_HDL(void) {
-	if (GPIO_HALL2_IS_ACTIVE_FLAG()) {
-		GPIO_Motor_HallClbk(2);
-		GPIO_HALL2_CLEAR_FLAG();
-	}
+	// if (GPIO_HALL2_IS_ACTIVE_FLAG()) {
+	// 	GPIO_Motor_HallClbk(2);
+	// 	GPIO_HALL2_CLEAR_FLAG();
+	// }
 }
 
 void GPIO_HALL3_IRQ_HDL(void) {
-	if (GPIO_HALL3_IS_ACTIVE_FLAG()) {
-		GPIO_Motor_HallClbk(3);
-		GPIO_HALL3_CLEAR_FLAG();
-	}
+	// if (GPIO_HALL3_IS_ACTIVE_FLAG()) {
+	// 	GPIO_Motor_HallClbk(3);
+	// 	GPIO_HALL3_CLEAR_FLAG();
+	// }
 }
 
 void GPIO_SensThrottle_Init(void) {

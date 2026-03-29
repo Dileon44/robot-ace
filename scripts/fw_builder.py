@@ -17,10 +17,10 @@ import sys
 from pathlib import Path
 from time import time
 
-from tqdm import tqdm
-
 from memory_table import RE_DATA as _RE_MEMORY_DATA
 from memory_table import render as _render_memory
+from memory_table import render_sections as _render_sections
+from tqdm import tqdm
 
 log = logging.getLogger(__name__)
 
@@ -112,7 +112,47 @@ def parse_args(raw: list[str]) -> dict[str, str]:
     return result
 
 
-def run(cmd: list[str], cwd: Path, show_progress: bool = False) -> int:
+_RE_LD_ORIGIN = re.compile(
+    r"^\s*(\w+)\s*(?:\([^)]*\)\s*)?:\s*ORIGIN\s*=\s*(0x[0-9a-fA-F]+)",
+    re.IGNORECASE,
+)
+
+
+def _read_linker_origins(ld: Path) -> dict[str, str] | None:
+    """Parse MEMORY block in a linker script, return region_name → hex_origin."""
+    try:
+        origins: dict[str, str] = {}
+        with ld.open() as f:
+            for line in f:
+                m = _RE_LD_ORIGIN.match(line)
+                if m:
+                    origins[m.group(1)] = m.group(2)
+        return origins or None
+    except Exception:
+        return None
+
+
+def _read_elf_sections(elf: Path) -> dict[str, int] | None:
+    """Run arm-none-eabi-size on *elf* and return text/data/bss sizes in bytes."""
+    try:
+        out = subprocess.check_output(
+            ["arm-none-eabi-size", str(elf)],
+            stderr=subprocess.DEVNULL,
+            text=True,
+        )
+        # Output format:  text   data    bss    dec    hex  filename
+        for line in out.splitlines()[1:]:
+            parts = line.split()
+            if len(parts) >= 3:
+                return {"text": int(parts[0]), "data": int(parts[1]), "bss": int(parts[2])}
+    except Exception:
+        pass
+    return None
+
+
+def run(cmd: list[str], cwd: Path, show_progress: bool = False,
+        elf_path: Path | None = None,
+        ld_path: Path | None = None) -> int:
     """Run a subprocess command, stream and colorize output, return exit code."""
     log.info("Run: " + " ".join(cmd))
     process = subprocess.Popen(
@@ -145,6 +185,13 @@ def run(cmd: list[str], cwd: Path, show_progress: bool = False) -> int:
         if m and show_progress:
             current, t = int(m.group(1)), int(m.group(2))
 
+            # [0/N] is ninja's internal status step (e.g. "Re-checking globbed
+            # directories") — not a real compilation unit; skip from bar tracking
+            if current == 0:
+                stripped = re.sub(r"^\[\s*\d+/\s*\d+\]\s*", "", line)
+                (pbar.write if pbar is not None else print)(colorize_line(stripped))
+                continue
+
             if pbar is None:
                 bar_fmt = "{l_bar}{bar:60}{r_bar}"
                 pbar = tqdm(
@@ -155,6 +202,9 @@ def run(cmd: list[str], cwd: Path, show_progress: bool = False) -> int:
                     dynamic_ncols=True,
                 )
                 pbar.n = current - 1
+                pbar.refresh()
+            elif pbar.total != t:
+                pbar.total = t
                 pbar.refresh()
 
             # Building lines → update bar silently
@@ -180,7 +230,11 @@ def run(cmd: list[str], cwd: Path, show_progress: bool = False) -> int:
         pbar.close()
 
     if memory_lines:
-        _render_memory(memory_lines)
+        origins = _read_linker_origins(ld_path) if ld_path else None
+        _render_memory(memory_lines, origins)
+        sections = _read_elf_sections(elf_path) if elf_path else None
+        if sections:
+            _render_sections(sections)
 
     process.wait()
     return process.returncode
@@ -219,7 +273,7 @@ def cmd_build(args: dict[str, str]) -> int:
     preset = get_preset(args)
     build_dir = BUILD_BASE_DIR / preset
     target_name = args.get("target", "app")
-    cmake_target = f"{target_name}.elf"
+    cmake_target = target_name
 
     if not (build_dir / "CMakeCache.txt").exists():
         log.info("CMakeCache.txt not found — running configure first")
@@ -227,8 +281,19 @@ def cmd_build(args: dict[str, str]) -> int:
         if ret != 0:
             return ret
 
+    elf_path: Path | None = None
+    artifacts_dir = ROOT_DIR / "artifacts"
+    if target_name == "boot":
+        candidates = sorted(artifacts_dir.glob("*.boot.*.elf"))
+    else:
+        candidates = sorted(artifacts_dir.glob("*.app.*.elf"))
+    if candidates:
+        elf_path = candidates[-1]
+
+    ld_path = BUILD_BASE_DIR / f"{preset}_{target_name}_linker_script.ld"
+
     cmake_args = ["cmake", "--build", str(build_dir), "--target", cmake_target]
-    return run(cmake_args, ROOT_DIR, show_progress=True)
+    return run(cmake_args, ROOT_DIR, show_progress=True, elf_path=elf_path, ld_path=ld_path)
 
 
 def cmd_clean(args: dict[str, str]) -> int:
@@ -240,7 +305,22 @@ def cmd_clean(args: dict[str, str]) -> int:
         return 0
 
     cmake_args = ["cmake", "--build", str(build_dir), "--target", "clean"]
-    return run(cmake_args, ROOT_DIR)
+    ret = run(cmake_args, ROOT_DIR)
+
+    # Remove simple-named artifacts from build/
+    for pattern in ("*.elf", "*.hex", "*.bin", "*.map"):
+        for f in BUILD_BASE_DIR.glob(pattern):
+            f.unlink()
+            log.info(f"Removed: {f}")
+
+    # Remove versioned artifacts from artifacts/
+    artifacts_dir = ROOT_DIR / "artifacts"
+    for pattern in ("*.elf", "*.hex", "*.bin"):
+        for f in artifacts_dir.glob(pattern):
+            f.unlink()
+            log.info(f"Removed: {f}")
+
+    return ret
 
 
 def cmd_rebuild(args: dict[str, str]) -> int:

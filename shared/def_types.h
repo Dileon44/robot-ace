@@ -1,13 +1,21 @@
+
 #ifndef __DEF_TYPES_H
 #define __DEF_TYPES_H
+// clang-format off
 
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <float.h>
+#include <math.h>
+#include <stdarg.h>
+#include "cmsis_compiler.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 typedef int64_t s64;
 typedef int32_t s32;
@@ -19,27 +27,38 @@ typedef uint32_t u32;
 typedef uint16_t u16;
 typedef uint8_t u8;
 
-typedef enum { BIT_RESET = 0, BIT_SET = 1 } BIT_t;
+typedef struct {
+	u32 Err;
+	u32 Luck;
+} ErrorCounter_t;
 
-typedef enum { STATE_DISABLE = 0, STATE_ENABLE = !STATE_DISABLE } FUNCTIONAL_STATE_t;
+typedef void (*VoidFunc_t)(void);
 
-#define RET_STATE_TABLE()                     \
-	X(RET_STATE_UNDEF, "UNDEF")               \
-	X(RET_STATE_SUCCESS, "SUCCESS")           \
-	X(RET_STATE_ERR_MEMORY, "ERR_MEMORY")     \
-	X(RET_STATE_ERR_CRC, "ERR_CRC")           \
-	X(RET_STATE_ERR_EMPTY, "ERR_EMPTY")       \
-	X(RET_STATE_ERR_PARAM, "ERR_PARAM")       \
-	X(RET_STATE_ERR_BUSY, "ERR_BUSY")         \
-	X(RET_STATE_ERR_OVERFLOW, "ERR_OVERFLOW") \
-	X(RET_STATE_ERR_TIMEOUT, "ERR_TIMEOUT")   \
-	X(RET_STATE_ERROR, "ERROR")               \
-	X(RET_STATE_WARNING, "WARNING")
+#define RET_STATE_TABLE()\
+X_ENTRY(RET_STATE_UNDEF,		"UNDEF")\
+X_ENTRY(RET_STATE_SUCCESS,		"SUCCESS")\
+X_ENTRY(RET_STATE_ERR_MEMORY,	"ERR_MEMORY")\
+X_ENTRY(RET_STATE_ERR_CRC,		"ERR_CRC")\
+X_ENTRY(RET_STATE_ERR_EMPTY,	"ERR_EMPTY")\
+X_ENTRY(RET_STATE_ERR_PARAM,	"ERR_PARAM")\
+X_ENTRY(RET_STATE_ERR_BUSY,		"ERR_BUSY")\
+X_ENTRY(RET_STATE_ERR_OVERFLOW,	"ERR_OVERFLOW")\
+X_ENTRY(RET_STATE_ERR_TIMEOUT,	"ERR_TIMEOUT")\
+X_ENTRY(RET_STATE_ERROR,		"ERROR")\
+X_ENTRY(RET_STATE_WARNING,		"WARNING")
 
-#define X(a, b) a,
-typedef enum { RET_STATE_TABLE() } RET_STATE_t;
-#undef X
+#define X_ENTRY(state, state_str) state,
+typedef enum {
+	RET_STATE_TABLE()
+} RET_STATE_t;
+#undef X_ENTRY
 
-const char* RetStateStr_Get(RET_STATE_t retState);
+#define RETURN_IF_UNSUCCESS(a)	if((a) != RET_STATE_SUCCESS) return(a)
+
+const char* RetState_GetStr(RET_STATE_t retState);
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* __DEF_TYPES_H */

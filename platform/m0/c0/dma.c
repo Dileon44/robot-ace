@@ -122,24 +122,24 @@ void DMA_Debug_Irq_Enable(void) {
 }
 
 void DMA_DEBUG_TX_IRQ_HDL(void) {
-	if (DMA_DEBUG_TX_IS_TC()) {
-		USART_Debug_TxClbk();
-		DMA_DEBUG_TX_CLEAR_TC();
-		LL_DMA_ClearFlag_TE1(DMA_DEBUG_TX);
-		LL_USART_EnableDMAReq_TX(USART_Debug_GetUSART());
-	}
+	// if (DMA_DEBUG_TX_IS_TC()) {
+	// 	USART_Debug_TxClbk();
+	// 	DMA_DEBUG_TX_CLEAR_TC();
+	// 	LL_DMA_ClearFlag_TE1(DMA_DEBUG_TX);
+	// 	LL_USART_EnableDMAReq_TX(USART_Debug_GetUSART());
+	// }
 }
 
 void DMA_DEBUG_RX_IRQ_HDL(void) {
-	if (DMA_DEBUG_RX_IS_HT()) {
-		DMA_DEBUG_RX_CLEAR_HT();
-		USART_Debug_RxClbk();
-	}
+	// if (DMA_DEBUG_RX_IS_HT()) {
+	// 	DMA_DEBUG_RX_CLEAR_HT();
+	// 	USART_Debug_RxClbk();
+	// }
 
-	if (DMA_DEBUG_RX_IS_TC()) {
-		DMA_DEBUG_RX_CLEAR_TC();
-		USART_Debug_RxClbk();
-	}
+	// if (DMA_DEBUG_RX_IS_TC()) {
+	// 	DMA_DEBUG_RX_CLEAR_TC();
+	// 	USART_Debug_RxClbk();
+	// }
 }
 
 void DMA_ADCLowFreq_Enable(void) {
@@ -180,17 +180,17 @@ void DMA_ADCLowFreq_Irq_Enable(void) {
 }
 
 void DMA_SENSORS_ADC_LOW_FREQ_IRQ_HDL(void) {
-	if (DMA_SENSORS_ADC_LOW_FREQ_IS_TC()) {
-		u16* buffADC = ADC_GetLowFreqSensBuffPtr();
-		u16 buffLen	 = ADC_GetLowFreqSensBuffLen();
+	// if (DMA_SENSORS_ADC_LOW_FREQ_IS_TC()) {
+	// 	u16* buffADC = ADC_GetLowFreqSensBuffPtr();
+	// 	u16 buffLen	 = ADC_GetLowFreqSensBuffLen();
 
-		for (u32 idx = 0; idx < buffLen; idx++) {
-			buffADC[idx] = ADC_CalcDigitToVoltage(buffADC[idx]);
-		}
-		ADC_SensLowFreqClbk(buffADC, buffLen);
+	// 	for (u32 idx = 0; idx < buffLen; idx++) {
+	// 		buffADC[idx] = ADC_CalcDigitToVoltage(buffADC[idx]);
+	// 	}
+	// 	ADC_SensLowFreqClbk(buffADC, buffLen);
 
-		DMA_SENSORS_ADC_LOW_FREQ_CLEAR_TC();
-	}
+	// 	DMA_SENSORS_ADC_LOW_FREQ_CLEAR_TC();
+	// }
 }
 
 void DMA_AdcHighFreq_Enable(void) {
@@ -234,15 +234,15 @@ void DMA_AdcHighFreq_Irq_Enable(void) {
 }
 
 void DMA_ADC_HIGH_FREQ_IRQ_HDL(void) {
-	if (DMA_ADC_HIGH_FREQ_IS_TC()) {
-		u16* buffADC = ADC_GetHighFreqSensBuffPtr();
-		u16 buffLen	 = ADC_GetHighFreqSensBuffLen();
+	// if (DMA_ADC_HIGH_FREQ_IS_TC()) {
+	// 	u16* buffADC = ADC_GetHighFreqSensBuffPtr();
+	// 	u16 buffLen	 = ADC_GetHighFreqSensBuffLen();
 
-		for (u32 idx = 0; idx < buffLen; idx++) {
-			buffADC[idx] = ADC_CalcDigitToVoltage(buffADC[idx]);
-		}
-		ADC_SensHighFreqClbk(buffADC, buffLen);
+	// 	for (u32 idx = 0; idx < buffLen; idx++) {
+	// 		buffADC[idx] = ADC_CalcDigitToVoltage(buffADC[idx]);
+	// 	}
+	// 	ADC_SensHighFreqClbk(buffADC, buffLen);
 
-		DMA_ADC_HIGH_FREQ_CLEAR_TC();
-	}
+	// 	DMA_ADC_HIGH_FREQ_CLEAR_TC();
+	// }
 }

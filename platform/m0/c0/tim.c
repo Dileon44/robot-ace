@@ -4,10 +4,11 @@
 
 // #define TIM_FREQ					170000000 // RCC_GetHCLKClockFreq(RCC_PLL_GetFreqDomain_SYS())
 
-#define TIM_DELAY		   TIM6
-#define TIM_DELAY_IRQ	   TIM6_DAC_IRQn
-#define TIM_DELAY_IRQ_HDL  TIM6_DAC_IRQHandler
-#define TIM_DELAY_CLK_EN() LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM6)
+#define TIM_DELAY			TIM6
+#define TIM_DELAY_IRQ		TIM6_DAC_IRQn
+#define TIM_DELAY_IRQ_HDL	TIM6_DAC_IRQHandler
+#define TIM_DELAY_CLK_EN()	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM6)
+#define TIM_DELAY_CLK_DIS() LL_APB1_GRP1_DisableClock(LL_APB1_GRP1_PERIPH_TIM6)
 
 #define TIM_PWM			 TIM1
 #define TIM_PWMA		 LL_TIM_CHANNEL_CH1
@@ -34,6 +35,7 @@ static Pl_Motor_HallToggleTimeCalcClbk_t TIM_Motor_HallToggleTimeCalcClbk = Pl_S
 static Pl_TIM_PWM_Clbk_t TIM_PwmCntTopClbk								  = Pl_Stub_CommonClbk;
 static Pl_TIM_PWM_Clbk_t TIM_PwmCntBottomClbk							  = Pl_Stub_CommonClbk;
 static Pl_TIM_Motor_SpeedControlClbk_t TIM_Motor_SpeedControlClbk		  = Pl_Stub_CommonClbk;
+volatile static u32 TimDelayOverflowsCnt								  = 0;
 
 void TIM_Delay_Init(Pl_Common_Clbk_t pDelayTimerClbk) {
 	ASSIGN_NOT_NULL_VAL_TO_PTR(DelayTimerClbk, pDelayTimerClbk);
@@ -51,6 +53,21 @@ void TIM_Delay_Init(Pl_Common_Clbk_t pDelayTimerClbk) {
 	LL_TIM_EnableCounter(TIM_DELAY);
 }
 
+bool TIM_Delay_DeInit(void) {
+	LL_TIM_DisableCounter(TIM_DELAY);
+	LL_TIM_DisableIT_UPDATE(TIM_DELAY);
+
+	LL_TIM_InitTypeDef TIM_InitStruct;
+	LL_TIM_StructInit(&TIM_InitStruct);
+	LL_TIM_Init(TIM_DELAY, &TIM_InitStruct);
+	TimDelayOverflowsCnt = 0;
+	DelayTimerClbk		 = Pl_Stub_CommonClbk;
+
+	TIM_DELAY_CLK_DIS();
+
+	return true;
+}
+
 __INLINE void TIM_Delay_Disable(void) {
 	LL_TIM_DisableCounter(TIM_DELAY);
 }
@@ -63,15 +80,20 @@ __INLINE u32 TIM_Delay_GetCnt(void) {
 	return LL_TIM_GetCounter(TIM_DELAY);
 }
 
+__INLINE u32 TIM_Delay_GetOvrflCnt(void) {
+	return TimDelayOverflowsCnt;
+}
+
 void TIM_Delay_Irq_Enable(void) {
 	Sys_NVIC_SetPrioEnable(TIM_DELAY_IRQ, NVIC_IRQ_PRIO_TIM_DELAY);
 }
 
 void TIM_DELAY_IRQ_HDL(void) {
-	if (LL_TIM_IsActiveFlag_UPDATE(TIM_DELAY)) {
-		DelayTimerClbk();
-		LL_TIM_ClearFlag_UPDATE(TIM_DELAY);
-	}
+	// if (LL_TIM_IsActiveFlag_UPDATE(TIM_DELAY)) {
+	// 	DelayTimerClbk();
+	// 	TimDelayOverflowsCnt++;
+	// 	LL_TIM_ClearFlag_UPDATE(TIM_DELAY);
+	// }
 }
 
 void TIM_PWM_Init(Pl_TIM_PWM_Clbk_t pTimPwmCntTopClbk, Pl_TIM_PWM_Clbk_t pTimPwmCntBottomClbk) {
@@ -206,18 +228,18 @@ void TIM_PWM_Irq_Enable(void) {
 }
 
 void TIM_PWM_IRQ_HDL(void) {
-	if (LL_TIM_IsActiveFlag_UPDATE(TIM_PWM)) {
-		if (LL_TIM_GetCounterMode(TIM1) == LL_TIM_COUNTERMODE_CENTER_UP_DOWN) {
-			// Проверка направления счёта: вверх или вниз
-			if (LL_TIM_GetDirection(TIM1) == LL_TIM_COUNTERDIRECTION_UP) {
-				TIM_PwmCntTopClbk();
-			} else {
-				TIM_PwmCntBottomClbk();
-			}
-		}
+	// if (LL_TIM_IsActiveFlag_UPDATE(TIM_PWM)) {
+	// 	if (LL_TIM_GetCounterMode(TIM1) == LL_TIM_COUNTERMODE_CENTER_UP_DOWN) {
+	// 		// Проверка направления счёта: вверх или вниз
+	// 		if (LL_TIM_GetDirection(TIM1) == LL_TIM_COUNTERDIRECTION_UP) {
+	// 			TIM_PwmCntTopClbk();
+	// 		} else {
+	// 			TIM_PwmCntBottomClbk();
+	// 		}
+	// 	}
 
-		LL_TIM_ClearFlag_UPDATE(TIM_PWM);
-	}
+	// 	LL_TIM_ClearFlag_UPDATE(TIM_PWM);
+	// }
 }
 
 void TIM_ADCLowFreq_Init(void) {
@@ -292,10 +314,10 @@ u32 TIM_HallToggleTimeCalc_GetCnt(void) {
 }
 
 void TIM_HALL_TOGGLE_TIME_CALC_IRQ_HDL(void) {
-	if (LL_TIM_IsActiveFlag_UPDATE(TIM_HALL_TOGGLE_TIME_CALC)) {
-		TIM_Motor_HallToggleTimeCalcClbk();
-		LL_TIM_ClearFlag_UPDATE(TIM_HALL_TOGGLE_TIME_CALC);
-	}
+	// if (LL_TIM_IsActiveFlag_UPDATE(TIM_HALL_TOGGLE_TIME_CALC)) {
+	// 	TIM_Motor_HallToggleTimeCalcClbk();
+	// 	LL_TIM_ClearFlag_UPDATE(TIM_HALL_TOGGLE_TIME_CALC);
+	// }
 }
 
 // void TIM_SpeedControl1_Init(Pl_Motor_HallToggleTimeCalcClbk_t pHallToggleTimeCalcClbk) {
@@ -369,8 +391,8 @@ __INLINE u32 TIM_SpeedControl_GetAutoReload(void) {
 }
 
 void TIM_SPEED_CONTROL_IRQ_HDL(void) {
-	if (LL_TIM_IsActiveFlag_UPDATE(TIM_SPEED_CONTROL)) {
-		TIM_Motor_SpeedControlClbk();
-		LL_TIM_ClearFlag_UPDATE(TIM_SPEED_CONTROL);
-	}
+	// if (LL_TIM_IsActiveFlag_UPDATE(TIM_SPEED_CONTROL)) {
+	// 	TIM_Motor_SpeedControlClbk();
+	// 	LL_TIM_ClearFlag_UPDATE(TIM_SPEED_CONTROL);
+	// }
 }
