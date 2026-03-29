@@ -2,28 +2,42 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "🟡🟢 | m3 STLink launch",
+            "name": "🚀 | m0 STLink launch",
             "presentation": {
                 "group": "Local"
             },
             "type": "cortex-debug",
             "request": "launch",
-            "executable": "${workspaceFolder}/build/app.elf",
-            "svdFile": "${workspaceFolder}/platform/m3/core/stm32f413.svd",
+            "executable": "${workspaceFolder}/build/fw_m0.elf",
+            "svdFile": "${workspaceFolder}/platform/m0/core/stm32g431.svd",
             "gdbPath": "${config:gdb_path}",
             "showDevDebugOutput": "raw",
             "servertype": "stlink",
             "interface": "swd"
         },
         {
-            "name": "🟡🟢 | m3 OpenOCD-STLink launch",
+            "name": "🚀 | m0 STLink attach",
+            "presentation": {
+                "group": "Local"
+            },
+            "type": "cortex-debug",
+            "request": "attach",
+            "executable": "${workspaceFolder}/build/fw_m0.elf",
+            "svdFile": "${workspaceFolder}/platform/m0/core/stm32g431.svd",
+            "gdbPath": "${config:gdb_path}",
+            "showDevDebugOutput": "raw",
+            "servertype": "stlink",
+            "interface": "swd"
+        },
+        {
+            "name": "🚀 | m0 OpenOCD-STLink launch",
             "presentation": {
                 "group": "Local"
             },
             "type": "cortex-debug",
             "request": "launch",
-            "executable": "${workspaceFolder}/build/app.elf",
-            "svdFile": "${workspaceFolder}/platform/m3/core/stm32f413.svd",
+            "executable": "${workspaceFolder}/build/fw_m0.elf",
+            "svdFile": "${workspaceFolder}/platform/m0/core/stm32g431.svd",
             "gdbPath": "${config:gdb_path}",
             "showDevDebugOutput": "raw",
             "servertype": "openocd",
@@ -31,78 +45,38 @@
             "interface": "swd",
             "configFiles": [
                 "${config:openocd_scripts_path}/interface/stlink.cfg",
-                "${config:openocd_scripts_path}/target/stm32f4x.cfg"
+                "${workspaceFolder}/platform/m0/stm32g4x.cfg"
             ],
-            "preLaunchCommands": [
-                "monitor init",
-                "monitor reset init",
-                "monitor flash write_image debug/fw_m3.elf"
-            ]
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": 10
+            }
         },
         {
-            "name": "🟡🟢 | m3 BMP launch",
-            "presentation": {
-                "group": "Local"
-            },
-            "type": "cortex-debug",
-            "request": "launch",
-            "executable": "${workspaceFolder}/build/app.elf",
-            "svdFile": "${workspaceFolder}/platform/m3/core/stm32f413.svd",
-            "gdbPath": "${config:gdb_path}",
-            "showDevDebugOutput": "raw",
-            "servertype": "bmp",
-            "BMPGDBSerialPort": "${config:bmp_serial_port}"
-        },
-        {
-            "name": "🟡🟢 | m3 BMP attach",
+            "name": "🚀 | m0 OpenOCD-STLink attach",
             "presentation": {
                 "group": "Local"
             },
             "type": "cortex-debug",
             "request": "attach",
-            "executable": "${workspaceFolder}/build/app.elf",
-            "svdFile": "${workspaceFolder}/platform/m3/core/stm32f413.svd",
+            "executable": "${workspaceFolder}/build/fw_m0.elf",
+            "svdFile": "${workspaceFolder}/platform/m0/core/stm32g431.svd",
             "gdbPath": "${config:gdb_path}",
             "showDevDebugOutput": "raw",
-            "servertype": "bmp",
-            "BMPGDBSerialPort": "${config:bmp_serial_port}"
+            "servertype": "openocd",
+            "serverpath": "${config:openocd_path}",
+            "interface": "swd",
+            "configFiles": [
+                "${config:openocd_scripts_path}/interface/stlink.cfg",
+                "${workspaceFolder}/platform/m0/stm32g4x.cfg"
+            ],
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": 10
+            }
         },
         {
-            "name": "🟡🟢 | m3 JLink launch",
-            "presentation": {
-                "group": "Local"
-            },
-            "type": "cortex-debug",
-            "request": "launch",
-            "executable": "${workspaceFolder}/build/app.elf",
-            "svdFile": "${workspaceFolder}/platform/m3/core/stm32f413.svd",
-            "gdbPath": "${config:gdb_path}",
-            "showDevDebugOutput": "raw",
-            "servertype": "jlink",
-            "serverpath": "${config:jlink_server_path}",
-            "device": "STM32F413VG",
-            "serialNumber": "${config:jlink_serial_number}",
-            "interface": "swd"
-        },
-        {
-            "name": "🟡🟢 | m3 JLink attach",
-            "presentation": {
-                "group": "Local"
-            },
-            "type": "cortex-debug",
-            "request": "attach",
-            "executable": "${workspaceFolder}/build/app.elf",
-            "svdFile": "${workspaceFolder}/platform/m3/core/stm32f413.svd",
-            "gdbPath": "${config:gdb_path}",
-            "showDevDebugOutput": "raw",
-            "servertype": "jlink",
-            "serverpath": "${config:jlink_server_path}",
-            "device": "STM32F413VG",
-            "serialNumber": "${config:jlink_serial_number}",
-            "interface": "swd"
-        },
-        {
-            "name": "🛴🟡 | m0 STLink launch",
+            "name": "🚀 | m0 OpenOCD-CMSIS-Dap launch",
             "presentation": {
                 "group": "Local"
             },
@@ -110,34 +84,6 @@
             "request": "launch",
             "executable": "${workspaceFolder}/build/fw_m0.elf",
             "svdFile": "${workspaceFolder}/platform/m0/core/stm32g431.svd",
-            "gdbPath": "${config:gdb_path}",
-            "showDevDebugOutput": "raw",
-            "servertype": "stlink",
-            "interface": "swd"
-        },
-        {
-            "name": "🟡🟢 | m0 BMP launch",
-            "presentation": {
-                "group": "Local"
-            },
-            "type": "cortex-debug",
-            "request": "launch",
-            "executable": "${workspaceFolder}/build/fw_m0.elf",
-            "svdFile": "${workspaceFolder}/platform/m0/core/stm32g431.svd",
-            "gdbPath": "${config:gdb_path}",
-            "showDevDebugOutput": "raw",
-            "servertype": "bmp",
-            "BMPGDBSerialPort": "${config:bmp_serial_port}"
-        },
-        {
-            "name": "🟡🟢 | m0 OpenOCD-CMSIS-Dap launch",
-            "presentation": {
-                "group": "Local"
-            },
-            "type": "cortex-debug",
-            "request": "launch",
-            "executable": "${workspaceFolder}/build/fw_m0.elf",
-            "svdFile": "${workspaceFolder}/platform/m0/stm32g431.svd",
             "gdbPath": "${config:gdb_path}",
             "showDevDebugOutput": "raw",
             "servertype": "openocd",
@@ -151,6 +97,57 @@
                 "enabled": true,
                 "samplesPerSecond": 10
             }
+        },
+        {
+            "name": "🚀 | m0 OpenOCD-CMSIS-Dap attach",
+            "presentation": {
+                "group": "Local"
+            },
+            "type": "cortex-debug",
+            "request": "attach",
+            "executable": "${workspaceFolder}/build/fw_m0.elf",
+            "svdFile": "${workspaceFolder}/platform/m0/core/stm32g431.svd",
+            "gdbPath": "${config:gdb_path}",
+            "showDevDebugOutput": "raw",
+            "servertype": "openocd",
+            "serverpath": "${config:openocd_path}",
+            "interface": "swd",
+            "configFiles": [
+                "${workspaceFolder}/platform/cmsis-dap.cfg",
+                "${workspaceFolder}/platform/m0/stm32g4x.cfg"
+            ],
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": 10
+            }
+        },
+        {
+            "name": "🚀 | m0 BMP launch",
+            "presentation": {
+                "group": "Local"
+            },
+            "type": "cortex-debug",
+            "request": "launch",
+            "executable": "${workspaceFolder}/build/fw_m0.elf",
+            "svdFile": "${workspaceFolder}/platform/m0/core/stm32g431.svd",
+            "gdbPath": "${config:gdb_path}",
+            "showDevDebugOutput": "raw",
+            "servertype": "bmp",
+            "BMPGDBSerialPort": "${config:bmp_serial_port}"
+        },
+        {
+            "name": "🚀 | m0 BMP attach",
+            "presentation": {
+                "group": "Local"
+            },
+            "type": "cortex-debug",
+            "request": "attach",
+            "executable": "${workspaceFolder}/build/fw_m0.elf",
+            "svdFile": "${workspaceFolder}/platform/m0/core/stm32g431.svd",
+            "gdbPath": "${config:gdb_path}",
+            "showDevDebugOutput": "raw",
+            "servertype": "bmp",
+            "BMPGDBSerialPort": "${config:bmp_serial_port}"
         }
     ]
 }

@@ -1,5 +1,6 @@
 .venv
 build
+artifacts
 *.original
 
 # Python bytecode cache

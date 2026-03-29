@@ -282,11 +282,11 @@ def cmd_build(args: dict[str, str]) -> int:
             return ret
 
     elf_path: Path | None = None
-    build_dir_root = ROOT_DIR / "build"
+    artifacts_dir = ROOT_DIR / "artifacts"
     if target_name == "boot":
-        candidates = sorted(build_dir_root.glob("*.boot.*.elf"))
+        candidates = sorted(artifacts_dir.glob("*.boot.*.elf"))
     else:
-        candidates = sorted(build_dir_root.glob("*.app.*.elf"))
+        candidates = sorted(artifacts_dir.glob("*.app.*.elf"))
     if candidates:
         elf_path = candidates[-1]
 
@@ -307,15 +307,16 @@ def cmd_clean(args: dict[str, str]) -> int:
     cmake_args = ["cmake", "--build", str(build_dir), "--target", "clean"]
     ret = run(cmake_args, ROOT_DIR)
 
-    # Remove versioned artifacts copied to build/
+    # Remove simple-named artifacts from build/
     for pattern in ("*.elf", "*.hex", "*.bin", "*.map"):
         for f in BUILD_BASE_DIR.glob(pattern):
             f.unlink()
             log.info(f"Removed: {f}")
 
-    # Remove legacy/accumulated versioned ELF files inside preset subdirs
-    for target_subdir in ("app", "boot"):
-        for f in (build_dir / target_subdir).glob("*.elf*"):
+    # Remove versioned artifacts from artifacts/
+    artifacts_dir = ROOT_DIR / "artifacts"
+    for pattern in ("*.elf", "*.hex", "*.bin"):
+        for f in artifacts_dir.glob(pattern):
             f.unlink()
             log.info(f"Removed: {f}")
 
