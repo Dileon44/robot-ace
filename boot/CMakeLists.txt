@@ -6,6 +6,7 @@ add_executable(boot ${SOURCES_BOOT})
 
 target_include_directories(boot PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/conf
 )
 
 target_link_libraries(boot PRIVATE
