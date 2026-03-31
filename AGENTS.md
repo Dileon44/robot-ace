@@ -58,11 +58,11 @@ cmake --build build/m0r0c0 --target boot
 ```
 
 Output artifacts:
-- `build/fw_m0.elf` — app ELF (flat copy of versioned ELF, e.g. `1.0.0.ecu.app.dev.m0r0c0.0.a1b2c3.elf`)
-- `build/fw_m0.hex` / `build/fw_m0.bin` — app HEX and binary
-- `build/boot_m0.elf` / `build/boot_m0.hex` / `build/boot_m0.bin` — bootloader artifacts
+- `build/fw_m0.elf` / `build/fw_m0.hex` / `build/fw_m0.bin` — app (flat-named copies)
+- `build/boot_m0.elf` / `build/boot_m0.hex` / `build/boot_m0.bin` — bootloader (flat-named copies)
+- `artifacts/` — versioned copies of all ELF/HEX/BIN files, e.g. `1.0.0.ecu.app.dev.m0r0c0.0.a1b2c3.elf`
 
-The versioned ELF and a symlink to it reside inside `build/m0r0c0/app/`.
+The internal CMake build output resides in `build/m0r0c0/app/` (not used directly).
 
 **There are no unit tests or linter in this project.** Validation is done by building and flashing to hardware.
 
@@ -81,22 +81,25 @@ Strict layering — never skip layers:
 
 ```
 app/       (motor control, sensors, UART protocol, debug — FreeRTOS tasks)
+  conf/    (FreeRTOSConfig.h, dbg_cfg.h, lib_cfg.h, main_cfg.h, rtos_tasks_stack_and_prio.h)
 boot/      (bootloader — bare-metal, no RTOS, separate CMake target)
+  conf/    (dbg_cfg.h, lib_cfg.h, main_cfg.h)
   └─► platform/platform.h  (Pl_* API only)
         └─► platform/m0/platform.c
-              └─► platform/m0/c0/*.c     (STM32 LL peripheral drivers)
+              └─► platform/m0/c0/*.c     (STM32 LL peripheral drivers: adc, dma, gpio, int, sys, tim, usart)
               └─► platform/m0/core/      (CMSIS, STM32 LL/HAL headers+src, USB Device stack)
 
 shared/    (MCU-agnostic: types, macros, delay, syscalls — INTERFACE lib)
-lib/       (MCU-agnostic: ring_buff, ring_list — INTERFACE lib, include path only)
+lib/       (MCU-agnostic: ring_buff, ring_list, rand, shared_mutex — CMake target: libs)
 thirdparty/freertos_kernel/   (FreeRTOS V11.2.0 — linked into app only)
 thirdparty/wsh-shell/         (wsh-shell v2.4 STATIC lib — linked into app only)
 ```
 
 - App code calls only `Pl_*` functions. Never call `LL_*`, `TIM_*`, `ADC_*`, `GPIO_*` directly from app.
 - Platform layer uses STM32 LL (Low-Layer) exclusively — no HAL (HAL subset exists in `core/` only for USB PCD).
-- `shared/` and `lib/` are MCU-agnostic portable code.
+- `shared/` and `lib/` are MCU-agnostic portable code. The CMake target for `lib/` is `libs` (plural).
 - `boot/` links only `platform` and `shared` — no FreeRTOS, no `libs`, no `wsh_shell`.
+- `app/CMakeLists.txt` uses `file(GLOB_RECURSE ...)` — any `.c` added under `app/` is auto-included.
 - Global struct instances (`Motor_t motor`, `Sensors_t sensors`) are owned by their `.c` files;
   expose via getter: `Motor_GetMotorPtr()`, `Sensors_GetPtrSensors()`.
 
@@ -216,8 +219,10 @@ if (rs != RET_STATE_SUCCESS) {
 }
 ```
 
-Key states: `RET_STATE_SUCCESS`, `RET_STATE_ERROR`, `RET_STATE_ERR_PARAM`,
-`RET_STATE_ERR_MEMORY`, `RET_STATE_ERR_TIMEOUT`, `RET_STATE_ERR_BUSY`.
+Key states: `RET_STATE_SUCCESS`, `RET_STATE_ERROR`, `RET_STATE_WARNING`,
+`RET_STATE_ERR_PARAM`, `RET_STATE_ERR_MEMORY`, `RET_STATE_ERR_CRC`,
+`RET_STATE_ERR_EMPTY`, `RET_STATE_ERR_BUSY`, `RET_STATE_ERR_OVERFLOW`,
+`RET_STATE_ERR_TIMEOUT`.
 
 **Panic / assertion:**
 
@@ -226,7 +231,12 @@ PANIC();           // ErrorHandler → disable IRQ + breakpoint + infinite loop
 ASSERT_CHECK(x);   // calls PANIC() if x == 0 (active when PANIC_CHECK_ENABLE defined)
 ```
 
-Panic behavior is controlled by `PANIC_CHECK_ENABLE` (app) defined in `app/conf/dbg_cfg.h`.
+Panic behavior is controlled by flags in `app/conf/dbg_cfg.h`:
+
+- `PANIC_CHECK_ENABLE` — enables `PANIC()` (defaults to `0` even in dev builds)
+- `APP_ASSERT_CHECK_ENABLE` — enables `ASSERT_CHECK(x)`
+- `RTOS_ASSERT_CHECK_ENABLE` — enables FreeRTOS stack overflow checks
+- `DEBUG_QUICK_ENABLE` — master switch: set to `1` to enable all three above at once
 
 **Debug-only code:** wrap with `#if DEBUG_ENABLE` / `#if !DEBUG_ENABLE`.
 
@@ -266,7 +276,7 @@ void FreeRTOS_Module_InitComponents(void) {
 
 Stack sizes and priorities are defined in `app/conf/rtos_tasks_stack_and_prio.h`.
 Use `configMINIMAL_STACK_SIZE` multiples for stack sizes.
-Use `TASK_PRIORITY_NN` constants for priorities.
+Use `TASK_PRIORITY_01` … `TASK_PRIORITY_08` constants for priorities (`TASK_PRIORITY_08` is also aliased as `WATCHDOG_TASK_PRIORITY`).
 
 Critical sections: `SYS_CRITICAL_ON()` / `SYS_CRITICAL_OFF()` (map to FreeRTOS critical section API).
 
@@ -274,16 +284,16 @@ Critical sections: `SYS_CRITICAL_ON()` / `SYS_CRITICAL_OFF()` (map to FreeRTOS c
 
 ## Key Module APIs
 
-**Filter (first-order IIR low-pass):**
+**Filter (first-order IIR low-pass):** *(planned — module not yet implemented)*
 
 ```c
-TFilter f = { .T = 0.05f, .calc = TFilter_Calc };  // T = Tsample / Tfilter
+TFilter f = { .T = 0.05f, .Calc = TFilter_Calc };  // T = Tsample / Tfilter
 f.input = rawValue;
 f.calc(&f);
 filtValue = f.output;
 ```
 
-**PID controller:**
+**PID controller:** *(planned — module not yet implemented)*
 
 ```c
 volatile struct PI_t pid = { .Kp=1.0f, .Ki=0.0f, .dt=0.001f,
@@ -300,14 +310,14 @@ Declare `volatile` when accessed from ISR context.
 ```c
 RingBuff_Init(&rb, backingBuf, sizeof(backingBuf), NULL);
 RingBuff_InterruptCallback(&rb, newByteCount);           // call from ISR
-RingBuff_Str_Search(&rb, DELAY_1_MILLISECOND, "token");  // blocking search
+RingBuff_Str_Search(&rb, DELAY_1_MILSEC, "token");       // blocking search
 RingBuff_Str_SetSearch(&rb, timeout_ms, patterns, n, &matchIdx);
 ```
 
-**Debug print** (dev builds only):
+**Debug print** *(planned — not yet implemented; will route to USART via syscalls.c)*:
 
 ```c
-DEBUG_PRINT("value: %d\n", val);   // routes to USART via syscalls.c
+DEBUG_PRINT("value: %d\n", val);
 ```
 
 ---
@@ -321,3 +331,9 @@ DEBUG_PRINT("value: %d\n", val);   // routes to USART via syscalls.c
 | `PANIC_CHECK_ENABLE` | defined / not | Enables `PANIC()` / `ASSERT_CHECK()` macros (app) |
 | `USE_FULL_LL_DRIVER` | always set | STM32 full LL driver |
 | `HSE_VALUE` | `24000000U` | External crystal frequency |
+| `STM32G431xx` | always set | STM32G431 device family selection |
+| `USE_FULL_ASSERT` | always set | Enables STM32 assert_param checks |
+| `FLASH_BOOT_ADDR` | `0x08000000` | Boot flash base address |
+| `FLASH_BOOT_SIZE` | `0x4000` | Boot flash size (16 KB) |
+| `FLASH_APP_ADDR` | `0x08000000` | App flash base address |
+| `FLASH_APP_SIZE` | `0x18000` | App flash size (96 KB) |
