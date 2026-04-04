@@ -9,8 +9,15 @@
 #include "tim.h"
 #include "usart.h"
 
-#define NVIC_PRIO_GROUP_4 \
-	0x00000003U /*!< 4 bits for pre-emption priority, 0 bits for subpriority (for FreeRTOS)*/
+/**
+ * 4 bits for pre-emption priority,
+ * 0 bits for subpriority (for FreeRTOS)
+ */
+#define NVIC_PRIO_GROUP_0 ((u32)0x00000007)
+#define NVIC_PRIO_GROUP_1 ((u32)0x00000006)
+#define NVIC_PRIO_GROUP_2 ((u32)0x00000005)
+#define NVIC_PRIO_GROUP_3 ((u32)0x00000004)
+#define NVIC_PRIO_GROUP_4 ((u32)0x00000003)
 
 void Pl_Stub_CommonClbk(void) {
 }
@@ -127,8 +134,8 @@ void Pl_IWDG_ReloadCounter(void) {
 
 /*========================= Platform USART functions =========================*/
 
-void Pl_USART_Debug_Init(u8* pTxBuff, u16 TxBuffLen, Pl_USART_ClbkTx_t pTxClbk, u8* pRxBuff,
-						 u16 RxBuffLen, Pl_USART_ClbkRx_t pRxClbk) {
+void Pl_Debug_Init(u8* pTxBuff, u16 TxBuffLen, Pl_USART_ClbkTx_t pTxClbk, u8* pRxBuff,
+				   u16 RxBuffLen, Pl_USART_ClbkRx_t pRxClbk) {
 	GPIO_Debug_Init();
 
 	USART_Debug_Init(pRxClbk);
@@ -139,46 +146,46 @@ void Pl_USART_Debug_Init(u8* pTxBuff, u16 TxBuffLen, Pl_USART_ClbkTx_t pTxClbk, 
 	DMA_Debug_Irq_Enable();
 }
 
-RET_STATE_t Pl_USART_Debug_TxData(u8* pBuff, u16 size) {
+RET_STATE_t Pl_Debug_TxData(u8* pBuff, u16 size) {
 	// SYS_CRITICAL_ON();
-	RET_STATE_t retState = USART_Debug_TxData(pBuff, size, PL_USART_DEF_TIMEOUT);
+	RET_STATE_t retState = USART_Debug_TxData(pBuff, size, PL_USART_DEF_TMO);
 	// SYS_CRITICAL_OFF();
 	return retState;
 }
 
-void Pl_USART_Debug_Enable_Tx(void) {
+void Pl_Debug_Enable_Tx(void) {
 	DMA_Debug_Enable_Tx();
 }
 
-void Pl_USART_Debug_Enable_Rx(void) {
+void Pl_Debug_Enable_Rx(void) {
 	DMA_Debug_Enable_Rx();
 }
 
-void Pl_USART_Debug_Disable_Tx(void) {
+void Pl_Debug_Disable_Tx(void) {
 	DMA_Debug_Disable_Tx();
 }
 
-void Pl_USART_Debug_Disable_Rx(void) {
+void Pl_Debug_Disable_Rx(void) {
 	DMA_Debug_Disable_Rx();
 }
 
-void Pl_USART_Debug_SetDataLengthRx(u32 NbData) {
+void Pl_Debug_SetDataLengthRx(u32 NbData) {
 	DMA_Debug_SetDataLengthRx(NbData);
 }
 
-void Pl_USART_Debug_SetDataLengthTx(u32 NbData) {
+void Pl_Debug_SetDataLengthTx(u32 NbData) {
 	DMA_Debug_SetDataLengthTx(NbData);
 }
 
-u32 Pl_USART_Debug_GetDataLengthTx(void) {
+u32 Pl_Debug_GetDataLengthTx(void) {
 	return DMA_Debug_GetDataLengthTx();
 }
 
-u32 Pl_USART_Debug_GetDataLengthRx(void) {
+u32 Pl_Debug_GetDataLengthRx(void) {
 	return DMA_Debug_GetDataLengthRx();
 }
 
-u8 Pl_USART_Debug_GetRxByte(void) {
+u8 Pl_Debug_GetRxByte(void) {
 	return USART_Debug_GetRxByte();
 }
 
