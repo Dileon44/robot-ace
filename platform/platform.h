@@ -87,8 +87,8 @@ u32 Pl_DelayMs_GetMsCnt(void);
 
 void Pl_JumpToAddr(u32 appAddr);
 
-void Pl_IWDG_Init(void);
-void Pl_IWDG_ReloadCounter(void);
+void Pl_WatchDog_Init(void);
+void Pl_WatchDog_RstCnt(void);
 
 void Pl_Debug_Init(u8* pTxBuff, u16 TxBuffLen, Pl_USART_ClbkTx_t pTxClbk, u8* pRxBuff,
 				   u16 RxBuffLen, Pl_USART_ClbkRx_t pRxClbk);

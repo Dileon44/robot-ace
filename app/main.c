@@ -2,6 +2,7 @@
 #include "delay.h"
 #include "health_check.h"
 #include "platform.h"
+#include "watchdog.h"
 
 #if DEBUG_ENABLE
 #warning DEBUG_ENABLE
@@ -28,14 +29,22 @@ void assert_failed(uint8_t* file, uint32_t line) {
 }
 
 void FreeRTOS_InitComponents(bool resources, bool tasks) {
+#if !DEBUG_ENABLE
+	FreeRTOS_WatchDog_InitComponents(resources, tasks);
+#endif /* DEBUG_ENABLE */
 	FreeRTOS_HealthCheck_InitComponents(resources, tasks);
 }
 
 int main(void) {
-	FreeRTOS_InitComponents(true, false);
+#if !DEBUG_ENABLE
+	WatchDog_Init();
+#endif /* DEBUG_ENABLE */
 
 	Pl_Init(HardFault_Clbk);
 	Pl_SysCpuCnt_Init();
+
+	FreeRTOS_InitComponents(true, false);
+
 	Delay_Init();
 
 	FreeRTOS_InitComponents(false, true);
