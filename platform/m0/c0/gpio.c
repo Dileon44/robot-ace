@@ -275,9 +275,9 @@ void GPIO_Motor_SetKeyCL(GPIO_ACTION_t action) {
 }
 
 void GPIO_Motor_HallIrqEnable(void) {
-	Sys_NVIC_SetPrioEnable(GPIO_HALL1_IRQ, NVIC_IRQ_PRIO_HALL);
-	Sys_NVIC_SetPrioEnable(GPIO_HALL2_IRQ, NVIC_IRQ_PRIO_HALL);
-	Sys_NVIC_SetPrioEnable(GPIO_HALL3_IRQ, NVIC_IRQ_PRIO_HALL);
+	// Sys_NVIC_SetPrioEnable(GPIO_HALL1_IRQ, NVIC_IRQ_PRIO_HALL);
+	// Sys_NVIC_SetPrioEnable(GPIO_HALL2_IRQ, NVIC_IRQ_PRIO_HALL);
+	// Sys_NVIC_SetPrioEnable(GPIO_HALL3_IRQ, NVIC_IRQ_PRIO_HALL);
 }
 
 void GPIO_Hall1_CallIrq(void) {

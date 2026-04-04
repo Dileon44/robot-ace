@@ -6,6 +6,8 @@ add_executable(app ${SOURCES_APP})
 
 target_include_directories(app PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/features
+	${CMAKE_CURRENT_SOURCE_DIR}/features/health_check
 )
 
 target_link_libraries(app PRIVATE

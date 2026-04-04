@@ -2,6 +2,7 @@
 #define __PLATFORM_H
 
 #include "main.h"
+#include "platform_inc_m0.h"
 
 #ifndef PL_NOP
 #define PL_NOP() __NOP()
@@ -14,6 +15,41 @@
 #define PL_USART_DEF_TIMEOUT 50
 
 typedef enum { GPIO_RST, GPIO_SET, GPIO_REV } GPIO_ACTION_t;
+
+typedef struct {
+	bool Sys;
+	bool Bsp;
+	bool DelayMs;
+	bool LedSys;
+	bool SerialDebug;
+	bool LsiClk;
+	bool LseClk;
+	bool Hsi48Clk;
+	bool Rtc;
+	bool Iwdg;
+	bool CpuCounter;
+	bool Usb;
+	bool Adc;
+} Pl_IsInit_t;
+
+extern Pl_IsInit_t Pl_IsInit;
+
+typedef struct {
+	u32 P;
+	u32 Q;
+	u32 R;
+} Pl_Pll_t;
+
+typedef struct {
+	u32 SYSCLK;
+	u32 HCLK;
+	u32 APB1;
+	u32 APB2;
+	Pl_Pll_t PLL;
+	u32 ADC;
+} Pl_SysClock_t;
+
+extern Pl_SysClock_t Pl_SysClk;
 
 typedef void (*Pl_Common_Clbk_t)(void);
 typedef void (*Pl_HardFault_Clbk_t)(u32 pcVal);
@@ -40,7 +76,7 @@ void Pl_Stub_HallClbk(u32 idHall);
 void Pl_Stub_Sensors_ADCLowFreqClbk(u16* buffPtr, u16 buffLen);
 void Pl_Stub_Motor_AdcHighFreqClbk(u16* buffPtr, u16 buffLen);
 
-void Pl_Init(Pl_HardFault_Clbk_t pHardFault_Clbk);
+bool Pl_Init(Pl_HardFault_Clbk_t pHardFault_Clbk);
 
 void Pl_SysCpuCnt_Init(void);
 u32 Pl_SysCpuCnt_Get(void);
