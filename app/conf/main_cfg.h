@@ -8,4 +8,18 @@
 #define USE_OS
 #endif /* USE_OS */
 
+/**
+ * @brief System periodic health check
+ */
+#ifndef HEALTH_CHECK
+#define HEALTH_CHECK 1
+#endif /* HEALTH_CHECK */
+
+/**
+ * @brief Enable periodic RTOS stack and tasks stack checkout
+ */
+#ifndef RTOS_ANALYZER
+#define RTOS_ANALYZER 1
+#endif /* RTOS_ANALYZER */
+
 #endif /* __MAIN_CFG_H */

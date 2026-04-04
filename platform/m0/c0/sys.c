@@ -4,8 +4,6 @@
 #define ARM_CM_DWT_CTRL	  (*(u32*)0xE0001000)
 #define ARM_CM_DWT_CYCCNT (*(u32*)0xE0001004)
 
-#define SYS_CORE_CLOCK 170000000
-
 static const char* ResetSrcList[] = {"UNKNOWN", "IWDG", "LOW_POWER", "PIN", "POR",
 									 "SOFT",	"WWDG", "BOR",		 "SBF"};
 
@@ -107,31 +105,30 @@ void Sys_MainClock_Config(void) {
 
 	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG);
 	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_PWR);
+
 	LL_PWR_EnableRange1BoostMode();
 
 	LL_FLASH_SetLatency(LL_FLASH_LATENCY_4);
 	while (LL_FLASH_GetLatency() != LL_FLASH_LATENCY_4) {
 	}
+
 	LL_PWR_EnableRange1BoostMode();
 	LL_RCC_HSE_Enable();
-	/* Wait till HSE is ready */
 	while (LL_RCC_HSE_IsReady() != 1) {
 	}
 
 	LL_RCC_LSI_Enable();
-	/* Wait till LSI is ready */
 	while (LL_RCC_LSI_IsReady() != 1) {
 	}
 
-	LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSE, LL_RCC_PLLM_DIV_2, 85, LL_RCC_PLLR_DIV_2);
+	LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSE, LL_RCC_PLLM_DIV_2, 80, LL_RCC_PLLR_DIV_4);
 	LL_RCC_PLL_EnableDomain_SYS();
 	LL_RCC_PLL_Enable();
-	/* Wait till PLL is ready */
 	while (LL_RCC_PLL_IsReady() != 1) {
 	}
 
 	LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_PLL);
-	LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
+	LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_4);
 	/* Wait till System clock is ready */
 	while (LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_PLL) {
 	}
@@ -141,12 +138,11 @@ void Sys_MainClock_Config(void) {
 		;
 
 	/* Set AHB prescaler*/
-	LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
 	LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
 	LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_1);
 
-	LL_Init1msTick(SYS_CORE_CLOCK);
-	LL_SetSystemCoreClock(SYS_CORE_CLOCK);
+	SystemCoreClockUpdate();
+	LL_Init1msTick(SystemCoreClock);
 	SysTick_Config(SystemCoreClock / 1000);
 
 	LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOA);
@@ -178,13 +174,14 @@ void Sys_StandbyMode_Enter(void) {
 	__WFI();
 }
 
-void Sys_CounterCPU_Init(void) {
-	if (ARM_CM_DWT_CTRL != 0)  // See if DWT is available
-	{
-		ARM_CM_DWT_CYCCNT = 0;
-		ARM_CM_DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
-		ARM_CM_DWT_CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+bool Sys_CounterCPU_Init(void) {
+	if (ARM_CM_DWT_CTRL != 0) {						 // See if DWT is available
+		ARM_CM_DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;	 // 1. Enable trace first
+		ARM_CM_DWT_CYCCNT = 0;						 // 2. Reset counter
+		ARM_CM_DWT_CTRL |= DWT_CTRL_CYCCNTENA_Msk;	 // 3. Enable CYCCNT
 	}
+
+	return true;
 }
 
 u32 Sys_CounterCPU_Get(void) {
@@ -198,4 +195,9 @@ void Sys_MCU_Reset(void) {
 void Sys_NVIC_SetPrioEnable(IRQn_Type irq, u16 prio) {
 	NVIC_SetPriority(irq, prio);
 	NVIC_EnableIRQ(irq);
+}
+
+void Sys_NVIC_Disable(IRQn_Type irq) {
+	NVIC_SetPriority(irq, 0);
+	NVIC_DisableIRQ(irq);
 }

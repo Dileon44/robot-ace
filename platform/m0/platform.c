@@ -33,23 +33,34 @@ void Pl_Stub_Motor_AdcHighFreqClbk(u16* buffPtr, u16 buffLen) {
 	DISCARD_UNUSED(buffLen);
 }
 
-void Pl_Init(Pl_HardFault_Clbk_t pHardFault_Clbk) {
+Pl_IsInit_t Pl_IsInit;
+Pl_SysClock_t Pl_SysClk;
+
+bool Pl_Init(Pl_HardFault_Clbk_t pHardFault_Clbk) {
 	HardFault_SetCallback(pHardFault_Clbk);
 
-	LL_FLASH_EnableInstCache();
-	LL_FLASH_EnableDataCache();
-	LL_FLASH_EnablePrefetch();
-	LL_FLASH_SetLatency(LL_FLASH_LATENCY_4);
-	while (LL_FLASH_GetLatency() != LL_FLASH_LATENCY_4)
-		;
-	LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE1);
 	NVIC_SetPriorityGrouping(NVIC_PRIO_GROUP_4);
 
 	Sys_MainClock_Config();
+
+	// Flash caches must be enabled after the correct flash latency is set by Sys_MainClock_Config
+	LL_FLASH_EnableInstCache();
+	LL_FLASH_EnableDataCache();
+	LL_FLASH_EnablePrefetch();
+
+	LL_RCC_ClocksTypeDef RCC_Clocks;
+	LL_RCC_GetSystemClocksFreq(&RCC_Clocks);
+	Pl_SysClk.SYSCLK = RCC_Clocks.SYSCLK_Frequency;
+	Pl_SysClk.HCLK	 = RCC_Clocks.HCLK_Frequency;
+	Pl_SysClk.APB1	 = RCC_Clocks.PCLK1_Frequency;
+	Pl_SysClk.APB2	 = RCC_Clocks.PCLK2_Frequency;
+
+	Pl_IsInit.Sys = true;
+	return Pl_IsInit.Sys;
 }
 
 void Pl_SysCpuCnt_Init(void) {
-	// Pl_IsInit.CpuCounter = Sys_CounterCPU_Init();
+	Pl_IsInit.CpuCounter = Sys_CounterCPU_Init();
 	Sys_CounterCPU_Init();
 }
 
@@ -58,16 +69,15 @@ u32 Pl_SysCpuCnt_Get(void) {
 }
 
 bool Pl_DelayMs_Init(Pl_Common_Clbk_t pDelayTimerClbk) {
-	// Pl_IsInit.DelayMs = TIM_Delay_Init(pDelayTimerClbk);
-	// TIM_Delay_Irq_Enable();
-	// return Pl_IsInit.DelayMs;
-	return true;
+	Pl_IsInit.DelayMs = TIM_Delay_Init(pDelayTimerClbk);
+	Sys_NVIC_SetPrioEnable(TIM_DELAY_IRQ, NVIC_IRQ_PRIO_TIM_DELAY);
+	return Pl_IsInit.DelayMs;
 }
 
 bool Pl_DelayMs_DeInit(void) {
-	// Pl_IsInit.DelayMs = !TIM_Delay_DeInit();
-	// Sys_NVIC_Disable(TIM_DELAY_IRQ);
-	// return !Pl_IsInit.DelayMs;
+	Pl_IsInit.DelayMs = !TIM_Delay_DeInit();
+	Sys_NVIC_Disable(TIM_DELAY_IRQ);
+	return !Pl_IsInit.DelayMs;
 	return true;
 }
 

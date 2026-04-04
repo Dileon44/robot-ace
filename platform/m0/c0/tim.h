@@ -4,12 +4,14 @@
 #include "main.h"
 #include "platform.h"
 
-void TIM_Delay_Init(Pl_Common_Clbk_t pDelayTimerClbk);
+#define TIM_DELAY_IRQ TIM6_DAC_IRQn
+
+bool TIM_Delay_Init(Pl_Common_Clbk_t pDelayTimerClbk);
+bool TIM_Delay_DeInit(void);
 void TIM_Delay_Disable(void);
 void TIM_Delay_Enable(void);
 u32 TIM_Delay_GetCnt(void);
 u32 TIM_Delay_GetOvrflCnt(void);
-void TIM_Delay_Irq_Enable(void);
 
 void TIM_PWM_Init(Pl_TIM_PWM_Clbk_t pTimPwmCntTopClbk, Pl_TIM_PWM_Clbk_t pTimPwmCntBottomClbk);
 u32 TIM_PWM_GetCnt(void);

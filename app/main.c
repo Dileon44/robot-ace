@@ -1,4 +1,6 @@
 #include "main.h"
+#include "delay.h"
+#include "health_check.h"
 #include "platform.h"
 
 #if DEBUG_ENABLE
@@ -26,10 +28,15 @@ void assert_failed(uint8_t* file, uint32_t line) {
 }
 
 void FreeRTOS_InitComponents(bool resources, bool tasks) {
+	FreeRTOS_HealthCheck_InitComponents(resources, tasks);
 }
 
 int main(void) {
 	FreeRTOS_InitComponents(true, false);
+
+	Pl_Init(HardFault_Clbk);
+	Pl_SysCpuCnt_Init();
+	Delay_Init();
 
 	FreeRTOS_InitComponents(false, true);
 	vTaskStartScheduler();
