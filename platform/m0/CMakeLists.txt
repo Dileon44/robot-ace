@@ -54,7 +54,7 @@ target_include_directories(platform INTERFACE
 
 target_compile_definitions(platform INTERFACE
 	USE_FULL_ASSERT
-	HSE_VALUE=24000000U
+	HSE_VALUE=8000000U
 	STM32G431xx
 	USE_FULL_LL_DRIVER
 	FLASH_BOOT_ADDR=${FLASH_BOOT_ADDR}

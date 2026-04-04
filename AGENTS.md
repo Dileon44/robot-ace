@@ -4,8 +4,8 @@ Embedded firmware for a PMSM motor controller ACE (actuator control electronics)
 
 When writing the code, you need to keep in mind that this program will control power transistors on an electronic board, so you need to pay attention to safety - think about through currents in three-phase bridge systems. And you also need to understand that in any emergency situation, it is necessary to close the power transistors in order to save the board and the MCU.
 
-Target: STM32G431RB (Cortex-M4F, 128 KB Flash, 32 KB RAM). RTOS: FreeRTOS V11.2.0.
-Language: C17. No dynamic memory allocation in application code.
+Target: STM32G431CBU (Cortex-M4F, 128 KB Flash, 32 KB RAM). RTOS: FreeRTOS V11.2.0.
+Language: C17.
 
 ---
 
@@ -58,6 +58,7 @@ cmake --build build/m0r0c0 --target boot
 ```
 
 Output artifacts:
+
 - `build/fw_m0.elf` / `build/fw_m0.hex` / `build/fw_m0.bin` — app (flat-named copies)
 - `build/boot_m0.elf` / `build/boot_m0.hex` / `build/boot_m0.bin` — bootloader (flat-named copies)
 - `artifacts/` — versioned copies of all ELF/HEX/BIN files, e.g. `1.0.0.ecu.app.dev.m0r0c0.0.a1b2c3.elf`

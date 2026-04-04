@@ -28,9 +28,10 @@ void Sys_MainClock_Config(void);
 u32* Sys_UID_GetStrAndPtr(char* pDst);
 void Sys_CPU_GetStrAndPtr(char* pDst);
 void Sys_StandbyMode_Enter(void);
-void Sys_CounterCPU_Init(void);
+bool Sys_CounterCPU_Init(void);
 u32 Sys_CounterCPU_Get(void);
 void Sys_MCU_Reset(void);
 void Sys_NVIC_SetPrioEnable(IRQn_Type irq, u16 prio);
+void Sys_NVIC_Disable(IRQn_Type irq);
 
 #endif /* __SYS_H */

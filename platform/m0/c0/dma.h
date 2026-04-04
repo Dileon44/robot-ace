@@ -31,15 +31,4 @@ void DMA_Debug_SetDataLengthTx(u32 NbData);
 void DMA_Debug_SetDataLengthRx(u32 NbData);
 u32 DMA_Debug_GetDataLengthTx(void);
 u32 DMA_Debug_GetDataLengthRx(void);
-
-void DMA_ADCLowFreq_Init(void* interface, Pl_Sensors_ADCLowFreqClbk_t pVoltageSensClbk);
-void DMA_ADCLowFreq_Enable(void);
-void DMA_ADCLowFreq_Irq_Enable(void);
-void DMA_AdcHighFreq_Init(void* interface, Pl_ADC_Motor_SensHighFreqClbk_t pAdcHighFreqClbk);
-void DMA_AdcHighFreq_Enable(void);
-void DMA_AdcHighFreq_Irq_Enable(void);
-
-// void DMA_DEBUG_TX_IRQ_HDL(void);
-// void DMA_DEBUG_RX_IRQ_HDL(void);
-
 #endif /* __DMA_H */
