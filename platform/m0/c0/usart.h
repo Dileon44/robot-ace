@@ -3,7 +3,6 @@
 
 #include "main.h"
 #include "platform.h"
-#include "platform_inc_m0.h"
 
 #define USART_DEBUG			 USART2
 #define USART_DEBUG_BAUDRATE 230400	 // 921600 // 115200
