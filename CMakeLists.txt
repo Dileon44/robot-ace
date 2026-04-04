@@ -10,7 +10,7 @@ set(CMAKE_OBJDUMP arm-none-eabi-objdump)
 set(SIZE arm-none-eabi-size)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
-project(ecu VERSION 1.0.0)
+project(ace VERSION 1.0.0)
 enable_language(C ASM)
 set(CMAKE_C_STANDARD 17)
 
