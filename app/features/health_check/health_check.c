@@ -1,4 +1,5 @@
 #include "health_check.h"
+#include "platform.h"
 
 #if HEALTH_CHECK
 
@@ -17,6 +18,8 @@ static TaskHandle_t HealthCheck_Handle;
 
 static void vTask_HealthCheck_Process(void* pvParameters) {
 	for (;;) {
+		Pl_Led_Toggle();
+
 		u32 start = Delay_TimeMilliSec_Get();
 		vTaskDelay(DELAY_1_SECOND);
 		u32 end	 = Delay_TimeMilliSec_Get();

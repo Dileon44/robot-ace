@@ -45,6 +45,7 @@ int main(void) {
 
 	FreeRTOS_InitComponents(true, false);
 
+	Pl_Led_Init();
 	Delay_Init();
 
 	FreeRTOS_InitComponents(false, true);
