@@ -23,12 +23,11 @@
 //
 #define TASK_PRIORITY_08		   TASK_PRIORITY_07 + 1
 #define WATCHDOG_TASK_PRIORITY	   TASK_PRIORITY_08
-
 /*
  * configMAX_PRIORITIES - 1 is the highest priority for RTOS timer-task
  * and better to keep it the highest to avoid any possible issues with RTOS timers.
  */
-#define MAX_TASK_PRIORITY TASK_PRIORITY_08 + 1
+#define MAX_TASK_PRIORITY		   TASK_PRIORITY_08 + 1
 
 /*
  * Stack size
