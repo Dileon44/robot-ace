@@ -48,21 +48,20 @@ void UsageFault_Handler(void) {
 }
 
 void DebugMon_Handler(void) {
+	while (1)
+		;
 }
 
 /*
-void SVC_Handler(void)
-{
+void SVC_Handler(void) {
 	//RTOS
 }
 
-void PendSV_Handler(void)
-{
+void PendSV_Handler(void) {
 	//RTOS
 }
 
-void SysTick_Handler(void)
-{
+void SysTick_Handler(void) {
 	//RTOS
 }
 */
