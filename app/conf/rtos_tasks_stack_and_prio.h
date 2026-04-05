@@ -10,8 +10,10 @@
 #define HEALTH_CHECK_TASK_PRIORITY TASK_PRIORITY_01
 //
 #define TASK_PRIORITY_02		   TASK_PRIORITY_01 + 1
+#define DEBUG_SEND_TASK_PRIORITY   TASK_PRIORITY_02
 //
 #define TASK_PRIORITY_03		   TASK_PRIORITY_02 + 1
+#define SHELL_TASK_PRIORITY		   TASK_PRIORITY_03
 //
 #define TASK_PRIORITY_04		   TASK_PRIORITY_03 + 1
 //
@@ -23,17 +25,18 @@
 //
 #define TASK_PRIORITY_08		   TASK_PRIORITY_07 + 1
 #define WATCHDOG_TASK_PRIORITY	   TASK_PRIORITY_08
-
 /*
  * configMAX_PRIORITIES - 1 is the highest priority for RTOS timer-task
  * and better to keep it the highest to avoid any possible issues with RTOS timers.
  */
-#define MAX_TASK_PRIORITY TASK_PRIORITY_08 + 1
+#define MAX_TASK_PRIORITY		   TASK_PRIORITY_08 + 1
 
 /*
  * Stack size
  */
 #define WATCHDOG_TASK_STACK		1 * configMINIMAL_STACK_SIZE
 #define HEALTH_CHECK_TASK_STACK 2 * configMINIMAL_STACK_SIZE
+#define SHELL_TASK_STACK		4 * configMINIMAL_STACK_SIZE
+#define DEBUG_SEND_TASK_STACK	2 * configMINIMAL_STACK_SIZE
 
 #endif /* __TASKS_STACK_AND_PRIORITY_H */

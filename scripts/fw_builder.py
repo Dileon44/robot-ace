@@ -46,7 +46,7 @@ ARG_TO_CMAKE_DEFINE: dict[str, str] = {
     "tag":      "FW_TYPE",    # prd / dev
     "bsp":      "FW_BSP",
     "target":   "FW_TARGET",  # app / boot
-    "opt":      "FW_OPT",     # 0 = -O0 (debug), 1 = -O1
+    "opt":      "FW_OPT",     # 0 = -Og (debug), 1 = -O1
 }
 
 _RE_ERROR   = re.compile(r"\berror:", re.IGNORECASE)

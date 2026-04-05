@@ -3,12 +3,14 @@
         "allConfigIncludePath": [
             "${workspaceFolder}/app",
             "${workspaceFolder}/app/conf",
-            "${workspaceFolder}/app/debug",
-            "${workspaceFolder}/app/motor",
-            "${workspaceFolder}/app/motor/connection",
-            "${workspaceFolder}/app/motor/control",
+            "${workspaceFolder}/app/features",
+            "${workspaceFolder}/app/features/health_check",
+            "${workspaceFolder}/app/features/shell",
+            "${workspaceFolder}/app/features/shell/cmd",
+            "${workspaceFolder}/app/features/watchdog",
 
             "${workspaceFolder}/boot",
+            "${workspaceFolder}/boot/conf",
 
             "${workspaceFolder}/lib",
             "${workspaceFolder}/lib/rand",
@@ -20,7 +22,7 @@
 
             "${workspaceFolder}/thirdparty/freertos_kernel/include",
             "${workspaceFolder}/thirdparty/freertos_kernel/portable/GCC/ARM_CM4F",
-            "${workspaceFolder}/thirdparty/wsh/src"
+            "${workspaceFolder}/thirdparty/wsh-shell/src"
         ]
     },
     "configurations": [
