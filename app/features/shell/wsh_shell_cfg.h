@@ -99,9 +99,7 @@
  * ───────────────────────────────────────────── 
  */
 
-#define WSH_SHELL_CMD_GROUP_LIST               \
-	X_ENTRY(WSH_SHELL_CMD_GROUP_SERVICE, 0x01) \
-	X_ENTRY(WSH_SHELL_CMD_GROUP_HARDWARE, 0x02)
+#define WSH_SHELL_CMD_GROUP_LIST X_ENTRY(WSH_SHELL_CMD_GROUP_SERVICE, 0x01)
 
 #define X_ENTRY(name, value) name = value,
 typedef enum { WSH_SHELL_CMD_GROUP_LIST } WSH_SHELL_CMD_GROUP_t;
