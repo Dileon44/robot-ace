@@ -115,6 +115,10 @@ void Pl_JumpToAddr(u32 appAddr) {
 	pGoToApp();
 }
 
+void Pl_SoftReset(void) {
+	Sys_MCU_Reset();
+}
+
 void Pl_WatchDog_Init(void) {
 	LL_IWDG_Enable(IWDG);
 	LL_IWDG_EnableWriteAccess(IWDG);

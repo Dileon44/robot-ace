@@ -2,7 +2,6 @@
 #define __WSH_SHELL_CFG_H
 
 #include "dbg_cfg.h"
-#include "def_rtos.h"
 #include "def_types.h"
 #include "wsh_shell_types.h"
 

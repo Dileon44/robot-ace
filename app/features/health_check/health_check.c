@@ -1,4 +1,5 @@
 #include "health_check.h"
+#include "debug.h"
 #include "platform.h"
 
 #if HEALTH_CHECK

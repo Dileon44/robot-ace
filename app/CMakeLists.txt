@@ -9,6 +9,7 @@ target_include_directories(app PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/features
 	${CMAKE_CURRENT_SOURCE_DIR}/features/debug
 	${CMAKE_CURRENT_SOURCE_DIR}/features/health_check
+	${CMAKE_CURRENT_SOURCE_DIR}/features/shell
 	${CMAKE_CURRENT_SOURCE_DIR}/features/watchdog
 )
 
@@ -22,6 +23,7 @@ target_link_libraries(app PRIVATE
 
 target_link_options(app PRIVATE
 	-u _printf_float
+	-Wno-stringop-overread
 	-T${CMAKE_SOURCE_DIR}/${BUILD_DIR}/${FW_PLATFORM}_app_linker_script.ld
 	-Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/app.map
 )

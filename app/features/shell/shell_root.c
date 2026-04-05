@@ -3,10 +3,7 @@
 #if SHELL_INTERFACE
 
 #include "debug.h"
-#include "device_name.h"
-#include "mem_wrapper.h"
 #include "platform.h"
-#include "rtos_analyzer.h"
 #include "shell_commands.h"
 #include "shell_users.h"
 #include "wsh_shell.h"
@@ -79,7 +76,7 @@ static WshShellExtCallbacks_t ShellRoot_Callbacks = {
 };
 
 void ShellRoot_Init(void) {
-	if (WshShell_Init(&ShellRoot, DeviceName_GetPtr(), NULL, &ShellRoot_Callbacks) !=
+	if (WshShell_Init(&ShellRoot, "terminator", NULL, &ShellRoot_Callbacks) !=
 		WSH_SHELL_RET_STATE_SUCCESS) {
 		PANIC();
 		return;
@@ -131,8 +128,8 @@ void FreeRTOS_ShellRoot_InitComponents(bool resources, bool tasks) {
 	}
 
 	if (tasks) {
-		RTOS_Analyzer_CreateTask(vTask_Shell_Process, "shell-interface", SHELL_TASK_STACK, NULL,
-								 SHELL_TASK_PRIORITY, &ShellProcess_Handle);
+		xTaskCreate(vTask_Shell_Process, "shell-interface", SHELL_TASK_STACK, NULL,
+					SHELL_TASK_PRIORITY, &ShellProcess_Handle);
 	}
 }
 

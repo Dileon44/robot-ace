@@ -44,8 +44,9 @@ _Min_Stack_Size = 0x600; /* required amount of stack */
 /* Memories definition */
 MEMORY
 {
-  RAM (xrw) : ORIGIN = 0x20000000, LENGTH = 32K
-  FLASH (rx) : ORIGIN = ${LD_FLASH_START}, LENGTH = ${LD_FLASH_SIZE}
+  RAM              (xrw) : ORIGIN = 0x20000000, LENGTH = 0x7E00
+  RAM_SHELL_HISTORY (rw) : ORIGIN = 0x20007E00, LENGTH = 0x200
+  FLASH             (rx) : ORIGIN = ${LD_FLASH_START}, LENGTH = ${LD_FLASH_SIZE}
 }
 
 /* Sections */
@@ -163,6 +164,14 @@ SECTIONS
     _ebss = .;         /* define a global symbol at bss end */
     __bss_end__ = _ebss;
   } >RAM
+
+  /* Shell command history — NOLOAD so it is not zeroed on soft reset */
+  .shellHistoryData (NOLOAD) : ALIGN(4)
+  {
+    PROVIDE(__start_shell_history_data = .) ;
+    *(.SHELL_HISTORY_DATA*)
+    PROVIDE(__end_shell_history_data = .) ;
+  } >RAM_SHELL_HISTORY
 
   /* User_heap_stack section, used to check that there is enough "RAM" Ram  type memory left */
   ._user_heap_stack :

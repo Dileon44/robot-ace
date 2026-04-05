@@ -8,6 +8,10 @@
 #define PL_NOP() __NOP()
 #endif /* PL_NOP */
 
+#ifndef PL_SHELL_HISTORY_DATA
+#define PL_SHELL_HISTORY_DATA __attribute__((section(".SHELL_HISTORY_DATA")))
+#endif /* PL_SHELL_HISTORY_DATA */
+
 #ifndef PL_SET_BKPT
 #define PL_SET_BKPT(v) __BKPT(v)
 #endif /* PL_SET_BKPT */
@@ -86,6 +90,7 @@ u32 Pl_DelayMs_GetUsCnt(void);
 u32 Pl_DelayMs_GetMsCnt(void);
 
 void Pl_JumpToAddr(u32 appAddr);
+void Pl_SoftReset(void);
 
 void Pl_WatchDog_Init(void);
 void Pl_WatchDog_RstCnt(void);
