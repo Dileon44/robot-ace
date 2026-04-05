@@ -1,6 +1,11 @@
 #include "usart.h"
 #include "sys.h"
 
+#define USART_DEBUG			 USART2
+#define USART_DEBUG_BAUDRATE 230400	 // 921600 // 115200
+#define USART_DEBUG_IRQ_HD	 USART2_IRQHandler
+#define USART_DEBUG_CLK_EN() LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_USART2)
+
 static Pl_USART_ClbkRx_t USART_Debug_RxClbk = Pl_Stub_CommonClbk;
 
 void USART_Debug_Init(Pl_USART_ClbkRx_t pRxClbk) {
@@ -72,12 +77,12 @@ __INLINE u8 USART_Debug_GetRxByte() {
 }
 
 void USART_Debug_Irq_Enable(void) {
-	Sys_NVIC_SetPrioEnable(USART_DEBUG_IRQ, NVIC_IRQ_PRIO_USART_RX);
+	Sys_NVIC_SetPrioEnable(USART_DEBUG_IRQ, NVIC_IRQ_PRIO_USART_DEBUG_IDLE);
 }
 
 void USART_DEBUG_IRQ_HD(void) {
-	// if (LL_USART_IsActiveFlag_IDLE(USART_DEBUG)) {
-	// 	LL_USART_ClearFlag_IDLE(USART_DEBUG);
-	// 	USART_Debug_RxClbk();
-	// }
+	if (LL_USART_IsActiveFlag_IDLE(USART_DEBUG)) {
+		LL_USART_ClearFlag_IDLE(USART_DEBUG);
+		USART_Debug_RxClbk();
+	}
 }
