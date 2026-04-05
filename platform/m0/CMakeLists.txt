@@ -48,8 +48,6 @@ target_include_directories(platform INTERFACE
 	${CMAKE_CURRENT_SOURCE_DIR}/core/HAL/inc
 	${CMAKE_CURRENT_SOURCE_DIR}/core/HAL/inc/Legacy
 	${CMAKE_CURRENT_SOURCE_DIR}/core/LL/inc
-	${CMAKE_CURRENT_SOURCE_DIR}/core/USB_Device/Class/CDC/Inc
-	${CMAKE_CURRENT_SOURCE_DIR}/core/USB_Device/Core/Inc
 )
 
 target_compile_definitions(platform INTERFACE

@@ -115,6 +115,10 @@ void Pl_JumpToAddr(u32 appAddr) {
 	pGoToApp();
 }
 
+void Pl_SoftReset(void) {
+	Sys_MCU_Reset();
+}
+
 void Pl_WatchDog_Init(void) {
 	LL_IWDG_Enable(IWDG);
 	LL_IWDG_EnableWriteAccess(IWDG);
@@ -143,10 +147,7 @@ void Pl_Debug_Init(u8* pTxBuff, u16 TxBuffLen, Pl_USART_ClbkTx_t pTxClbk, u8* pR
 }
 
 RET_STATE_t Pl_Debug_TxData(u8* pBuff, u16 size) {
-	// SYS_CRITICAL_ON();
-	RET_STATE_t retState = USART_Debug_TxData(pBuff, size, PL_USART_DEF_TMO);
-	// SYS_CRITICAL_OFF();
-	return retState;
+	return USART_Debug_TxData(pBuff, size, PL_USART_DEF_TMO);
 }
 
 void Pl_Debug_Enable_Tx(void) {

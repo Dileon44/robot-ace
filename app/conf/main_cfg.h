@@ -22,4 +22,12 @@
 #define RTOS_ANALYZER 1
 #endif /* RTOS_ANALYZER */
 
+/**
+ * @brief Enable UART shell interface (wsh-shell)
+ * Auth + auto-exit timer protect it in production builds.
+ */
+#ifndef SHELL_INTERFACE
+#define SHELL_INTERFACE 1
+#endif /* SHELL_INTERFACE */
+
 #endif /* __MAIN_CFG_H */

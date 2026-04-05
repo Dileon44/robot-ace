@@ -3,25 +3,24 @@
 
 #include "main.h"
 
-#define NVIC_IRQ_PRIO_0			0
-#define NVIC_IRQ_PRIO_TIM_DELAY NVIC_IRQ_PRIO_0
+#define NVIC_IRQ_PRIO_0					 0
+#define NVIC_IRQ_PRIO_TIM_DELAY			 NVIC_IRQ_PRIO_0
 //
-#define NVIC_IRQ_PRIO_1			(NVIC_IRQ_PRIO_0 + 1)
+#define NVIC_IRQ_PRIO_1					 (NVIC_IRQ_PRIO_0 + 1)
 //
-#define NVIC_IRQ_PRIO_2			(NVIC_IRQ_PRIO_1 + 1)
+#define NVIC_IRQ_PRIO_2					 (NVIC_IRQ_PRIO_1 + 1)
 //
-#define NVIC_IRQ_PRIO_3			(NVIC_IRQ_PRIO_2 + 1)
+#define NVIC_IRQ_PRIO_3					 (NVIC_IRQ_PRIO_2 + 1)
 //
-#define NVIC_IRQ_PRIO_4			(NVIC_IRQ_PRIO_3 + 1)
-//
-#define NVIC_IRQ_PRIO_USART_RX	(NVIC_IRQ_PRIO_4)
-
-/* Interrupts below are masked after entering critical section -
- * see configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY */
-
+#define NVIC_IRQ_PRIO_4					 (NVIC_IRQ_PRIO_3 + 1)
+/* 
+ * Interrupts below are masked after entering critical section -
+ * see configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY 
+ */
 #define NVIC_IRQ_PRIO_5					 (NVIC_IRQ_PRIO_4 + 1)
 #define NVIC_IRQ_PRIO_USART_DEBUG_DMA_RX (NVIC_IRQ_PRIO_5)
 #define NVIC_IRQ_PRIO_USART_DEBUG_DMA_TX (NVIC_IRQ_PRIO_5)
+#define NVIC_IRQ_PRIO_USART_DEBUG_IDLE	 (NVIC_IRQ_PRIO_5)
 //
 #define NVIC_IRQ_PRIO_6					 (NVIC_IRQ_PRIO_5 + 1)
 //

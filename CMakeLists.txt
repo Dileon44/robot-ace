@@ -36,7 +36,7 @@ endif()
 if(FW_OPT EQUAL 1)
 	set(OPT_FLAG -O1)
 else()
-	set(OPT_FLAG -O0)
+	set(OPT_FLAG -Og)
 endif()
 
 # Debug mode: tag=dev → DEBUG_ENABLE=1; tag=prd → macro not defined
@@ -54,8 +54,16 @@ else()
 	set(DEBUG_ENABLE_DEF "")
 endif()
 
+# LTO: enabled for opt=1 builds (both dev and prd)
+if(FW_OPT EQUAL 1)
+	set(LTO_FLAGS -flto)
+else()
+	set(LTO_FLAGS "")
+endif()
+
 add_compile_options(
 	${OPT_FLAG}
+	${LTO_FLAGS}
 	-g
 	-specs=nosys.specs
 	-ffunction-sections
@@ -70,6 +78,7 @@ add_compile_options(
 )
 
 add_link_options(
+	${LTO_FLAGS}
 	-specs=nano.specs
 	-specs=nosys.specs
 	-static

@@ -36,7 +36,7 @@ void DMA_Debug_Init_Tx(void* interface, u8* buff, u16 buffSize, Pl_USART_ClbkTx_
 		LL_USART_DMA_GetRegAddr((USART_TypeDef*)interface, LL_USART_DMA_REG_DATA_TRANSMIT);
 	DMA_InitStruct.MemoryOrM2MDstAddress  = (u32)buff;
 	DMA_InitStruct.Direction			  = LL_DMA_DIRECTION_MEMORY_TO_PERIPH;
-	DMA_InitStruct.Mode					  = LL_DMA_MODE_CIRCULAR;
+	DMA_InitStruct.Mode					  = LL_DMA_MODE_NORMAL;
 	DMA_InitStruct.PeriphOrM2MSrcIncMode  = LL_DMA_PERIPH_NOINCREMENT;
 	DMA_InitStruct.MemoryOrM2MDstIncMode  = LL_DMA_MEMORY_INCREMENT;
 	DMA_InitStruct.PeriphOrM2MSrcDataSize = LL_DMA_PDATAALIGN_BYTE;
@@ -120,22 +120,20 @@ void DMA_Debug_Irq_Enable(void) {
 }
 
 void DMA_DEBUG_TX_IRQ_HDL(void) {
-	// if (DMA_DEBUG_TX_IS_TC()) {
-	// 	USART_Debug_TxClbk();
-	// 	DMA_DEBUG_TX_CLEAR_TC();
-	// 	LL_DMA_ClearFlag_TE1(DMA_DEBUG_TX);
-	// 	LL_USART_EnableDMAReq_TX(USART_Debug_GetUSART());
-	// }
+	if (DMA_DEBUG_TX_IS_TC()) {
+		DMA_DEBUG_TX_CLEAR_TC();
+		LL_DMA_ClearFlag_TE1(DMA_DEBUG_TX);
+		USART_Debug_TxClbk();
+	}
 }
 
 void DMA_DEBUG_RX_IRQ_HDL(void) {
-	// if (DMA_DEBUG_RX_IS_HT()) {
-	// 	DMA_DEBUG_RX_CLEAR_HT();
-	// 	USART_Debug_RxClbk();
-	// }
-
-	// if (DMA_DEBUG_RX_IS_TC()) {
-	// 	DMA_DEBUG_RX_CLEAR_TC();
-	// 	USART_Debug_RxClbk();
-	// }
+	if (DMA_DEBUG_RX_IS_HT()) {
+		DMA_DEBUG_RX_CLEAR_HT();
+		USART_Debug_RxClbk();
+	}
+	if (DMA_DEBUG_RX_IS_TC()) {
+		DMA_DEBUG_RX_CLEAR_TC();
+		USART_Debug_RxClbk();
+	}
 }

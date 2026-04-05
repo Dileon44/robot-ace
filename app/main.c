@@ -1,7 +1,9 @@
 #include "main.h"
+#include "debug.h"
 #include "delay.h"
 #include "health_check.h"
 #include "platform.h"
+#include "shell_root.h"
 #include "watchdog.h"
 
 #if DEBUG_ENABLE
@@ -29,10 +31,12 @@ void assert_failed(uint8_t* file, uint32_t line) {
 }
 
 void FreeRTOS_InitComponents(bool resources, bool tasks) {
+	FreeRTOS_Debug_InitComponents(resources, tasks);
 #if !DEBUG_ENABLE
 	FreeRTOS_WatchDog_InitComponents(resources, tasks);
 #endif /* DEBUG_ENABLE */
 	FreeRTOS_HealthCheck_InitComponents(resources, tasks);
+	FreeRTOS_ShellRoot_InitComponents(resources, tasks);
 }
 
 int main(void) {
@@ -47,6 +51,7 @@ int main(void) {
 
 	Pl_Led_Init();
 	Delay_Init();
+	Debug_Init();
 
 	FreeRTOS_InitComponents(false, true);
 	vTaskStartScheduler();

@@ -20,7 +20,7 @@ through verbatim. It also runs `git submodule update --init --recursive` on each
 **Normal usage — invoke via `builder.sh`:**
 
 ```bash
-# Dev build, -O0 (DEBUG_ENABLE=1)  →  app_dev_m0r0c0_o0
+# Dev build, -Og (DEBUG_ENABLE=1)  →  app_dev_m0r0c0_og
 bash scripts/builder.sh rebuild preset=m0r0c0 target=app tag=dev bsp=0 opt=0
 
 # Dev build, -O1                   →  app_dev_m0r0c0_o1
@@ -39,7 +39,7 @@ bash scripts/builder.sh clean preset=m0r0c0
 VS Code build tasks pass these same argument strings (defined in `.vscode/settings.json`):
 
 ```json
-"app_dev_m0r0c0_o0": "rebuild preset=m0r0c0 target=app tag=dev bsp=0 opt=0"
+"app_dev_m0r0c0_og": "rebuild preset=m0r0c0 target=app tag=dev bsp=0 opt=0"
 ```
 
 **Direct Python invocation** (requires `.venv` active or `tqdm` installed globally):
@@ -328,7 +328,7 @@ DEBUG_PRINT("value: %d\n", val);
 | Flag | Values | Effect |
 |---|---|---|
 | `DEBUG_ENABLE` | `0` / `1` | Enables debug UART, disables IWDG |
-| `FW_OPT` | `0` / `1` | `-O0` / `-O1` |
+| `FW_OPT` | `0` / `1` | `-Og` / `-O1` |
 | `PANIC_CHECK_ENABLE` | defined / not | Enables `PANIC()` / `ASSERT_CHECK()` macros (app) |
 | `USE_FULL_LL_DRIVER` | always set | STM32 full LL driver |
 | `HSE_VALUE` | `24000000U` | External crystal frequency |
