@@ -1,7 +1,7 @@
-#include "wsh_shell_cfg.h"
 #include "debug.h"
 #include "platform.h"
 #include "wsh_shell.h"
+#include "wsh_shell_cfg.h"
 
 /* clang-format off */
 #define CMD_DEBUG_LOG_OPT_TABLE() \

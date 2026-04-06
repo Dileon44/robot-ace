@@ -2,6 +2,7 @@
 #include "adc.h"
 #include "dma.h"
 #include "gpio.h"
+#include "i2c.h"
 #include "int.h"
 #include "platform_inc_m0.h"
 #include "platform_int_cfg_m0.h"
@@ -200,4 +201,24 @@ void Pl_Led_Reset(void) {
 
 void Pl_Led_Toggle(void) {
 	GPIO_Led_Toggle();
+}
+
+bool Pl_I2cSensor_Init(void) {
+	GPIO_Sensor_Init();
+	Pl_IsInit.I2cSensor = I2C_Sensor_Init();
+	return Pl_IsInit.I2cSensor;
+}
+
+bool Pl_I2cSensor_DeInit(void) {
+	Pl_IsInit.I2cSensor = !I2C_Sensor_DeInit();
+	GPIO_Sensor_DeInit();
+	return !Pl_IsInit.I2cSensor;
+}
+
+RET_STATE_t Pl_I2cSensor_Read(u8 devAddr, u8 wordAddr, u8* pData, u16 len) {
+	return I2C_Sensor_Read(devAddr, wordAddr, pData, len);
+}
+
+RET_STATE_t Pl_I2cSensor_Write(u8 devAddr, u8 wordAddr, const u8* pData, u16 len) {
+	return I2C_Sensor_Write(devAddr, wordAddr, pData, len);
 }
