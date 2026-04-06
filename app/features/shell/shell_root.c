@@ -103,7 +103,7 @@ static void vTask_Shell_Process(void* pvParameters) {
 	ShellRoot_Init();
 
 #if DEBUG_ENABLE
-	WshShell_Auth(&ShellRoot, "admin", "1234");
+	WshShell_Auth(&ShellRoot, "dmitrii", "1234");
 #endif /* DEBUG_ENABLE */
 
 	for (;;) {
