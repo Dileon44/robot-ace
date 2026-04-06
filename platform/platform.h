@@ -34,6 +34,7 @@ typedef struct {
 	bool CpuCounter;
 	bool Usb;
 	bool Adc;
+	bool I2cSensor;
 } Pl_IsInit_t;
 
 extern Pl_IsInit_t Pl_IsInit;
@@ -112,5 +113,10 @@ void Pl_Led_Init(void);
 void Pl_Led_Set(void);
 void Pl_Led_Reset(void);
 void Pl_Led_Toggle(void);
+
+bool Pl_I2cSensor_Init(void);
+bool Pl_I2cSensor_DeInit(void);
+RET_STATE_t Pl_I2cSensor_Read(u8 devAddr, u8 wordAddr, u8* pData, u16 len);
+RET_STATE_t Pl_I2cSensor_Write(u8 devAddr, u8 wordAddr, const u8* pData, u16 len);
 
 #endif /* __PLATFORM_H */
