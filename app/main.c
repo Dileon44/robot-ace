@@ -1,4 +1,5 @@
 #include "main.h"
+#include "bsp.h"
 #include "debug.h"
 #include "delay.h"
 #include "health_check.h"
@@ -52,6 +53,7 @@ int main(void) {
 	Pl_Led_Init();
 	Delay_Init();
 	Debug_Init();
+	Bsp_Init();
 
 	FreeRTOS_InitComponents(false, true);
 	vTaskStartScheduler();
