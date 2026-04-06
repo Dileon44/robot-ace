@@ -131,5 +131,6 @@ set(FREERTOS_PORT "GCC_ARM_CM4F" CACHE STRING "FreeRTOS Cross Compile Port" FORC
 add_subdirectory(thirdparty)
 add_subdirectory(shared)
 add_subdirectory(lib)
+add_subdirectory(bsp)
 add_subdirectory(app)
 add_subdirectory(boot)

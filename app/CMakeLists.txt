@@ -17,6 +17,7 @@ target_link_libraries(app PRIVATE
 	platform
 	shared
 	libs
+	bsp
 	wsh_shell
 	freertos_kernel
 )
