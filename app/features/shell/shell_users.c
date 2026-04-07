@@ -3,7 +3,7 @@
 
 static const WshShellUser_t Shell_UserTable[] = {
 	{
-		.Login	= "admin",
+		.Login	= "dmitrii",
 		.Salt	= "a0523cb065ee08c1",
 		.Hash	= "0632cee0",  //1234
 		.Groups = WSH_SHELL_CMD_GROUP_ALL,

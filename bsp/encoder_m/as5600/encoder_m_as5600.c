@@ -25,6 +25,8 @@ static bool As5600_Init(void) {
 		return false;
 	}
 
+	PL_DELAY_MS(10);  // Delay for CONF to take effect
+
 	// Verify magnet detection
 	u8 status = 0;
 	rs		  = As5600_InterfacePtr->Read(AS5600_REG_STATUS, &status, 1);

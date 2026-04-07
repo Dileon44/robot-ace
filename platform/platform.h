@@ -114,9 +114,10 @@ void Pl_Led_Set(void);
 void Pl_Led_Reset(void);
 void Pl_Led_Toggle(void);
 
-bool Pl_I2cSensor_Init(void);
-bool Pl_I2cSensor_DeInit(void);
-RET_STATE_t Pl_I2cSensor_Read(u8 devAddr, u8 wordAddr, u8* pData, u16 len);
-RET_STATE_t Pl_I2cSensor_Write(u8 devAddr, u8 wordAddr, const u8* pData, u16 len);
+bool Pl_Encoder_Init(void);
+bool Pl_Encoder_DeInit(void);
+void Pl_Encoder_Dir_Set(bool clockwise);
+RET_STATE_t Pl_I2cEncoder_Read(u8 devAddr, u8 wordAddr, u8* pData, u16 len);
+RET_STATE_t Pl_I2cEncoder_Write(u8 devAddr, u8 wordAddr, const u8* pData, u16 len);
 
 #endif /* __PLATFORM_H */
