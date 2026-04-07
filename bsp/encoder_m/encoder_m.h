@@ -22,6 +22,7 @@ typedef bool        (*EncoderM_Interface_Init_t)(void);
 typedef bool        (*EncoderM_Interface_DeInit_t)(void);
 typedef RET_STATE_t (*EncoderM_Interface_Read_t)(u8 wordAddr, u8* pData, u16 len);
 typedef RET_STATE_t (*EncoderM_Interface_Write_t)(u8 wordAddr, const u8* pData, u16 len);
+typedef void        (*EncoderM_Interface_SetDir_t)(bool clockwise);
 
 typedef struct {
 	u8                          I2cAddr;
@@ -29,6 +30,7 @@ typedef struct {
 	EncoderM_Interface_DeInit_t DeInit;
 	EncoderM_Interface_Read_t   Read;
 	EncoderM_Interface_Write_t  Write;
+	EncoderM_Interface_SetDir_t SetDir;
 } EncoderM_Interface_t;
 
 /* --------------------------------------------------------------------------
@@ -81,5 +83,6 @@ u8          EncoderM_GetStatus(void);
 bool        EncoderM_IsMagnetDetected(void);
 u8          EncoderM_GetAGC(void);
 u16         EncoderM_GetMagnitude(void);
+void        EncoderM_SetDirection(bool clockwise);
 
 #endif /* __ENCODER_M_H */

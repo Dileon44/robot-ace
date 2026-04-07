@@ -110,3 +110,11 @@ u16 EncoderM_GetMagnitude(void) {
 	}
 	return EncoderM_Ptr->GetMagnitude();
 }
+
+void EncoderM_SetDirection(bool clockwise) {
+	if (!EncoderM_IsAttached) {
+		PANIC();
+		return;
+	}
+	EncoderM_InterfacePtr->SetDir(clockwise);
+}

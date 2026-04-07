@@ -4,6 +4,7 @@
             "${workspaceFolder}/app",
             "${workspaceFolder}/app/conf",
             "${workspaceFolder}/app/features",
+            "${workspaceFolder}/app/features/debug",
             "${workspaceFolder}/app/features/health_check",
             "${workspaceFolder}/app/features/shell",
             "${workspaceFolder}/app/features/shell/cmd",
@@ -11,6 +12,10 @@
 
             "${workspaceFolder}/boot",
             "${workspaceFolder}/boot/conf",
+
+            "${workspaceFolder}/bsp",
+            "${workspaceFolder}/bsp/encoder_m",
+            "${workspaceFolder}/bsp/encoder_m/as5600",
 
             "${workspaceFolder}/lib",
             "${workspaceFolder}/lib/rand",
