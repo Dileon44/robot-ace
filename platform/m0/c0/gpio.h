@@ -11,7 +11,8 @@ void GPIO_Led_Set(void);
 void GPIO_Led_Reset(void);
 void GPIO_Led_Toggle(void);
 
-void GPIO_Sensor_Init(void);
-void GPIO_Sensor_DeInit(void);
+void GPIO_Encoder_Init(void);
+void GPIO_Encoder_DeInit(void);
+void GPIO_Encoder_Dir_Set(bool clockwise);
 
 #endif /* __GPIO_H */

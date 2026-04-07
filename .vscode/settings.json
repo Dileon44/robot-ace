@@ -48,7 +48,7 @@
     },
 
     // Cortex debug
-    "cortex-debug.variableUseNaturalFormat": true,
+    "cortex-debug.variableUseNaturalFormat": false,
     "makefile.configureOnOpen": true
     // "cortex-debug.openocdPath": "${config:openocd_path}",
     // "cortex-debug.armToolchainPath": "${config:compiler_path}",

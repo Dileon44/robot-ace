@@ -203,22 +203,26 @@ void Pl_Led_Toggle(void) {
 	GPIO_Led_Toggle();
 }
 
-bool Pl_I2cSensor_Init(void) {
-	GPIO_Sensor_Init();
+bool Pl_Encoder_Init(void) {
+	GPIO_Encoder_Init();
 	Pl_IsInit.I2cSensor = I2C_Sensor_Init();
 	return Pl_IsInit.I2cSensor;
 }
 
-bool Pl_I2cSensor_DeInit(void) {
+bool Pl_Encoder_DeInit(void) {
 	Pl_IsInit.I2cSensor = !I2C_Sensor_DeInit();
-	GPIO_Sensor_DeInit();
+	GPIO_Encoder_DeInit();
 	return !Pl_IsInit.I2cSensor;
 }
 
-RET_STATE_t Pl_I2cSensor_Read(u8 devAddr, u8 wordAddr, u8* pData, u16 len) {
+void Pl_Encoder_Dir_Set(bool clockwise) {
+	GPIO_Encoder_Dir_Set(clockwise);
+}
+
+RET_STATE_t Pl_I2cEncoder_Read(u8 devAddr, u8 wordAddr, u8* pData, u16 len) {
 	return I2C_Sensor_Read(devAddr, wordAddr, pData, len);
 }
 
-RET_STATE_t Pl_I2cSensor_Write(u8 devAddr, u8 wordAddr, const u8* pData, u16 len) {
+RET_STATE_t Pl_I2cEncoder_Write(u8 devAddr, u8 wordAddr, const u8* pData, u16 len) {
 	return I2C_Sensor_Write(devAddr, wordAddr, pData, len);
 }
