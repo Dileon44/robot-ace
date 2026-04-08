@@ -22,16 +22,16 @@ static TaskHandle_t HealthCheck_Handle;
 static void vTask_HealthCheck_Process(void* pvParameters) {
 	TickType_t xLastWakeTime = xTaskGetTickCount();
 	for (;;) {
-		vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(5));
+		vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1));
 
 		Pl_Led_Toggle();
 
 		volatile u32 start = Delay_TimeMilliSec_Get();
-		DEBUG_PRINT("%u;%u\r\n", EncoderM_GetRawAngle(), Delay_TimeMilliSec_Get());
+		DEBUG_PRINT("%3.1f;%u\r\n", EncoderM_GetAngleDeg(), Delay_TimeMilliSec_Get());
 		// vTaskDelay(20);
 		volatile u32 end  = Delay_TimeMilliSec_Get();
 		volatile u32 diff = end - start;
-		if (diff > 5) {
+		if (diff > 2) {
 			PANIC();
 		}
 	}
