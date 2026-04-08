@@ -50,6 +50,7 @@ def receive_data(port: str, baudrate: int, duration: float):
     """Open serial port and collect (angle, time_s) pairs for `duration` seconds."""
     angles = []
     timestamps = []
+    host_times = []
 
     print(f"Opening {port} at {baudrate} baud...")
     with serial.Serial(port, baudrate, timeout=1.0) as ser:
@@ -91,6 +92,7 @@ def receive_data(port: str, baudrate: int, duration: float):
 
                 angles.append(angle)
                 timestamps.append(ts_ms)
+                host_times.append(time.monotonic())
 
         except KeyboardInterrupt:
             print("\nCollection stopped by user.")
@@ -98,9 +100,29 @@ def receive_data(port: str, baudrate: int, duration: float):
     print(f"Collected {len(angles)} samples.")
 
     if len(timestamps) >= 2:
-        diffs = [(timestamps[i] - timestamps[i - 1]) % (2**32) for i in range(1, len(timestamps))]
-        avg_ms = sum(diffs) / len(diffs)
-        print(f"Average interval between samples: {avg_ms:.2f} ms")
+        total_ms = (timestamps[-1] - timestamps[0]) % (2**32)
+        avg_ms = total_ms / (len(timestamps) - 1)
+        print(f"Average interval between samples (MCU):  {avg_ms:.2f} ms")
+
+        host_avg_ms = (host_times[-1] - host_times[0]) / (len(host_times) - 1) * 1000.0
+        print(f"Average interval between samples (host): {host_avg_ms:.2f} ms")
+
+        max_deg_s = 0.0
+        for i in range(1, len(timestamps)):
+            dt_ms = (timestamps[i] - timestamps[i - 1]) % (2**32)
+            if dt_ms == 0:
+                continue
+            d_angle = angles[i] - angles[i - 1]
+            # Wrap-around correction: assume shortest angular path
+            if d_angle > 180.0:
+                d_angle -= 360.0
+            elif d_angle < -180.0:
+                d_angle += 360.0
+            deg_s = abs(d_angle) / (dt_ms / 1000.0)
+            if deg_s > max_deg_s:
+                max_deg_s = deg_s
+        max_rpm = max_deg_s / 360.0 * 60.0
+        print(f"Max rotation speed: {max_deg_s:.1f} deg/s  |  {max_rpm:.2f} RPM")
 
     return timestamps, angles
 
@@ -121,7 +143,8 @@ def plot_data(timestamps, angles):
     ax.set_xlabel("t, ms")
     ax.set_ylabel("raw angle")
     ax.set_title("Encoder raw angle over time")
-    ax.set_ylim(-50, 4145)
+    margin = max(angles) * 0.03
+    ax.set_ylim(min(angles) - margin, max(angles) + margin)
     ax.grid(True, linestyle="--", alpha=0.5)
     plt.tight_layout()
     plt.show()
