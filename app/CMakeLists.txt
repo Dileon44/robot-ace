@@ -29,6 +29,19 @@ target_link_options(app PRIVATE
 	-Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/app.map
 )
 
+target_compile_definitions(app PRIVATE
+	FW_PROJECT="${FW_PROJECT}"
+    FW_TARGET="${FW_TARGET}"
+	FW_VER_MAJOR=${FW_VER_MAJOR}
+	FW_VER_MINOR=${FW_VER_MINOR}
+	FW_VER_BUILD=${FW_VER_BUILD}
+	FW_TAG="${FW_TAG}"
+    FW_PLATFORM="${FW_PLATFORM}"
+	FW_BSP="${FW_BSP}"
+    FW_GIT_HASH="${FW_GIT_HASH}"
+	FW_GIT_BRANCH="${FW_GIT_BRANCH}"
+)
+
 add_custom_command(TARGET app POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E make_directory
 		${CMAKE_SOURCE_DIR}/artifacts

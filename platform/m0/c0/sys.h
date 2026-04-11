@@ -19,6 +19,7 @@ typedef enum {
 const char* Sys_ResetFlag_GetStr(void);
 SYS_RESET_FLAG_t Sys_ResetFlag_Get(void);
 void Sys_ResetFlag_Clear(void);
+void Sys_MCU_Reset(void);
 
 u32 Sys_LSE_IsReadyAndClkSrc(void);
 u32 Sys_LSI_IsReadyAndClkSrc(void);
@@ -27,10 +28,12 @@ void Sys_EnableBkpAccess(void);
 void Sys_MainClock_Config(void);
 u32* Sys_UID_GetStrAndPtr(char* pDst);
 void Sys_CPU_GetStrAndPtr(char* pDst);
+u32 Sys_MCU_GetFlashSize(void);
 void Sys_StandbyMode_Enter(void);
+
 bool Sys_CounterCPU_Init(void);
 u32 Sys_CounterCPU_Get(void);
-void Sys_MCU_Reset(void);
+
 void Sys_NVIC_SetPrioEnable(IRQn_Type irq, u16 prio);
 void Sys_NVIC_Disable(IRQn_Type irq);
 
