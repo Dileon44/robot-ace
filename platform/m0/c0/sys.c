@@ -108,8 +108,8 @@ void Sys_MainClock_Config(void) {
 
 	LL_PWR_EnableRange1BoostMode();
 
-	LL_FLASH_SetLatency(LL_FLASH_LATENCY_4);
-	while (LL_FLASH_GetLatency() != LL_FLASH_LATENCY_4) {
+	LL_FLASH_SetLatency(LL_FLASH_LATENCY_2);
+	while (LL_FLASH_GetLatency() != LL_FLASH_LATENCY_2) {
 	}
 
 	LL_PWR_EnableRange1BoostMode();
@@ -121,14 +121,14 @@ void Sys_MainClock_Config(void) {
 	while (LL_RCC_LSI_IsReady() != 1) {
 	}
 
-	LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSE, LL_RCC_PLLM_DIV_2, 80, LL_RCC_PLLR_DIV_4);
+	LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSE, LL_RCC_PLLM_DIV_2, 85, LL_RCC_PLLR_DIV_2);
 	LL_RCC_PLL_EnableDomain_SYS();
 	LL_RCC_PLL_Enable();
 	while (LL_RCC_PLL_IsReady() != 1) {
 	}
 
 	LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_PLL);
-	LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_4);
+	LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_2);
 	/* Wait till System clock is ready */
 	while (LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_PLL) {
 	}
