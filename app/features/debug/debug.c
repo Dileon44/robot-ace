@@ -8,7 +8,7 @@
 #define DBG_TX_BUFF_SIZE  256
 #define DBG_RX_BUFF_SIZE  256
 #define DBG_TX_TIMEOUT_MS DELAY_1_SECOND
-#define DBG_TX_QUEUE_SIZE 20
+#define DBG_TX_QUEUE_SIZE 64
 #define DBG_RX_SYM_Q_SIZE 64
 
 #ifndef DEBUG_DEF_LOG_LVL
@@ -310,6 +310,50 @@ const char* Debug_LogLvl_GetColor(LOG_LVL_t lvl) {
 	return Debug_LvlTable[lvl].Color;
 }
 
+void Debug_PrintMainInfo(void) {
+	DEBUG_PRINT(ESC_END_LINE ESC_END_LINE ESC_COLOR_RED
+				"+++++++++ Device started +++++++++" ESC_RESET_STYLE ESC_END_LINE);
+
+	DEBUG_PRINT(ESC_END_LINE "Main info: " ESC_END_LINE);
+	DEBUG_PRINT(" * Project: " ESC_COLOR_CYAN "%s" ESC_RESET_STYLE ESC_END_LINE, FW_PROJECT);
+	DEBUG_PRINT(" * Fw/type: " ESC_COLOR_CYAN "%s" ESC_RESET_STYLE ESC_END_LINE, FW_TARGET);
+	DEBUG_PRINT(" * Fw/version: " ESC_COLOR_CYAN "%d.%d.%d" ESC_RESET_STYLE ESC_END_LINE,
+				FW_VER_MAJOR, FW_VER_MINOR, FW_VER_BUILD);
+	DEBUG_PRINT(" * Fw/tag: " ESC_COLOR_CYAN "%s" ESC_RESET_STYLE ESC_END_LINE, FW_TAG);
+	DEBUG_PRINT(" * Hw/platform: " ESC_COLOR_CYAN "%s" ESC_RESET_STYLE ESC_END_LINE, FW_PLATFORM);
+	DEBUG_PRINT(" * Fw/BSP: " ESC_COLOR_CYAN "%s" ESC_RESET_STYLE ESC_END_LINE, FW_BSP);
+	DEBUG_PRINT(" * GIT Hash: " ESC_COLOR_CYAN "%s" ESC_RESET_STYLE ESC_END_LINE, FW_GIT_HASH);
+	DEBUG_PRINT(" * GIT Branch: " ESC_COLOR_CYAN "%s" ESC_RESET_STYLE ESC_END_LINE, FW_GIT_BRANCH);
+	DEBUG_PRINT(" * Build date/time: " ESC_COLOR_CYAN "%s" ESC_RESET_STYLE ESC_END_LINE,
+				(__DATE__ " " __TIME__));
+
+	DEBUG_PRINT(ESC_RESET_STYLE);
+}
+
+void Debug_PrintSysInfo(void) {
+	char tmpBuff[32];
+
+	DEBUG_PRINT(ESC_END_LINE "Sys info: " ESC_END_LINE);
+	Pl_UID_GetStrAndPtr(tmpBuff);
+	DEBUG_PRINT(" * MCU UID: " ESC_COLOR_CYAN "%s" ESC_RESET_STYLE ESC_END_LINE, tmpBuff);
+	Pl_CPU_GetStrAndPtr(tmpBuff);
+	DEBUG_PRINT(" * MCU RevID/DevID: " ESC_COLOR_CYAN "%s" ESC_RESET_STYLE ESC_END_LINE, tmpBuff);
+	DEBUG_PRINT(" * MCU Flash (KBytes): " ESC_COLOR_CYAN "%d" ESC_RESET_STYLE ESC_END_LINE,
+				Pl_MCU_GetFlashSize());
+	DEBUG_PRINT(" * MCU Reset Flag: " ESC_COLOR_CYAN "%s" ESC_RESET_STYLE ESC_END_LINE,
+				Pl_GetRstFlagStr());
+	DEBUG_PRINT(" * MCU Clocks (Hz): " ESC_END_LINE);
+	DEBUG_PRINT(ESC_COLOR_CYAN "   SYSCLK: %u, HCLK: %u" ESC_END_LINE, Pl_SysClk.SYSCLK,
+				Pl_SysClk.HCLK);
+	DEBUG_PRINT(ESC_COLOR_CYAN "   APB1: %u, APB2: %u" ESC_END_LINE, Pl_SysClk.APB1,
+				Pl_SysClk.APB2);
+	// DEBUG_PRINT("    PLLP: %u, PLLQ: %u, PLLR: %u" ESC_END_LINE, Pl_SysClk.PLL.P, Pl_SysClk.PLL.Q,
+	// 			Pl_SysClk.PLL.R);
+	// DEBUG_PRINT(ESC_COLOR_CYAN "    ADC: %u" ESC_END_LINE, Pl_SysClk.ADC);
+
+	DEBUG_PRINT(ESC_RESET_STYLE);
+}
+
 /* ============================================================================
  * Debug send task — drains the TX queue, sending chunks over DMA
  * ============================================================================ */
@@ -319,6 +363,9 @@ TaskHandle_t Debug_GetSendHandle(void) {
 
 static void vTask_DebugSend_Process(void* pvParameters) {
 	DISCARD_UNUSED(pvParameters);
+	vTaskDelay(DELAY_1_SECOND);
+	Debug_PrintMainInfo();
+	Debug_PrintSysInfo();
 
 	DebugMsg_t msg;
 	for (;;) {

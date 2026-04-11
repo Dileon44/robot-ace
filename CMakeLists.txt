@@ -19,15 +19,28 @@ set(BUILD_DIR build)
 set(FW_VER_APP  ${PROJECT_VERSION})
 set(FW_VER_BOOT 1.0.0)
 
+set(FW_PROJECT "robot-ace")
+string(REGEX REPLACE "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$" "\\1" FW_VER_MAJOR "${PROJECT_VERSION}")
+string(REGEX REPLACE "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$" "\\2" FW_VER_MINOR "${PROJECT_VERSION}")
+string(REGEX REPLACE "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$" "\\3" FW_VER_BUILD "${PROJECT_VERSION}")
 set(FW_BSP 0)
 
 execute_process(
-	COMMAND git rev-parse --short=6 HEAD
-	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-	OUTPUT_VARIABLE GIT_COMMIT_HASH
-	OUTPUT_STRIP_TRAILING_WHITESPACE
+    COMMAND git rev-parse --short=6 HEAD
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_COMMIT_HASH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-set(FW_GIT_HASH ${GIT_COMMIT_HASH})
+
+execute_process(
+    COMMAND git rev-parse --abbrev-ref HEAD
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_BRANCH_NAME
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+set(FW_GIT_HASH    "${GIT_COMMIT_HASH}")
+set(FW_GIT_BRANCH  "${GIT_BRANCH_NAME}")
 
 # Optimization level: set via -DFW_OPT=0|1 (fw_builder.py), default 0
 if(NOT DEFINED FW_OPT)
@@ -40,10 +53,10 @@ else()
 endif()
 
 # Debug mode: tag=dev → DEBUG_ENABLE=1; tag=prd → macro not defined
-if(NOT DEFINED FW_TYPE)
-	set(FW_TYPE prd)
+if(NOT DEFINED FW_TAG)
+	set(FW_TAG prd)
 endif()
-if(FW_TYPE STREQUAL "dev")
+if(FW_TAG STREQUAL "dev")
 	set(DEBUG_ENABLE_DEF
 		DEBUG_ENABLE=1
 		PANIC_CHECK_ENABLE=1

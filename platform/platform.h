@@ -75,13 +75,19 @@ __STATIC_FORCEINLINE void Pl_IrqOff(void) {
 
 void Pl_Stub_CommonClbk(void);
 void Pl_Stub_HardFaultClbk(u32 pcVal);
-void Pl_Stub_Sensors_ADCLowFreqClbk(u16* buffPtr, u16 buffLen);
-void Pl_Stub_Motor_AdcHighFreqClbk(u16* buffPtr, u16 buffLen);
 
 bool Pl_Init(Pl_HardFault_Clbk_t pHardFault_Clbk);
 
 void Pl_SysCpuCnt_Init(void);
 u32 Pl_SysCpuCnt_Get(void);
+
+u32* Pl_UID_GetStrAndPtr(char* pDst);
+void Pl_CPU_GetStrAndPtr(char* pDst);
+u32 Pl_MCU_GetFlashSize(void);
+
+void Pl_JumpToAddr(u32 appAddr);
+void Pl_SoftReset(void);
+const char* Pl_GetRstFlagStr(void);
 
 bool Pl_DelayMs_Init(Pl_Common_Clbk_t pDelayTimerClbk);
 bool Pl_DelayMs_DeInit(void);
@@ -89,9 +95,6 @@ void Pl_DelayMs_SuspendTimer(void);
 void Pl_DelayMs_ResumeTimer(void);
 u32 Pl_DelayMs_GetUsCnt(void);
 u32 Pl_DelayMs_GetMsCnt(void);
-
-void Pl_JumpToAddr(u32 appAddr);
-void Pl_SoftReset(void);
 
 void Pl_WatchDog_Init(void);
 void Pl_WatchDog_RstCnt(void);
