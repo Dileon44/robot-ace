@@ -22,8 +22,8 @@ void Delay_WaitTime_MilliSec(u32 ms) {
 	}
 }
 
-void Delay_WaitTime_MicroSec(u64 us) {
-	u64 startTime = Delay_TimeMicroSec_Get();
+void Delay_WaitTime_MicroSec(u32 us) {
+	u32 startTime = Delay_TimeMicroSec_Get();
 	while ((Delay_TimeMicroSec_Get() - startTime) < us) {
 	}
 }
@@ -32,9 +32,10 @@ u32 Delay_TimeMilliSec_Get(void) {
 	return MilliSecAfterStart;
 }
 
-u64 Delay_TimeMicroSec_Get(void) {
+u32 Delay_TimeMicroSec_Get(void) {
 	//one u32 value can hold ~1.19 of an hour
-	return (u64)(MilliSecAfterStart) * (u64)1000 + (u64)Pl_DelayMs_GetUsCnt();
+	u32 us = Pl_DelayMs_GetUsCnt();
+	return (u32)(MilliSecAfterStart) * (u32)1000 + us;
 }
 
 double Delay_TimeAccurate_Get(void) {

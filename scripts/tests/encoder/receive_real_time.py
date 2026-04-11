@@ -22,7 +22,7 @@ import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 import serial
 
-SUPPORTED_BAUDRATES = [115200, 230400, 460800, 921600]
+SUPPORTED_BAUDRATES = [115200, 230400, 460800, 921600, 2000000]
 WINDOW_MS = 10_000  # visible window width in ms (host time)
 
 
