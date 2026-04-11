@@ -14,6 +14,7 @@ Example:
 """
 
 import argparse
+import os
 import sys
 import time
 
@@ -21,7 +22,8 @@ import matplotlib.pyplot as plt
 import mplcursors
 import serial
 
-SUPPORTED_BAUDRATES = [115200, 230400, 460800, 921600]
+SUPPORTED_BAUDRATES = [115200, 230400, 460800, 921600, 2000000]
+DEFAULT_OUTPUT_PATH = "scripts/tests/encoder/data/receive.csv"
 
 
 def parse_args():
@@ -42,6 +44,14 @@ def parse_args():
         "duration",
         type=float,
         help="Collection duration in seconds (e.g. 5, 10.5)",
+    )
+    parser.add_argument(
+        "--save",
+        type=int,
+        choices=[0, 1],
+        default=1,
+        metavar="0|1",
+        help="Save data to CSV file (default: 1). Path: " + DEFAULT_OUTPUT_PATH,
     )
     return parser.parse_args()
 
@@ -83,7 +93,7 @@ def receive_data(port: str, baudrate: int, duration: float):
 
                 try:
                     angle = float(parts[0])
-                    ts_ms  = int(parts[1])
+                    ts  = int(parts[1])
                 except ValueError:
                     continue
 
@@ -91,7 +101,7 @@ def receive_data(port: str, baudrate: int, duration: float):
                     continue
 
                 angles.append(angle)
-                timestamps.append(ts_ms)
+                timestamps.append(ts)
                 host_times.append(time.monotonic())
 
         except KeyboardInterrupt:
@@ -100,12 +110,19 @@ def receive_data(port: str, baudrate: int, duration: float):
     print(f"Collected {len(angles)} samples.")
 
     if len(timestamps) >= 2:
-        total_ms = (timestamps[-1] - timestamps[0]) % (2**32)
-        avg_ms = total_ms / (len(timestamps) - 1)
-        print(f"Average interval between samples (MCU):  {avg_ms:.2f} ms")
+        total = (timestamps[-1] - timestamps[0]) % (2**32)
+        avg = total / (len(timestamps) - 1)
+        print(f"Average interval between samples (MCU):  {avg:.2f} us")
+        # diffs = [(timestamps[i+1] - timestamps[i]) for i in range(len(timestamps)-1)]
+    
+        # # Среднее значение разностей
+        # average_interval = sum(diffs) / len(diffs)
 
-        host_avg_ms = (host_times[-1] - host_times[0]) / (len(host_times) - 1) * 1000.0
-        print(f"Average interval between samples (host): {host_avg_ms:.2f} ms")
+        # total = (timestamps[-1] - timestamps[-2])
+        # print(f"Average interval between samples (MCU):  {total:.2f} ms")
+
+        host_avg_us = (host_times[-1] - host_times[0]) / (len(host_times) - 1) * 1000000.0
+        print(f"Average interval between samples (host): {host_avg_us:.2f} us")
 
         max_deg_s = 0.0
         for i in range(1, len(timestamps)):
@@ -118,7 +135,7 @@ def receive_data(port: str, baudrate: int, duration: float):
                 d_angle -= 360.0
             elif d_angle < -180.0:
                 d_angle += 360.0
-            deg_s = abs(d_angle) / (dt_ms / 1000.0)
+            deg_s = abs(d_angle) / (dt_ms / 1000000.0)
             if deg_s > max_deg_s:
                 max_deg_s = deg_s
         max_rpm = max_deg_s / 360.0 * 60.0
@@ -150,9 +167,21 @@ def plot_data(timestamps, angles):
     plt.show()
 
 
+def save_data(path: str, timestamps: list, angles: list):
+    """Write collected samples to a CSV file (timestamp_ms;angle)."""
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("timestamp_ms;angle\n")
+        for ts, angle in zip(timestamps, angles):
+            f.write(f"{ts};{angle}\n")
+    print(f"Data saved to {path}  ({len(angles)} samples)")
+
+
 def main():
     args = parse_args()
     timestamps, angles = receive_data(args.port, args.baudrate, args.duration)
+    if args.save:
+        save_data(DEFAULT_OUTPUT_PATH, timestamps, angles)
     plot_data(timestamps, angles)
 
 
