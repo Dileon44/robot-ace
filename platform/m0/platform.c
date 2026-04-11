@@ -27,20 +27,6 @@ void Pl_Stub_HardFaultClbk(u32 pcVal) {
 	DISCARD_UNUSED(pcVal);
 }
 
-void Pl_Stub_HallClbk(u32 idHall) {
-	DISCARD_UNUSED(idHall);
-}
-
-void Pl_Stub_Sensors_ADCLowFreqClbk(u16* buffPtr, u16 buffLen) {
-	DISCARD_UNUSED(buffPtr);
-	DISCARD_UNUSED(buffLen);
-}
-
-void Pl_Stub_Motor_AdcHighFreqClbk(u16* buffPtr, u16 buffLen) {
-	DISCARD_UNUSED(buffPtr);
-	DISCARD_UNUSED(buffLen);
-}
-
 Pl_IsInit_t Pl_IsInit;
 Pl_SysClock_t Pl_SysClk;
 
@@ -76,6 +62,40 @@ u32 Pl_SysCpuCnt_Get(void) {
 	return Sys_CounterCPU_Get();
 }
 
+u32* Pl_UID_GetStrAndPtr(char* pDst) {
+	return Sys_UID_GetStrAndPtr(pDst);
+}
+
+void Pl_CPU_GetStrAndPtr(char* pDst) {
+	Sys_CPU_GetStrAndPtr(pDst);
+}
+
+u32 Pl_MCU_GetFlashSize(void) {
+	return Sys_MCU_GetFlashSize();
+}
+
+void Pl_JumpToAddr(u32 appAddr) {
+	u32 appJumpAddr;
+	void (*pGoToApp)(void);
+
+	appJumpAddr = *((volatile u32*)(appAddr + 4));
+	pGoToApp	= (void (*)(void))appJumpAddr;
+	SCB->VTOR	= appAddr;
+	__set_MSP(*((volatile u32*)appAddr));  //stack pointer (to RAM) for app on this addr
+	pGoToApp();
+}
+
+void Pl_SoftReset(void) {
+	Sys_MCU_Reset();
+}
+
+const char* Pl_GetRstFlagStr(void) {
+	const char* pTmpStr = Sys_ResetFlag_GetStr();
+	Sys_ResetFlag_Clear();
+
+	return pTmpStr;
+}
+
 bool Pl_DelayMs_Init(Pl_Common_Clbk_t pDelayTimerClbk) {
 	Pl_IsInit.DelayMs = TIM_Delay_Init(pDelayTimerClbk);
 	Sys_NVIC_SetPrioEnable(TIM_DELAY_IRQ, NVIC_IRQ_PRIO_TIM_DELAY);
@@ -103,21 +123,6 @@ u32 Pl_DelayMs_GetUsCnt(void) {
 
 u32 Pl_DelayMs_GetMsCnt(void) {
 	return TIM_Delay_GetOvrflCnt();
-}
-
-void Pl_JumpToAddr(u32 appAddr) {
-	u32 appJumpAddr;
-	void (*pGoToApp)(void);
-
-	appJumpAddr = *((volatile u32*)(appAddr + 4));
-	pGoToApp	= (void (*)(void))appJumpAddr;
-	SCB->VTOR	= appAddr;
-	__set_MSP(*((volatile u32*)appAddr));  //stack pointer (to RAM) for app on this addr
-	pGoToApp();
-}
-
-void Pl_SoftReset(void) {
-	Sys_MCU_Reset();
 }
 
 void Pl_WatchDog_Init(void) {

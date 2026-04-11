@@ -2,7 +2,7 @@
 #include "sys.h"
 
 #define USART_DEBUG			 USART2
-#define USART_DEBUG_BAUDRATE 230400	 // 921600 // 115200
+#define USART_DEBUG_BAUDRATE 921600	 // 2000000  // 230400
 #define USART_DEBUG_IRQ_HD	 USART2_IRQHandler
 #define USART_DEBUG_CLK_EN() LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_USART2)
 
@@ -11,7 +11,7 @@ static Pl_USART_ClbkRx_t USART_Debug_RxClbk = Pl_Stub_CommonClbk;
 void USART_Debug_Init(Pl_USART_ClbkRx_t pRxClbk) {
 	ASSIGN_NOT_NULL_VAL_TO_PTR(USART_Debug_RxClbk, pRxClbk);
 
-	LL_RCC_SetUSARTClockSource(LL_RCC_USART2_CLKSOURCE_HSI);
+	LL_RCC_SetUSARTClockSource(LL_RCC_USART2_CLKSOURCE_SYSCLK);
 	USART_DEBUG_CLK_EN();
 
 	LL_USART_InitTypeDef USART_InitStruct = {0};

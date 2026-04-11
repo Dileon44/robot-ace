@@ -43,7 +43,7 @@ class C:
 # passed via -D and will appear as a preprocessor macro in C code.
 # Values are forwarded verbatim unless a transformer function is applied.
 ARG_TO_CMAKE_DEFINE: dict[str, str] = {
-    "tag":      "FW_TYPE",    # prd / dev
+    "tag":      "FW_TAG",    # prd / dev
     "bsp":      "FW_BSP",
     "target":   "FW_TARGET",  # app / boot
     "opt":      "FW_OPT",     # 0 = -Og (debug), 1 = -O1

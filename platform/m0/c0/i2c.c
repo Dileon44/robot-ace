@@ -1,11 +1,16 @@
 #include "i2c.h"
 
-#define I2C_F_SCL_STANDARD 100000
-#define I2C_F_SCL_FAST	   400000
+#define I2C_F_SCL_STANDARD	100000
+#define I2C_F_SCL_FAST		400000
+#define I2C_F_SCL_FAST_PLUS 1000000
 
 #define I2C_TIMING_SCLL_AND_SCLH_SUM_MAX 512
 #define I2C_TIMING_SCLDEL_MAX			 0xF
 #define I2C_TRANSFER_SIZE_MAX			 255u
+
+// STM32H7 analog filter is enabled by default (CR1.ANFOFF=0).
+// t_SYNC1 + t_SYNC2 ≈ 4*tI2CCLK + 2*tAF; using tAF_min guarantees f_actual ≤ f_target.
+#define I2C_ANALOG_FILTER_DELAY_MIN_NS 50u
 
 #define I2C_SENSOR			 I2C1
 #define I2C_SENSOR_CLK_EN()	 LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_I2C1)
@@ -132,30 +137,40 @@ static bool I2C_Write_Common(I2C_TypeDef* pI2Cx, u8 devAddr, u8 reg, u8* pData, 
 }
 
 u32 I2C_CalculateTiming(u32 pclk, u32 fscl) {
-	u32 presc	  = pclk / (fscl * I2C_TIMING_SCLL_AND_SCLH_SUM_MAX);
-	u32 tPresc_ns = 1000000000 / pclk * (presc + 1);
+	u32 presc = pclk / (fscl * I2C_TIMING_SCLL_AND_SCLH_SUM_MAX);
 
-	s32 scldelTmp = 0;
-	if (fscl > 0 && fscl <= I2C_F_SCL_STANDARD) {
-		scldelTmp = (250 / tPresc_ns) - 1;
-	} else if (fscl > I2C_F_SCL_STANDARD && fscl <= I2C_F_SCL_FAST) {
-		scldelTmp = (100 / tPresc_ns) - 1;
+	// Minimum data-setup time per I2C spec mode
+	u32 tScldelMin_ns;
+	if (fscl <= I2C_F_SCL_STANDARD) {
+		tScldelMin_ns = 250u;
+	} else if (fscl <= I2C_F_SCL_FAST) {
+		tScldelMin_ns = 100u;
 	} else {
-		scldelTmp = (50 / tPresc_ns) - 1;
+		tScldelMin_ns = 50u;
 	}
 
-	u32 scldel = 0;
+	u64 scldelCycles = (u64)tScldelMin_ns * pclk;
+	u64 scldelDen	 = (u64)(presc + 1u) * 1000000000ULL;
+	s32 scldelTmp	 = (s32)((scldelCycles + scldelDen - 1u) / scldelDen) - 1;
+
+	u32 scldel;
 	if (scldelTmp < 0) {
-		scldel = 0;
-	} else if (scldelTmp > I2C_TIMING_SCLDEL_MAX) {
+		scldel = 0u;
+	} else if ((u32)scldelTmp > I2C_TIMING_SCLDEL_MAX) {
 		scldel = I2C_TIMING_SCLDEL_MAX;
 	} else {
 		scldel = (u32)scldelTmp;
 	}
 
-	u32 sdadel = 0;
-	u32 sclh   = ((pclk / (fscl * 2 * (presc + 1))) - 1);
-	u32 scll   = sclh;
+	u32 sdadel		 = 0u;
+	u64 target_ns	 = 1000000000ULL / fscl;
+	u64 tPresc_ns	 = (u64)(presc + 1u) * 1000000000ULL / pclk;
+	u64 syncTotal_ns = 4ULL * 1000000000ULL / pclk + 2ULL * I2C_ANALOG_FILTER_DELAY_MIN_NS;
+	u64 sclAvail_ns	 = (target_ns > syncTotal_ns) ? (target_ns - syncTotal_ns) : 0ULL;
+	u32 sclh = (sclAvail_ns > 0ULL)
+				   ? (u32)((sclAvail_ns + 2ULL * tPresc_ns - 1ULL) / (2ULL * tPresc_ns)) - 1u
+				   : 0u;
+	u32 scll = sclh;
 
 	return __LL_I2C_CONVERT_TIMINGS(presc, scldel, sdadel, sclh, scll);
 }
@@ -179,7 +194,7 @@ bool I2C_Sensor_Init(void) {
 	LL_I2C_InitTypeDef I2C_InitStruct;
 	LL_I2C_StructInit(&I2C_InitStruct);
 	I2C_InitStruct.PeripheralMode  = LL_I2C_MODE_I2C;
-	I2C_InitStruct.Timing		   = I2C_CalculateTiming(Pl_SysClk.APB1, I2C_F_SCL_FAST);
+	I2C_InitStruct.Timing		   = I2C_CalculateTiming(Pl_SysClk.APB1, I2C_F_SCL_FAST_PLUS);
 	I2C_InitStruct.OwnAddress1	   = 0;
 	I2C_InitStruct.TypeAcknowledge = LL_I2C_ACK;
 	I2C_InitStruct.OwnAddrSize	   = LL_I2C_OWNADDRESS1_7BIT;
