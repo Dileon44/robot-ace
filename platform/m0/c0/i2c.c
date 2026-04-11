@@ -239,7 +239,7 @@ RET_STATE_t I2C_Sensor_Read(u8 devAddr, u8 wordAddr, u8* pData, u16 len) {
 }
 
 RET_STATE_t I2C_Sensor_Write(u8 devAddr, u8 wordAddr, const u8* pData, u16 len) {
-	if (I2C_Write_Common(I2C_SENSOR, devAddr, wordAddr, (u8*)pData, len, 100)) {
+	if (I2C_Write_Common(I2C_SENSOR, devAddr, wordAddr, (u8*)pData, len, 10)) {
 		return RET_STATE_SUCCESS;
 	}
 
