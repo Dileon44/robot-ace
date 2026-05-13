@@ -8,6 +8,8 @@ set(CMAKE_ASM_COMPILER arm-none-eabi-gcc)
 set(CMAKE_OBJCOPY arm-none-eabi-objcopy)
 set(CMAKE_OBJDUMP arm-none-eabi-objdump)
 set(SIZE arm-none-eabi-size)
+set(CMAKE_AR arm-none-eabi-gcc-ar)
+set(CMAKE_RANLIB arm-none-eabi-gcc-ranlib)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
 project(ace VERSION 1.0.0)
