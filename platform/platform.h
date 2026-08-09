@@ -4,6 +4,10 @@
 #include "main.h"
 #include "platform_inc_m0.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 #ifndef PL_NOP
 #define PL_NOP() __NOP()
 #endif /* PL_NOP */
@@ -122,5 +126,9 @@ bool Pl_Encoder_DeInit(void);
 void Pl_Encoder_Dir_Set(bool clockwise);
 RET_STATE_t Pl_I2cEncoder_Read(u8 devAddr, u8 wordAddr, u8* pData, u16 len);
 RET_STATE_t Pl_I2cEncoder_Write(u8 devAddr, u8 wordAddr, const u8* pData, u16 len);
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* __PLATFORM_H */
