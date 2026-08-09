@@ -31,6 +31,10 @@ void assert_failed(uint8_t* file, uint32_t line) {
 	PANIC();
 }
 
+void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName) {
+	ErrorHandler(pcTaskName, 0);
+}
+
 void FreeRTOS_InitComponents(bool resources, bool tasks) {
 #if !DEBUG_ENABLE
 	FreeRTOS_WatchDog_InitComponents(resources, tasks);
@@ -53,7 +57,7 @@ int main(void) {
 	Pl_Led_Init();
 	Delay_Init();
 	Debug_Init();
-	Bsp_Init();
+	// Bsp_Init();
 
 	FreeRTOS_InitComponents(false, true);
 	vTaskStartScheduler();
