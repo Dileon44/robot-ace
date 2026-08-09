@@ -1,8 +1,8 @@
 #include "main.h"
 #include "bsp.h"
-#include "debug.h"
 #include "delay.h"
 #include "health_check.h"
+#include "log.h"
 #include "platform.h"
 #include "shell_root.h"
 #include "watchdog.h"
@@ -15,7 +15,7 @@ void HardFault_Clbk(u32 pcVal) {
 	// BkpStorage_SetRegister(BKP_REG_SYS_FAULT_EXEPTION_ADDR, pcVal);
 }
 
-void ErrorHandler(char* pFile, int line) {
+void ErrorHandler(const char* pFile, int line) {
 	DISCARD_UNUSED(pFile);
 	DISCARD_UNUSED(line);
 

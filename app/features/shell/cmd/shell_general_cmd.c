@@ -1,4 +1,4 @@
-#include "debug.h"
+#include "log.h"
 #include "platform.h"
 #include "wsh_shell.h"
 #include "wsh_shell_cfg.h"

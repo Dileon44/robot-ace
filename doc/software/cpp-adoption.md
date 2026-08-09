@@ -52,7 +52,7 @@ tags:
 
 | Ресурс | Занято | Доступно | % |
 |---|---|---|---|
-| Flash (app) | 60 200 B (`.text`) + 784 B (`.data`) | 98 304 B (96 KB, `FLASH_APP_SIZE`) | **62 %** |
+| Flash (app) | 60 240 B (`.text`) + 784 B (`.data`) | 98 304 B (96 KB, `FLASH_APP_SIZE`) | **62.1 %** |
 | RAM | 784 B (`.data`) + 12 060 B (`.bss`) | 32 256 B (`0x7e00`) | **40 %** |
 | В т.ч. куча FreeRTOS | 8 192 B (`configTOTAL_HEAP_SIZE`, heap_4) | — | 25 % всей RAM |
 

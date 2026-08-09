@@ -1,5 +1,5 @@
 #include "encoder_m_as5600.h"
-#include "debug.h"
+#include "log.h"
 #include "encoder_m_as5600_reg_map.h"
 
 #if BSP_CFG_USE_ENCODER_M

@@ -1,5 +1,5 @@
 #include "encoder_m.h"
-#include "debug.h"
+#include "log.h"
 
 static EncoderM_Interface_t* EncoderM_InterfacePtr;
 static EncoderM_t*           EncoderM_Ptr;

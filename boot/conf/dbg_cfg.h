@@ -33,7 +33,8 @@
 
 //------------------------------------------------------------------------------
 
-extern void ErrorHandler(char* pFile, int line);
+// const char*: __FILE__ is a string literal, C++ forbids binding it to char*
+extern void ErrorHandler(const char* pFile, int line);
 
 //------------------------------------------------------------------------------
 

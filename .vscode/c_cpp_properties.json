@@ -4,7 +4,7 @@
             "${workspaceFolder}/app",
             "${workspaceFolder}/app/conf",
             "${workspaceFolder}/app/features",
-            "${workspaceFolder}/app/features/debug",
+            "${workspaceFolder}/app/features/log",
             "${workspaceFolder}/app/features/health_check",
             "${workspaceFolder}/app/features/shell",
             "${workspaceFolder}/app/features/shell/cmd",

@@ -1,4 +1,4 @@
-#include "debug.h"
+#include "log.h"
 #include "platform.h"
 #include "ring_buff.h"
 

@@ -1,5 +1,5 @@
 #include "bsp.h"
-#include "debug.h"
+#include "log.h"
 
 #if BSP_CFG_USE_ENCODER_M
 #include "encoder_m.h"
