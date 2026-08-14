@@ -1,0 +1,98 @@
+#include "encoder_m_as5600.hpp"
+#include "encoder_m_as5600__interface.hpp"
+#include "encoder_m_as5600_reg_map.h"
+#include "log.h"
+
+#if BSP_CFG_USE_ENCODER_M
+
+namespace bsp {
+
+bool As5600::Init() {
+	// Configure CONF for FOC: PM=NOM, HYST=OFF, SF=2x, FTH=6LSB, WD=OFF
+	u16 confValue = AS5600_CONF_FOC_VALUE;
+	u8  confBuf[2] = {
+		 static_cast<u8>((confValue >> 8) & 0x3Fu),
+		 static_cast<u8>(confValue & 0xFFu),
+	};
+
+	RET_STATE_t rs = bus_.Write(AS5600_REG_CONF_H, confBuf, 2);
+	if (rs != RET_STATE_SUCCESS) {
+		DEBUG_COLOR_PRINT_NL(ESC_COLOR_RED, "AS5600: CONF write failed");
+		return false;
+	}
+
+	PL_DELAY_MS(10);  // Delay for CONF to take effect
+
+	// Verify magnet detection
+	u8 status = 0;
+	rs        = bus_.Read(AS5600_REG_STATUS, &status, 1);
+	if (rs != RET_STATE_SUCCESS) {
+		DEBUG_COLOR_PRINT_NL(ESC_COLOR_RED, "AS5600: STATUS read failed");
+		return false;
+	}
+
+	if (!(status & AS5600_STATUS_MD_BIT)) {
+		DEBUG_COLOR_PRINT_NL(ESC_COLOR_YELLOW, "AS5600: magnet not detected (STATUS=0x%02x)",
+							 status);
+	} else {
+		DEBUG_COLOR_PRINT_NL(ESC_COLOR_GREEN, "AS5600: magnet OK (STATUS=0x%02x)", status);
+	}
+
+	return true;
+}
+
+bool As5600::DeInit() {
+	return true;
+}
+
+u16 As5600::ReadReg12(u8 regAddr) {
+	u8          buf[2] = {0};
+	RET_STATE_t rs     = bus_.Read(regAddr, buf, 2);
+	if (rs != RET_STATE_SUCCESS) {
+		return 0;
+	}
+	return static_cast<u16>((static_cast<u16>(buf[0] & 0x0Fu) << 8) | buf[1]);
+}
+
+u16 As5600::GetRawAngle() {
+	return ReadReg12(AS5600_REG_RAW_ANGLE_H);
+}
+
+u16 As5600::GetAngle() {
+	return ReadReg12(AS5600_REG_ANGLE_H);
+}
+
+float As5600::GetAngleDeg() {
+	return static_cast<float>(GetRawAngle()) * (360.0f / 4096.0f);
+}
+
+u8 As5600::GetStatus() {
+	u8 status = 0;
+	bus_.Read(AS5600_REG_STATUS, &status, 1);
+	return status;
+}
+
+bool As5600::IsMagnetDetected() {
+	return (GetStatus() & AS5600_STATUS_MD_BIT) != 0u;
+}
+
+u8 As5600::GetAGC() {
+	u8 agc = 0;
+	bus_.Read(AS5600_REG_AGC, &agc, 1);
+	return agc;
+}
+
+u16 As5600::GetMagnitude() {
+	return ReadReg12(AS5600_REG_MAGNITUDE_H);
+}
+
+void As5600::SetDirection(bool clockwise) {
+	bus_.SetDirection(clockwise);
+}
+
+/* Constant-initialized: no .init_array entry, nothing touches hardware before main() */
+constinit As5600 EncoderAs5600{EncoderAs5600Bus};
+
+}  // namespace bsp
+
+#endif /* BSP_CFG_USE_ENCODER_M */

@@ -57,7 +57,7 @@ int main(void) {
 	Pl_Led_Init();
 	Delay_Init();
 	Debug_Init();
-	// Bsp_Init();
+	Bsp_Init();
 
 	FreeRTOS_InitComponents(false, true);
 	vTaskStartScheduler();
