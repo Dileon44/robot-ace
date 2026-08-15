@@ -6,9 +6,9 @@
 
 #if BSP_CFG_USE_ENCODER_M
 
-namespace bsp {
+namespace bsp::encoder {
 
-class As5600Bus final : public IEncoderBus {
+class As5600Bus final : public IBus {
 public:
 	constexpr As5600Bus() = default;
 
@@ -26,9 +26,9 @@ private:
 	static constexpr u8 I2C_ADDR = 0x36u;  // AS5600 fixed 7-bit I2C address
 };
 
-extern As5600Bus EncoderAs5600Bus;
+extern As5600Bus As5600BusDev;
 
-}  // namespace bsp
+}  // namespace bsp::encoder
 
 #endif /* BSP_CFG_USE_ENCODER_M */
 

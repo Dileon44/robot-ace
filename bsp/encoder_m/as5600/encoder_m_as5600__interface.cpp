@@ -3,7 +3,7 @@
 
 #if BSP_CFG_USE_ENCODER_M
 
-namespace bsp {
+namespace bsp::encoder {
 
 bool As5600Bus::Init() {
 	bool isEncoderInit = Pl_Encoder_Init();
@@ -28,8 +28,8 @@ void As5600Bus::SetDirection(bool clockwise) {
 }
 
 /* Constant-initialized: no .init_array entry, nothing touches hardware before main() */
-constinit As5600Bus EncoderAs5600Bus{};
+constinit As5600Bus As5600BusDev{};
 
-}  // namespace bsp
+}  // namespace bsp::encoder
 
 #endif /* BSP_CFG_USE_ENCODER_M */

@@ -5,9 +5,11 @@
 
 #if BSP_CFG_USE_ENCODER_M
 
-namespace bsp {
+namespace bsp::encoder {
 
 bool As5600::Init() {
+	DEBUG_COLOR_PRINT_NL(ESC_COLOR_MAGENTA, "AS5600: i2c addr 0x%02x", bus_.Address());
+
 	// Configure CONF for FOC: PM=NOM, HYST=OFF, SF=2x, FTH=6LSB, WD=OFF
 	u16 confValue = AS5600_CONF_FOC_VALUE;
 	u8  confBuf[2] = {
@@ -43,6 +45,16 @@ bool As5600::Init() {
 
 bool As5600::DeInit() {
 	return true;
+}
+
+// *this still has its exact type here, so the encoder's typed slot is filled
+// without any cast — that is the whole point of routing through this hook.
+void As5600::OnAttached() {
+	SetDriver(*this);
+}
+
+void As5600::OnDetached() {
+	ClearDriver();
 }
 
 u16 As5600::ReadReg12(u8 regAddr) {
@@ -91,8 +103,8 @@ void As5600::SetDirection(bool clockwise) {
 }
 
 /* Constant-initialized: no .init_array entry, nothing touches hardware before main() */
-constinit As5600 EncoderAs5600{EncoderAs5600Bus};
+constinit As5600 As5600Dev{As5600BusDev};
 
-}  // namespace bsp
+}  // namespace bsp::encoder
 
 #endif /* BSP_CFG_USE_ENCODER_M */

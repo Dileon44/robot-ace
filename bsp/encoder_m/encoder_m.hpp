@@ -2,6 +2,7 @@
 #define __ENCODER_M_HPP
 
 #include "bsp_cfg.h"
+#include "bsp_module.hpp"
 #include "main.h"
 
 /* ============================================================================
@@ -10,73 +11,61 @@
  * Replaces the hand-written vtable structs (EncoderM_Interface_t / EncoderM_t):
  * the compiler now builds the dispatch table, and `override` makes a mismatched
  * signature a compile error instead of a NULL entry found at runtime.
+ *
+ * Init/DeInit/Name/OnAttached come from IModule, so Bsp_Init() can bring this
+ * module up through the same generic loop as every other one.
  * ============================================================================ */
 
-namespace bsp {
-
-enum class EncoderType : u8 {
-	Undef  = 0,
-	As5600 = 1,
-};
+namespace bsp::encoder {
 
 /* --------------------------------------------------------------------------
  * Transport — how a driver reaches its chip.
  * Implementations live in encoder_m_<chip>__interface.cpp and call Pl_* directly.
  * -------------------------------------------------------------------------- */
-class IEncoderBus {
+class IBus : public IModuleBus {
   public:
-	virtual bool Init()												= 0;
-	virtual bool DeInit()											= 0;
-	virtual RET_STATE_t Read(u8 regAddr, u8* pData, u16 len)		= 0;
+	virtual RET_STATE_t Read(u8 regAddr, u8* pData, u16 len)        = 0;
 	virtual RET_STATE_t Write(u8 regAddr, const u8* pData, u16 len) = 0;
-	virtual void SetDirection(bool clockwise)						= 0;
-	virtual u8 Address() const										= 0;
+	virtual void        SetDirection(bool clockwise)                = 0;
+	virtual u8          Address() const                             = 0;
 
   protected:
-	// Protected and non-virtual: every instance has static storage duration and
-	// is never deleted, so a virtual destructor would only cost a vtable slot.
-	~IEncoderBus() = default;
+	~IBus() = default;
 };
 
 /* --------------------------------------------------------------------------
  * Chip driver — implemented in encoder_m_<chip>.cpp
  * -------------------------------------------------------------------------- */
-class IEncoder {
+class IDriver : public IModule {
   public:
-	virtual bool Init()						  = 0;
-	virtual bool DeInit()					  = 0;
-	virtual u16 GetRawAngle()				  = 0;
-	virtual u16 GetAngle()					  = 0;
-	virtual float GetAngleDeg()				  = 0;
-	virtual u8 GetStatus()					  = 0;
-	virtual bool IsMagnetDetected()			  = 0;
-	virtual u8 GetAGC()						  = 0;
-	virtual u16 GetMagnitude()				  = 0;
-	virtual void SetDirection(bool clockwise) = 0;
-	virtual EncoderType Type() const		  = 0;
-	virtual const char* Name() const		  = 0;
+	virtual u16   GetRawAngle()                = 0;
+	virtual u16   GetAngle()                   = 0;
+	virtual float GetAngleDeg()                = 0;
+	virtual u8    GetStatus()                  = 0;
+	virtual bool  IsMagnetDetected()           = 0;
+	virtual u8    GetAGC()                     = 0;
+	virtual u16   GetMagnitude()               = 0;
+	virtual void  SetDirection(bool clockwise) = 0;
 
   protected:
-	~IEncoder() = default;
+	~IDriver() = default;
 };
 
 /* --------------------------------------------------------------------------
- * Module-level access.
+ * Typed access to the attached driver.
  *
- * The attach guard that used to be repeated in every EncoderM_* wrapper now
- * lives in Get() alone: callers obtain the driver once and call it directly.
+ * The slot is filled from the driver's OnAttached(), where the concrete type is
+ * still known — that is why no cast or RTTI is needed to get IDriver* back out
+ * of the type-erased BSP module table.
  * -------------------------------------------------------------------------- */
-namespace encoder {
-
-RET_STATE_t Attach(IEncoder& driver, IEncoderBus& bus);
-RET_STATE_t Detach();
+void SetDriver(IDriver& driver);  // internal: call only from IDriver::OnAttached()
+void ClearDriver();                // internal: call only from IDriver::OnDetached()
 
 bool IsAttached();
 
-// PANIC() and nullptr when nothing is attached.
-IEncoder* Get();
+// PANIC() and nullptr when nothing is attached — caller must check.
+IDriver* GetPtr();
 
-}  // namespace encoder
-}  // namespace bsp
+}  // namespace bsp::encoder
 
 #endif /* __ENCODER_M_HPP */

@@ -6,17 +6,19 @@
 
 #if BSP_CFG_USE_ENCODER_M
 
-namespace bsp {
+namespace bsp::encoder {
 
-class As5600 final : public IEncoder {
+class As5600 final : public IDriver {
 public:
 	// constexpr and hardware-free: the instance is constant-initialized, so it
 	// carries no .init_array entry and nothing runs before Pl_Init(). All chip
 	// access happens in Init(), called from Bsp_Init() out of main().
-	constexpr explicit As5600(IEncoderBus& bus) : bus_(bus) {}
+	constexpr explicit As5600(IBus& bus) : bus_(bus) {}
 
 	bool  Init() override;
 	bool  DeInit() override;
+	void  OnAttached() override;
+	void  OnDetached() override;
 	u16   GetRawAngle() override;
 	u16   GetAngle() override;
 	float GetAngleDeg() override;
@@ -26,10 +28,6 @@ public:
 	u16   GetMagnitude() override;
 	void  SetDirection(bool clockwise) override;
 
-	EncoderType Type() const override {
-		return EncoderType::As5600;
-	}
-
 	const char* Name() const override {
 		return "as5600";
 	}
@@ -38,12 +36,12 @@ private:
 	// Reads a big-endian 12-bit value from regAddr (high byte first).
 	u16 ReadReg12(u8 regAddr);
 
-	IEncoderBus& bus_;
+	IBus& bus_;
 };
 
-extern As5600 EncoderAs5600;
+extern As5600 As5600Dev;
 
-}  // namespace bsp
+}  // namespace bsp::encoder
 
 #endif /* BSP_CFG_USE_ENCODER_M */
 
