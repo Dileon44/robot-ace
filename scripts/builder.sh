@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPTS_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPTS_DIR/.." && pwd)"
 BUILD_ACTION="$1"
 
@@ -17,7 +17,7 @@ log_error() {
 }
 
 # Detect OS
-if [ "$OS" == "Windows_NT" ]; then
+if [ "$OS" = "Windows_NT" ]; then
     OS_NAME="Windows_NT"
     VENV_SRC="Scripts"
     PYTHON_NAME="python"
@@ -42,9 +42,9 @@ VENV_DIR="$ROOT_DIR/.venv"
 if [ ! -d "$VENV_DIR" ]; then
     echo ".venv not found. Creating virtual environment..."
     "$PYTHON_NAME" -m venv "$VENV_DIR" || log_error "Failed to create virtual environment"
-    "$VENV_DIR/$VENV_SRC/pip" install --upgrade pip || log_error "Failed to upgrade pip"
+    "$VENV_DIR/$VENV_SRC/$PYTHON_NAME" -m pip install --upgrade pip || log_error "Failed to upgrade pip"
     if [ -f "$ROOT_DIR/scripts/requirements.txt" ]; then
-        "$VENV_DIR/$VENV_SRC/pip" install -r "$ROOT_DIR/scripts/requirements.txt" || log_error "Failed to install dependencies"
+        "$VENV_DIR/$VENV_SRC/$PYTHON_NAME" -m pip install -r "$ROOT_DIR/scripts/requirements.txt" || log_error "Failed to install dependencies"
     fi
 else
     echo "Using existing .venv"
