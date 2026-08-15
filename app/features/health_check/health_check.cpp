@@ -1,7 +1,6 @@
 #include "health_check.h"
-#include "debug.h"
 #include "delay.h"
-#include "encoder_m.h"
+#include "log.h"
 #include "platform.h"
 
 #if HEALTH_CHECK

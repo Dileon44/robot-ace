@@ -22,6 +22,15 @@ from memory_table import render as _render_memory
 from memory_table import render_sections as _render_sections
 from tqdm import tqdm
 
+# Windows consoles can default to a legacy code page (e.g. cp1251) that
+# can't encode the box-drawing/block characters used in the memory table;
+# force UTF-8 output so that doesn't crash the build.
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, ValueError):
+        pass
+
 log = logging.getLogger(__name__)
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
@@ -178,6 +187,10 @@ def run(cmd: list[str], cwd: Path, show_progress: bool = False,
         if in_memory_section:
             if _RE_MEMORY_DATA.match(line):
                 memory_lines.append(line)
+                continue
+            # Some binutils versions emit blank separator lines between
+            # memory-region rows; skip them without ending the section.
+            if not line.strip():
                 continue
             in_memory_section = False
 

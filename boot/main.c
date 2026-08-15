@@ -9,7 +9,7 @@ int main(void) {
 	// Pl_JumpToAddr();
 }
 
-void ErrorHandler(char* pFile, int line) {
+void ErrorHandler(const char* pFile, int line) {
 	DISCARD_UNUSED(pFile);
 	DISCARD_UNUSED(line);
 

@@ -2,7 +2,7 @@
 
 #if SHELL_INTERFACE
 
-#include "debug.h"
+#include "log.h"
 #include "platform.h"
 #include "shell_commands.h"
 #include "shell_users.h"

@@ -53,7 +53,16 @@
   * settings.  Your application will certainly need a different value so set this
   * correctly. This is very often, but not always, equal to the main system clock
   * frequency. */
+/* extern "C": the same variable is declared with C linkage in CMSIS
+ * system_stm32g4xx.h. Without this the two declarations conflict in C++. */
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 extern uint32_t SystemCoreClock;
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
 #define configCPU_CLOCK_HZ ((unsigned long)SystemCoreClock)
 
 /* configSYSTICK_CLOCK_HZ is an optional parameter for ARM Cortex-M ports only.

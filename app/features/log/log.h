@@ -5,6 +5,10 @@
 #include "main.h"
 #include "ring_buff.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 // clang-format off
 
 /* ============================================================================
@@ -112,5 +116,9 @@ const char* Debug_LogLvl_GetColor(LOG_LVL_t lvl);
 
 TaskHandle_t Debug_GetSendHandle(void);
 void         FreeRTOS_Debug_InitComponents(bool resources, bool tasks);
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* __DEBUG_H */

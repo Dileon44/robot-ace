@@ -1,5 +1,5 @@
 #include "watchdog.h"
-#include "debug.h"
+#include "log.h"
 #include "platform.h"
 
 #if DEBUG_ENABLE

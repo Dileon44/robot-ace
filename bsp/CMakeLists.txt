@@ -4,14 +4,15 @@
 add_library(bsp INTERFACE)
 
 target_sources(bsp INTERFACE
-	${CMAKE_CURRENT_SOURCE_DIR}/bsp.c
-	${CMAKE_CURRENT_SOURCE_DIR}/encoder_m/encoder_m.c
-	${CMAKE_CURRENT_SOURCE_DIR}/encoder_m/as5600/encoder_m_as5600.c
-	${CMAKE_CURRENT_SOURCE_DIR}/encoder_m/as5600/encoder_m_as5600__interface.c
+	${CMAKE_CURRENT_SOURCE_DIR}/bsp.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/bsp_module.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/encoder/encoder.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/encoder/as5600/as5600.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/encoder/as5600/as5600_bus.cpp
 )
 
 target_include_directories(bsp INTERFACE
 	${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/encoder_m
-	${CMAKE_CURRENT_SOURCE_DIR}/encoder_m/as5600
+	${CMAKE_CURRENT_SOURCE_DIR}/encoder
+	${CMAKE_CURRENT_SOURCE_DIR}/encoder/as5600
 )
