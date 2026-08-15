@@ -1,9 +1,9 @@
-#include "encoder_m_as5600.hpp"
-#include "encoder_m_as5600__interface.hpp"
-#include "encoder_m_as5600_reg_map.h"
+#include "as5600.hpp"
+#include "as5600_bus.hpp"
+#include "as5600_reg_map.h"
 #include "log.h"
 
-#if BSP_CFG_USE_ENCODER_M
+#if BSP_CFG_USE_ENCODER
 
 namespace bsp::encoder {
 
@@ -107,4 +107,4 @@ constinit As5600 As5600Dev{As5600BusDev};
 
 }  // namespace bsp::encoder
 
-#endif /* BSP_CFG_USE_ENCODER_M */
+#endif /* BSP_CFG_USE_ENCODER */

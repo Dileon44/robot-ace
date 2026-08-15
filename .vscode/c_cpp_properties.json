@@ -14,8 +14,8 @@
             "${workspaceFolder}/boot/conf",
 
             "${workspaceFolder}/bsp",
-            "${workspaceFolder}/bsp/encoder_m",
-            "${workspaceFolder}/bsp/encoder_m/as5600",
+            "${workspaceFolder}/bsp/encoder",
+            "${workspaceFolder}/bsp/encoder/as5600",
 
             "${workspaceFolder}/lib",
             "${workspaceFolder}/lib/rand",

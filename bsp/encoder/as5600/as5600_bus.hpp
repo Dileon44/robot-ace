@@ -1,10 +1,10 @@
-#ifndef __ENCODER_M_AS5600__INTERFACE_HPP
-#define __ENCODER_M_AS5600__INTERFACE_HPP
+#ifndef __AS5600_BUS_HPP
+#define __AS5600_BUS_HPP
 
 #include "bsp_cfg.h"
-#include "encoder_m.hpp"
+#include "encoder.hpp"
 
-#if BSP_CFG_USE_ENCODER_M
+#if BSP_CFG_USE_ENCODER
 
 namespace bsp::encoder {
 
@@ -30,6 +30,6 @@ extern As5600Bus As5600BusDev;
 
 }  // namespace bsp::encoder
 
-#endif /* BSP_CFG_USE_ENCODER_M */
+#endif /* BSP_CFG_USE_ENCODER */
 
-#endif /* __ENCODER_M_AS5600__INTERFACE_HPP */
+#endif /* __AS5600_BUS_HPP */

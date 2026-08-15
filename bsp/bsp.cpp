@@ -2,10 +2,10 @@
 #include "bsp_module.hpp"
 #include "log.h"
 
-#if BSP_CFG_USE_ENCODER_M
-#include "encoder_m_as5600.hpp"
-#include "encoder_m_as5600__interface.hpp"
-#endif /* BSP_CFG_USE_ENCODER_M */
+#if BSP_CFG_USE_ENCODER
+#include "as5600.hpp"
+#include "as5600_bus.hpp"
+#endif /* BSP_CFG_USE_ENCODER */
 
 namespace {
 
@@ -23,12 +23,12 @@ namespace {
  * const: the table lives in .rodata (Flash), not in RAM.
  * ============================================================================ */
 constinit const bsp::ModuleEntry Bsp_Modules[] = {
-#if BSP_CFG_USE_ENCODER_M
+#if BSP_CFG_USE_ENCODER
 	{
 		.module = &bsp::encoder::As5600Dev,
 		.bus    = &bsp::encoder::As5600BusDev,
 	},
-#endif /* BSP_CFG_USE_ENCODER_M */
+#endif /* BSP_CFG_USE_ENCODER */
 };
 
 }  // namespace

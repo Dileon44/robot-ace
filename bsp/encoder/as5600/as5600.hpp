@@ -1,10 +1,10 @@
-#ifndef __ENCODER_M_AS5600_HPP
-#define __ENCODER_M_AS5600_HPP
+#ifndef __AS5600_HPP
+#define __AS5600_HPP
 
 #include "bsp_cfg.h"
-#include "encoder_m.hpp"
+#include "encoder.hpp"
 
-#if BSP_CFG_USE_ENCODER_M
+#if BSP_CFG_USE_ENCODER
 
 namespace bsp::encoder {
 
@@ -43,6 +43,6 @@ extern As5600 As5600Dev;
 
 }  // namespace bsp::encoder
 
-#endif /* BSP_CFG_USE_ENCODER_M */
+#endif /* BSP_CFG_USE_ENCODER */
 
-#endif /* __ENCODER_M_AS5600_HPP */
+#endif /* __AS5600_HPP */

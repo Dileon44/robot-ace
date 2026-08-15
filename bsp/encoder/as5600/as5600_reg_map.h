@@ -1,5 +1,5 @@
-#ifndef __ENCODER_M_AS5600_REG_MAP_H
-#define __ENCODER_M_AS5600_REG_MAP_H
+#ifndef __AS5600_REG_MAP_H
+#define __AS5600_REG_MAP_H
 
 /* ============================================================================
  * AS5600 — 12-bit magnetic angle sensor register map
@@ -92,4 +92,4 @@
 #define AS5600_CONF_FOC_VALUE \
 	(AS5600_CONF_PM_NOM | AS5600_CONF_HYST_OFF | AS5600_CONF_SF_2X | AS5600_CONF_FTH_6LSB)
 
-#endif /* __ENCODER_M_AS5600_REG_MAP_H */
+#endif /* __AS5600_REG_MAP_H */

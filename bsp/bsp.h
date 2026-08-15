@@ -5,10 +5,10 @@
 #include "main.h"
 
 #ifdef __cplusplus
-// C++ only: encoder classes for application code — bsp::encoder::Get()->GetAngleDeg().
+// C++ only: encoder classes for application code — bsp::encoder::GetPtr()->GetAngleDeg().
 // Included before the extern "C" block on purpose: these are C++ declarations
 // and must keep C++ linkage.
-#include "encoder_m/encoder_m.hpp"
+#include "encoder/encoder.hpp"
 
 extern "C" {
 #endif /* __cplusplus */

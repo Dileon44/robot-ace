@@ -1,5 +1,5 @@
-#ifndef __ENCODER_M_HPP
-#define __ENCODER_M_HPP
+#ifndef __ENCODER_HPP
+#define __ENCODER_HPP
 
 #include "bsp_cfg.h"
 #include "bsp_module.hpp"
@@ -20,7 +20,7 @@ namespace bsp::encoder {
 
 /* --------------------------------------------------------------------------
  * Transport — how a driver reaches its chip.
- * Implementations live in encoder_m_<chip>__interface.cpp and call Pl_* directly.
+ * Implementations live in <chip>/<chip>_bus.cpp and call Pl_* directly.
  * -------------------------------------------------------------------------- */
 class IBus : public IModuleBus {
   public:
@@ -34,7 +34,7 @@ class IBus : public IModuleBus {
 };
 
 /* --------------------------------------------------------------------------
- * Chip driver — implemented in encoder_m_<chip>.cpp
+ * Chip driver — implemented in <chip>/<chip>.cpp
  * -------------------------------------------------------------------------- */
 class IDriver : public IModule {
   public:
@@ -68,4 +68,4 @@ IDriver* GetPtr();
 
 }  // namespace bsp::encoder
 
-#endif /* __ENCODER_M_HPP */
+#endif /* __ENCODER_HPP */

@@ -1,7 +1,7 @@
-#include "encoder_m_as5600__interface.hpp"
+#include "as5600_bus.hpp"
 #include "platform.h"
 
-#if BSP_CFG_USE_ENCODER_M
+#if BSP_CFG_USE_ENCODER
 
 namespace bsp::encoder {
 
@@ -32,4 +32,4 @@ constinit As5600Bus As5600BusDev{};
 
 }  // namespace bsp::encoder
 
-#endif /* BSP_CFG_USE_ENCODER_M */
+#endif /* BSP_CFG_USE_ENCODER */
