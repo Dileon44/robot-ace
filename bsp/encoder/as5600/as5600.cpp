@@ -3,8 +3,6 @@
 #include "as5600_reg_map.h"
 #include "log.h"
 
-#if BSP_CFG_USE_ENCODER
-
 namespace bsp::encoder {
 
 bool As5600::Init() {
@@ -106,5 +104,3 @@ void As5600::SetDirection(bool clockwise) {
 constinit As5600 As5600Dev{As5600BusDev};
 
 }  // namespace bsp::encoder
-
-#endif /* BSP_CFG_USE_ENCODER */

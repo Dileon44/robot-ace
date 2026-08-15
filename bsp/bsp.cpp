@@ -36,27 +36,27 @@ constinit const bsp::ModuleEntry Bsp_Modules[] = {
 RET_STATE_t Bsp_Init(void) {
 	DEBUG_PRINT_NL("\r\nBSP attaching:");
 
-	RET_STATE_t result = RET_STATE_SUCCESS;
+	RET_STATE_t rs = RET_STATE_SUCCESS;
 
 	for (const bsp::ModuleEntry& entry : Bsp_Modules) {
 		// Keep going after a failure: every module must reach a defined state so
 		// the board is never left half-initialized.
 		if (bsp::AttachModule(entry) != RET_STATE_SUCCESS) {
-			result = RET_STATE_ERROR;
+			rs = RET_STATE_ERROR;
 		}
 	}
 
-	return result;
+	return rs;
 }
 
 RET_STATE_t Bsp_DeInit(void) {
-	RET_STATE_t result = RET_STATE_SUCCESS;
+	RET_STATE_t rs = RET_STATE_SUCCESS;
 
 	for (const bsp::ModuleEntry& entry : Bsp_Modules) {
 		if (bsp::DetachModule(entry) != RET_STATE_SUCCESS) {
-			result = RET_STATE_ERROR;
+			rs = RET_STATE_ERROR;
 		}
 	}
 
-	return result;
+	return rs;
 }

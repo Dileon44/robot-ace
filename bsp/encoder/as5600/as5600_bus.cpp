@@ -1,8 +1,6 @@
 #include "as5600_bus.hpp"
 #include "platform.h"
 
-#if BSP_CFG_USE_ENCODER
-
 namespace bsp::encoder {
 
 bool As5600Bus::Init() {
@@ -31,5 +29,3 @@ void As5600Bus::SetDirection(bool clockwise) {
 constinit As5600Bus As5600BusDev{};
 
 }  // namespace bsp::encoder
-
-#endif /* BSP_CFG_USE_ENCODER */

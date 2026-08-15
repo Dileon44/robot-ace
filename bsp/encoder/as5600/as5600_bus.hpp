@@ -1,10 +1,7 @@
 #ifndef __AS5600_BUS_HPP
 #define __AS5600_BUS_HPP
 
-#include "bsp_cfg.h"
 #include "encoder.hpp"
-
-#if BSP_CFG_USE_ENCODER
 
 namespace bsp::encoder {
 
@@ -29,7 +26,5 @@ private:
 extern As5600Bus As5600BusDev;
 
 }  // namespace bsp::encoder
-
-#endif /* BSP_CFG_USE_ENCODER */
 
 #endif /* __AS5600_BUS_HPP */

@@ -1,10 +1,7 @@
 #ifndef __AS5600_HPP
 #define __AS5600_HPP
 
-#include "bsp_cfg.h"
 #include "encoder.hpp"
-
-#if BSP_CFG_USE_ENCODER
 
 namespace bsp::encoder {
 
@@ -42,7 +39,5 @@ private:
 extern As5600 As5600Dev;
 
 }  // namespace bsp::encoder
-
-#endif /* BSP_CFG_USE_ENCODER */
 
 #endif /* __AS5600_HPP */
