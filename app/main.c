@@ -35,6 +35,14 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName) {
 	ErrorHandler(pcTaskName, 0);
 }
 
+static void Main_OsDelayMs(u32 ms) {
+	vTaskDelay(ms);
+}
+
+static u32 Main_OsGetMs(void) {
+	return xTaskGetTickCount();
+}
+
 void FreeRTOS_InitComponents(bool resources, bool tasks) {
 #if !DEBUG_ENABLE
 	FreeRTOS_WatchDog_InitComponents(resources, tasks);
@@ -45,6 +53,8 @@ void FreeRTOS_InitComponents(bool resources, bool tasks) {
 }
 
 int main(void) {
+	Pl_SetOsClbks(Main_OsDelayMs, Main_OsGetMs);
+
 #if !DEBUG_ENABLE
 	WatchDog_Init();
 #endif /* DEBUG_ENABLE */
