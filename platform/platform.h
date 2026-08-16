@@ -62,6 +62,8 @@ extern Pl_SysClock_t Pl_SysClk;
 
 typedef void (*Pl_Common_Clbk_t)(void);
 typedef void (*Pl_HardFault_Clbk_t)(u32 pcVal);
+typedef void (*Pl_OsDelayMs_t)(u32 ms);
+typedef u32 (*Pl_OsGetMs_t)(void);
 typedef void (*Pl_USART_ClbkTx_t)(void);
 typedef void (*Pl_USART_ClbkRx_t)(void);
 typedef void (*Pl_Sensors_ADCLowFreqClbk_t)(u16* buffPtr, u16 buffLen);
@@ -99,6 +101,10 @@ void Pl_DelayMs_SuspendTimer(void);
 void Pl_DelayMs_ResumeTimer(void);
 u32 Pl_DelayMs_GetUsCnt(void);
 u32 Pl_DelayMs_GetMsCnt(void);
+
+void Pl_SetOsClbks(Pl_OsDelayMs_t pDelayMsClbk, Pl_OsGetMs_t pGetMsClbk);
+void Pl_OsDelayMs(u32 ms);
+u32 Pl_OsGetMs(void);
 
 void Pl_WatchDog_Init(void);
 void Pl_WatchDog_RstCnt(void);
