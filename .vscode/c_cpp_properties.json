@@ -4,7 +4,6 @@
             "${workspaceFolder}/app",
             "${workspaceFolder}/app/conf",
             "${workspaceFolder}/app/features",
-            "${workspaceFolder}/app/features/log",
             "${workspaceFolder}/app/features/health_check",
             "${workspaceFolder}/app/features/shell",
             "${workspaceFolder}/app/features/shell/cmd",
@@ -18,6 +17,7 @@
             "${workspaceFolder}/bsp/encoder/as5600",
 
             "${workspaceFolder}/lib",
+            "${workspaceFolder}/lib/log",
             "${workspaceFolder}/lib/rand",
             "${workspaceFolder}/lib/ring_buff",
             "${workspaceFolder}/lib/ring_list",

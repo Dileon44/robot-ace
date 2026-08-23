@@ -11,7 +11,7 @@
 #define PANIC_CHECK_ENABLE		 1
 #define APP_ASSERT_CHECK_ENABLE	 1
 #define RTOS_ASSERT_CHECK_ENABLE 1
-#define DEBUG_DEF_LOG_LVL		 LOG_LVL_DEBUG
+#define LOG_DEF_LVL				 LOG_LVL_DEBUG
 #endif /* DEBUG_QUICK_ENABLE */
 //------------------------------------------------------------------------------
 

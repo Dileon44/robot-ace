@@ -2,16 +2,16 @@
 
 #if LIB_USE_SHARED_MUTEX
 
-#define LOCAL_DEBUG_PRINT_ENABLE 0
+#define LOCAL_LOG_PRINT_ENABLE 0
 
-#if LOCAL_DEBUG_PRINT_ENABLE
-#warning LOCAL_DEBUG_PRINT_ENABLE
-#define LOCAL_DEBUG_PRINT		EMBLIB_DEBUG_LOG_PRINT
-#define LOCAL_DEBUG_COLOR_PRINT EMBLIB_DEBUG_LOG_COLOR_PRINT
-#else /* LOCAL_DEBUG_PRINT_ENABLE */
-#define LOCAL_DEBUG_PRINT(_f_, ...)
-#define LOCAL_DEBUG_COLOR_PRINT(c, _f_, ...)
-#endif /* LOCAL_DEBUG_PRINT_ENABLE */
+#if LOCAL_LOG_PRINT_ENABLE
+#warning LOCAL_LOG_PRINT_ENABLE
+#define LOCAL_LOG_PRINT		  LOG_DEBUG
+#define LOCAL_LOG_COLOR_PRINT LOG_COLOR
+#else /* LOCAL_LOG_PRINT_ENABLE */
+#define LOCAL_LOG_PRINT(_f_, ...)
+#define LOCAL_LOG_COLOR_PRINT(c, _f_, ...)
+#endif /* LOCAL_LOG_PRINT_ENABLE */
 
 void SharedMutex_Init(SharedMutex_t* pAccess, void* pEvent,
 					  SharedMutex_WaitEvent_Fptr_t fpWaitEvent,
@@ -41,7 +41,7 @@ RET_STATE_t SharedMutex_SharedLock(SharedMutex_t* pAccess, u32 waitMs) {
 	SYS_CRITICAL_OFF();
 
 	if (rejected) {
-		LOCAL_DEBUG_COLOR_PRINT(ESC_COLOR_YELLOW, "New readers rejected!");
+		LOCAL_LOG_COLOR_PRINT(TERM_COLOR_YELLOW, "New readers rejected!");
 		return RET_STATE_ERR_BUSY;
 	}
 
@@ -55,7 +55,7 @@ RET_STATE_t SharedMutex_SharedLock(SharedMutex_t* pAccess, u32 waitMs) {
 			bool eventReceived = pAccess->WaitEvent(pAccess->pEvent, waitMs);
 			if (!eventReceived) {
 				lockResult = RET_STATE_ERR_BUSY;
-				LOCAL_DEBUG_COLOR_PRINT(ESC_COLOR_YELLOW, "Exclusive lock await timeout");
+				LOCAL_LOG_COLOR_PRINT(TERM_COLOR_YELLOW, "Exclusive lock await timeout");
 				break;
 			}
 
@@ -97,8 +97,8 @@ RET_STATE_t SharedMutex_SharedLock(SharedMutex_t* pAccess, u32 waitMs) {
 			lockResult = RET_STATE_ERR_PARAM;
 	}
 
-	LOCAL_DEBUG_COLOR_PRINT(ESC_COLOR_GREEN, "SharedLock status: %s, concurrent readers: %d",
-							RetState_GetStr(lockResult), pAccess->ConcurrentReaders);
+	LOCAL_LOG_COLOR_PRINT(TERM_COLOR_GREEN, "SharedLock status: %s, concurrent readers: %d",
+						  RetState_GetStr(lockResult), pAccess->ConcurrentReaders);
 	return lockResult;
 }
 
@@ -118,7 +118,7 @@ RET_STATE_t SharedMutex_SharedUnlock(SharedMutex_t* pAccess) {
 
 		case SHARED_MUTEX_LOCK_SHARED:
 			if (pAccess->ConcurrentReaders == 0) {
-				LOCAL_DEBUG_COLOR_PRINT(ESC_COLOR_RED, "ConcurrentReaders is zero!");
+				LOCAL_LOG_COLOR_PRINT(TERM_COLOR_RED, "ConcurrentReaders is zero!");
 				PANIC();
 			}
 			if (--pAccess->ConcurrentReaders == 0)
@@ -140,8 +140,8 @@ RET_STATE_t SharedMutex_SharedUnlock(SharedMutex_t* pAccess) {
 	if (unlockResult == RET_STATE_SUCCESS && pAccess->SignalEvent)
 		pAccess->SignalEvent(pAccess->pEvent);
 
-	LOCAL_DEBUG_COLOR_PRINT(ESC_COLOR_GREEN, "SharedUnlock status: %s, concurrent readers: %d",
-							RetState_GetStr(unlockResult), pAccess->ConcurrentReaders);
+	LOCAL_LOG_COLOR_PRINT(TERM_COLOR_GREEN, "SharedUnlock status: %s, concurrent readers: %d",
+						  RetState_GetStr(unlockResult), pAccess->ConcurrentReaders);
 	return unlockResult;
 }
 
@@ -170,8 +170,7 @@ RET_STATE_t SharedMutex_ExclusiveLock(SharedMutex_t* pAccess, u32 waitMs, u32* p
 
 		bool eventReceived = pAccess->WaitEvent(pAccess->pEvent, waitMs);
 		if (!eventReceived) {
-			LOCAL_DEBUG_COLOR_PRINT(ESC_COLOR_YELLOW,
-									"ExclusiveLock operation rejected: is locked");
+			LOCAL_LOG_COLOR_PRINT(TERM_COLOR_YELLOW, "ExclusiveLock operation rejected: is locked");
 			return RET_STATE_ERR_BUSY;
 		}
 
@@ -206,7 +205,7 @@ RET_STATE_t SharedMutex_ExclusiveLock(SharedMutex_t* pAccess, u32 waitMs, u32* p
 			if (pAccess->SignalEvent)
 				pAccess->SignalEvent(pAccess->pEvent);
 
-			LOCAL_DEBUG_COLOR_PRINT(ESC_COLOR_YELLOW, "Await old readers timeout");
+			LOCAL_LOG_COLOR_PRINT(TERM_COLOR_YELLOW, "Await old readers timeout");
 			return RET_STATE_ERR_BUSY;
 		}
 	}
@@ -221,8 +220,8 @@ RET_STATE_t SharedMutex_ExclusiveLock(SharedMutex_t* pAccess, u32 waitMs, u32* p
 		*pLockKey = pAccess->LockKey;
 
 	SYS_CRITICAL_OFF();
-	LOCAL_DEBUG_COLOR_PRINT(ESC_COLOR_GREEN, "ExclusiveLock successful, lockID: %8x",
-							pAccess->LockKey);
+	LOCAL_LOG_COLOR_PRINT(TERM_COLOR_GREEN, "ExclusiveLock successful, lockID: %8x",
+						  pAccess->LockKey);
 
 	return RET_STATE_SUCCESS;
 }
@@ -247,7 +246,7 @@ RET_STATE_t SharedMutex_ExclusiveUnlock(SharedMutex_t* pAccess) {
 
 		case SHARED_MUTEX_LOCK_EXCLUSIVE:
 			if (pAccess->ConcurrentReaders != 1) {
-				LOCAL_DEBUG_COLOR_PRINT(ESC_COLOR_RED, "ConcurrentReaders is not 1!");
+				LOCAL_LOG_COLOR_PRINT(TERM_COLOR_RED, "ConcurrentReaders is not 1!");
 				PANIC();
 			}
 			pAccess->ConcurrentReaders--;
@@ -266,8 +265,8 @@ RET_STATE_t SharedMutex_ExclusiveUnlock(SharedMutex_t* pAccess) {
 	if (unlockResult == RET_STATE_SUCCESS && pAccess->SignalEvent)
 		pAccess->SignalEvent(pAccess->pEvent);
 
-	LOCAL_DEBUG_COLOR_PRINT(ESC_COLOR_GREEN, "ExclusiveUnlock status: %s, concurrent readers: %d",
-							RetState_GetStr(unlockResult), pAccess->ConcurrentReaders);
+	LOCAL_LOG_COLOR_PRINT(TERM_COLOR_GREEN, "ExclusiveUnlock status: %s, concurrent readers: %d",
+						  RetState_GetStr(unlockResult), pAccess->ConcurrentReaders);
 	return unlockResult;
 }
 
@@ -285,14 +284,14 @@ bool SharedMutex_IsLocked(SharedMutex_t* pAccess, u32 extLockKey) {
 
 		if (pAccess->LockType == SHARED_MUTEX_LOCK_EXCLUSIVE && pAccess->LockKey == extLockKey) {
 			isLocked = false;
-			LOCAL_DEBUG_COLOR_PRINT(
-				ESC_COLOR_GREEN, "External lock key the same with internal: %8x", pAccess->LockKey);
+			LOCAL_LOG_COLOR_PRINT(TERM_COLOR_GREEN, "External lock key the same with internal: %8x",
+								  pAccess->LockKey);
 		}
 	}
 
 	SYS_CRITICAL_OFF();
-	LOCAL_DEBUG_COLOR_PRINT(ESC_COLOR_GREEN, "Is locked: %d, lock type: %d", isLocked,
-							pAccess->LockType);
+	LOCAL_LOG_COLOR_PRINT(TERM_COLOR_GREEN, "Is locked: %d, lock type: %d", isLocked,
+						  pAccess->LockType);
 	return isLocked;
 }
 
