@@ -62,11 +62,10 @@ __attribute__((used)) int _read(int file, char* ptr, int len) {
 }
 
 /**
- * Wrapper for printf() function native using via
- * selected interface in debug.c
+ * Fallback for printf(): overridden by lib/log/log_io.c when the log module is
+ * enabled, so without a log transport stdout output is quietly dropped.
  */
 __WEAK int _write(int fd, char* ptr, int len) {
-	// Debug_TransmitBuff(ptr, len);
 	return len;
 }
 

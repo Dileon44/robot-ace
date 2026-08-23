@@ -34,7 +34,7 @@ constinit const bsp::ModuleEntry Bsp_Modules[] = {
 }  // namespace
 
 RET_STATE_t Bsp_Init(void) {
-	DEBUG_PRINT_NL("\r\nBSP attaching:");
+	LOG_RAW_NL("\r\nBSP attaching:");
 
 	RET_STATE_t rs = RET_STATE_SUCCESS;
 

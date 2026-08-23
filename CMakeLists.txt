@@ -81,6 +81,10 @@ else()
 endif()
 
 add_compile_options(
+	# __FILE__ relative to the repo root instead of an absolute path. Every PANIC()
+	# and every log header stores that literal in flash, so the dropped prefix is
+	# ~30 bytes per file (832 B today) and the output is readable.
+	-ffile-prefix-map=${CMAKE_SOURCE_DIR}/=
 	${OPT_FLAG}
 	${LTO_FLAGS}
 	-g

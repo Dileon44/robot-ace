@@ -4,15 +4,17 @@
 namespace bsp {
 
 RET_STATE_t AttachModule(const ModuleEntry& entry) {
+	// Only the log calls below read it, so it goes unused with LOG_ENABLE=0.
 	const char* name = entry.module->Name();
+	DISCARD_UNUSED(name);
 
 	if (!entry.bus->Init()) {
-		DEBUG_COLOR_PRINT_NL(ESC_COLOR_RED, "- %s: bus init failed", name);
+		LOG_RAW_COLOR_NL(TERM_COLOR_RED, "- %s: bus init failed", name);
 		return RET_STATE_ERROR;
 	}
 
 	if (!entry.module->Init()) {
-		DEBUG_COLOR_PRINT_NL(ESC_COLOR_RED, "- %s: init failed", name);
+		LOG_RAW_COLOR_NL(TERM_COLOR_RED, "- %s: init failed", name);
 		entry.bus->DeInit();
 		return RET_STATE_ERROR;
 	}
@@ -21,7 +23,7 @@ RET_STATE_t AttachModule(const ModuleEntry& entry) {
 	// chip that failed to answer can never be handed to application code.
 	entry.module->OnAttached();
 
-	DEBUG_COLOR_PRINT_NL(ESC_COLOR_GREEN, "- %s: attached", name);
+	LOG_RAW_COLOR_NL(TERM_COLOR_GREEN, "- %s: attached", name);
 	return RET_STATE_SUCCESS;
 }
 

@@ -6,7 +6,7 @@
 namespace bsp::encoder {
 
 bool As5600::Init() {
-	DEBUG_COLOR_PRINT_NL(ESC_COLOR_MAGENTA, "AS5600: i2c addr 0x%02x", bus_.Address());
+	LOG_RAW_COLOR_NL(TERM_COLOR_MAGENTA, "AS5600: i2c addr 0x%02x", bus_.Address());
 
 	// Configure CONF for FOC: PM=NOM, HYST=OFF, SF=2x, FTH=6LSB, WD=OFF
 	u16 confValue = AS5600_CONF_FOC_VALUE;
@@ -17,7 +17,7 @@ bool As5600::Init() {
 
 	RET_STATE_t rs = bus_.Write(AS5600_REG_CONF_H, confBuf, 2);
 	if (rs != RET_STATE_SUCCESS) {
-		DEBUG_COLOR_PRINT_NL(ESC_COLOR_RED, "AS5600: CONF write failed");
+		LOG_RAW_COLOR_NL(TERM_COLOR_RED, "AS5600: CONF write failed");
 		return false;
 	}
 
@@ -27,15 +27,14 @@ bool As5600::Init() {
 	u8 status = 0;
 	rs        = bus_.Read(AS5600_REG_STATUS, &status, 1);
 	if (rs != RET_STATE_SUCCESS) {
-		DEBUG_COLOR_PRINT_NL(ESC_COLOR_RED, "AS5600: STATUS read failed");
+		LOG_RAW_COLOR_NL(TERM_COLOR_RED, "AS5600: STATUS read failed");
 		return false;
 	}
 
 	if (!(status & AS5600_STATUS_MD_BIT)) {
-		DEBUG_COLOR_PRINT_NL(ESC_COLOR_YELLOW, "AS5600: magnet not detected (STATUS=0x%02x)",
-							 status);
+		LOG_RAW_COLOR_NL(TERM_COLOR_YELLOW, "AS5600: magnet not detected (STATUS=0x%02x)", status);
 	} else {
-		DEBUG_COLOR_PRINT_NL(ESC_COLOR_GREEN, "AS5600: magnet OK (STATUS=0x%02x)", status);
+		LOG_RAW_COLOR_NL(TERM_COLOR_GREEN, "AS5600: magnet OK (STATUS=0x%02x)", status);
 	}
 
 	return true;
