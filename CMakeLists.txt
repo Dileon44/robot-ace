@@ -8,11 +8,17 @@ set(CMAKE_ASM_COMPILER arm-none-eabi-gcc)
 set(CMAKE_OBJCOPY arm-none-eabi-objcopy)
 set(CMAKE_OBJDUMP arm-none-eabi-objdump)
 set(SIZE arm-none-eabi-size)
+set(CMAKE_AR arm-none-eabi-gcc-ar)
+set(CMAKE_RANLIB arm-none-eabi-gcc-ranlib)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
 project(ace VERSION 1.0.0)
-enable_language(C ASM)
+enable_language(C CXX ASM)
 set(CMAKE_C_STANDARD 17)
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(BUILD_DIR build)
 
@@ -75,6 +81,10 @@ else()
 endif()
 
 add_compile_options(
+	# __FILE__ relative to the repo root instead of an absolute path. Every PANIC()
+	# and every log header stores that literal in flash, so the dropped prefix is
+	# ~30 bytes per file (832 B today) and the output is readable.
+	-ffile-prefix-map=${CMAKE_SOURCE_DIR}/=
 	${OPT_FLAG}
 	${LTO_FLAGS}
 	-g
@@ -88,6 +98,20 @@ add_compile_options(
 	-Wno-format
 	-Wno-comment
 	-MMD
+
+	# --- C++ only ------------------------------------------------------------
+	# Embedded profile: no exceptions (unbounded latency in the FOC ISR + ~4.3 KB),
+	# no RTTI, no heap, no runtime-registered static destructors.
+	$<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions>
+	$<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>
+	$<$<COMPILE_LANGUAGE:CXX>:-fno-threadsafe-statics>
+	$<$<COMPILE_LANGUAGE:CXX>:-fno-use-cxa-atexit>
+	$<$<COMPILE_LANGUAGE:CXX>:-fno-unwind-tables>
+	$<$<COMPILE_LANGUAGE:CXX>:-fno-asynchronous-unwind-tables>
+	$<$<COMPILE_LANGUAGE:CXX>:-Wsuggest-override>
+	$<$<COMPILE_LANGUAGE:CXX>:-Woverloaded-virtual>
+	# -Wold-style-cast deliberately omitted: CMSIS and STM32 LL headers are full
+	# of C casts, so it fires thousands of times on code we do not own.
 )
 
 add_link_options(
@@ -104,6 +128,12 @@ add_link_options(
 add_compile_definitions(
 	FW_OPT=${FW_OPT}
 	${DEBUG_ENABLE_DEF}
+
+	# Suppresses the __cmsis_start() block in CMSIS cmsis_gcc.h, which is dead code
+	# here — the entry point is Reset_Handler from platform/m0/startup.s. The block
+	# declares extern variables of function-local struct types, which is ill-formed
+	# in C++ and breaks any C++ translation unit that reaches CMSIS headers.
+	__PROGRAM_START=Reset_Handler
 )
 
 # Platform — defines cpu_flags and platform targets; sets FLASH_* cache vars

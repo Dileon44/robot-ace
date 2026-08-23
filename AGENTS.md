@@ -5,7 +5,10 @@ Embedded firmware for a PMSM motor controller ACE (actuator control electronics)
 When writing the code, you need to keep in mind that this program will control power transistors on an electronic board, so you need to pay attention to safety - think about through currents in three-phase bridge systems. And you also need to understand that in any emergency situation, it is necessary to close the power transistors in order to save the board and the MCU.
 
 Target: STM32G431CBU (Cortex-M4F, 128 KB Flash, 32 KB RAM). RTOS: FreeRTOS V11.2.0.
-Language: C17.
+
+Languages: **C17** and **C++23**. The project is mid-migration to C++ — see [C++ Rules](#c-rules)
+for which layer is written in which language. Both standards are enforced by CMake
+(`CMAKE_C_STANDARD 17`, `CMAKE_CXX_STANDARD 23`, `CMAKE_CXX_EXTENSIONS OFF`).
 
 ---
 
@@ -100,7 +103,9 @@ thirdparty/wsh-shell/         (wsh-shell v2.4 STATIC lib — linked into app onl
 - Platform layer uses STM32 LL (Low-Layer) exclusively — no HAL (HAL subset exists in `core/` only for USB PCD).
 - `shared/` and `lib/` are MCU-agnostic portable code. The CMake target for `lib/` is `libs` (plural).
 - `boot/` links only `platform` and `shared` — no FreeRTOS, no `libs`, no `wsh_shell`.
-- `app/CMakeLists.txt` uses `file(GLOB_RECURSE ...)` — any `.c` added under `app/` is auto-included.
+- `app/CMakeLists.txt` uses `file(GLOB_RECURSE ...)` over both `*.c` and `*.cpp` — any source
+  added under `app/` is auto-included. `bsp/`, `shared/` and `lib/` are INTERFACE libraries and
+  list their sources explicitly, so a new file there must be added to the local `CMakeLists.txt`.
 - Global struct instances (`Motor_t motor`, `Sensors_t sensors`) are owned by their `.c` files;
   expose via getter: `Motor_GetMotorPtr()`, `Sensors_GetPtrSensors()`.
 
@@ -200,6 +205,164 @@ Motor_t Motor = {
 ```
 
 **Unused parameters:** suppress with `DISCARD_UNUSED(x)` (expands to `((void)x)`).
+
+---
+
+## C++ Rules
+
+The project is migrating from C to C++. Everything in this section applies to `.cpp` / `.hpp`
+files only — C sources keep the conventions above unchanged.
+
+### Which layer is written in which language
+
+| Layer | Language | Reason |
+|---|---|---|
+| `bsp/` | **C++23** | Several drivers behind one interface — the case polymorphism is for |
+| `app/` | **C++23** for new code | Application logic, FOC, tasks. Existing `.c` modules stay until they need reworking anyway |
+| `shared/` | C17, plus C++-only `.hpp` headers | Types and macros are shared with C; `critical_section.hpp` is C++-only |
+| `platform/` | C17 | Register-level LL code. C++ adds nothing here but risk |
+| `lib/` | C17 | Working, debugged code. Rewrite only with a functional reason |
+| `boot/` | C17 | Bare-metal loader — fewer dependencies is better |
+| `thirdparty/` | as-is | FreeRTOS and wsh-shell are never modified |
+
+Do not convert a working C module to C++ just to convert it. Write new code in C++; migrate old
+code when it is being substantially reworked for other reasons.
+
+### Language subset
+
+The profile is set by the flags in the root [CMakeLists.txt](CMakeLists.txt) and is not optional:
+`-fno-exceptions -fno-rtti -fno-threadsafe-statics -fno-use-cxa-atexit -fno-unwind-tables
+-fno-asynchronous-unwind-tables`, plus `-Wsuggest-override -Woverloaded-virtual`.
+
+**Never use:**
+
+| What | Why |
+|---|---|
+| Exceptions | +4.3 KB and unbounded stack-unwind latency — unacceptable in the FOC path |
+| RTTI, `dynamic_cast`, `typeid` | Type tables in Flash, not needed |
+| `new` / `delete` | No heap. Every operator is trapped into `ErrorHandler()` in [app/cpp_runtime.cpp](app/cpp_runtime.cpp) |
+| `std::string`, `std::vector`, `std::map`, `std::function` | Heap and/or kilobytes of code |
+| `<iostream>`, `std::shared_ptr` | Tens of KB / atomic refcount + heap |
+| Non-trivial global constructors | Static init order fiasco — see below |
+| Function-local `static` | `-fno-threadsafe-statics` strips the guard, leaving them non-reentrant |
+| Multiple or virtual inheritance | Opaque vtable cost |
+
+**Use freely** (cost ~zero): `constexpr` / `consteval`, `enum class`, `namespace`, references,
+overloading, default arguments, `static_assert`, `[[nodiscard]]`, `[[maybe_unused]]`, RAII guards,
+`std::array`, and the header-only parts of the STL — `<type_traits>`, `<concepts>`, `<bit>`,
+`<limits>`, `<span>`, `<utility>`, non-allocating `<algorithm>`.
+
+### Naming
+
+`namespace` replaces the C module prefix — `bsp::encoder::GetPtr()`, not `EncoderM_GetPtr()`.
+
+```cpp
+namespace bsp::encoder {          // namespaces: lowercase, nested with ::
+class IDriver { ... };            // interfaces: I prefix
+class As5600 final : public IDriver {
+  public:
+    bool  Init() override;        // methods: PascalCase
+    u16   GetRawAngle() override;
+  private:
+    IBus& bus_;                   // data members: trailing underscore
+};
+constinit As5600 As5600Dev{As5600BusDev};   // objects: PascalCase
+}  // namespace bsp::encoder
+```
+
+- **Types** (class / struct / enum class): `PascalCase`, **no `_t` suffix** — that suffix marks C types.
+- **`constexpr` constants:** `PascalCase`. `UPPER_SNAKE_CASE` stays reserved for macros, so the two
+  never look alike.
+- **Locals and parameters:** `camelCase`, same as C.
+- **Files:** `snake_case.hpp` / `snake_case.cpp`. Header guard `__FILE_NAME_HPP`, closing comment required.
+- **TU-local entities:** anonymous `namespace { ... }`, not `static`.
+
+### Classes and polymorphism
+
+Follow the pattern already established in [bsp/bsp_module.hpp](bsp/bsp_module.hpp):
+
+- Interfaces are pure-virtual with a **`protected`, non-virtual destructor**. Instances are static
+  and never deleted, so a virtual destructor would only add a vtable slot and drag in `operator delete`.
+- Concrete classes are `final`.
+- `override` on every override — `-Wsuggest-override` makes a missed one a warning and a mismatched
+  signature a compile error.
+- Single public inheritance only, and only to implement an interface.
+- `virtual` only where the polymorphism is genuinely resolved at runtime (swappable drivers).
+  **Never on the ISR or FOC path** — use templates / CRTP there.
+- Prefer references over pointers where null is impossible (`IBus& bus_`) — the null check disappears.
+
+### Static initialization — the hard rule
+
+Constructors of global objects run in `__libc_init_array` **before `main()`**, therefore before
+`Pl_Init()` and before the clock is configured. Order across translation units is unspecified.
+
+**Every global object must be `constinit`, with a `constexpr` constructor that touches no hardware.**
+All hardware work goes into an explicit `Init()` called from `main()` in a controlled order — the
+sequence in [app/main.c](app/main.c) is the contract and must not be bypassed.
+
+```cpp
+constexpr explicit As5600(IBus& bus) : bus_(bus) {}   // no hardware access
+...
+constinit As5600 As5600Dev{As5600BusDev};             // no .init_array entry
+```
+
+Check with `arm-none-eabi-objdump -s -j .init_array build/fw_m0.elf` — new entries mean a
+constructor slipped into pre-`main()` startup.
+
+### The C / C++ boundary
+
+- Every C header included from C++ is wrapped in `#ifdef __cplusplus extern "C" { #endif`.
+- A C++ header included from a C-visible header goes **before** the `extern "C"` block so it keeps
+  C++ linkage — see [bsp/bsp.h](bsp/bsp.h).
+- Anything called *from* C must be `extern "C"`: ISRs referenced by `startup.s`, FreeRTOS task
+  functions, LL callbacks, `main`. Vector-table names are not mangled — a missed `extern "C"` here
+  is a link error at best and a silently unused handler at worst.
+- **Enums across the boundary:** `-fshort-enums` is on by default for `arm-none-eabi`, so a C enum
+  is **1 byte**. A scoped enum must pin the same width — `enum class Foo : u8` — otherwise the two
+  sides disagree on size inside structs and through pointers, silently.
+
+### Casts
+
+`static_cast` / `reinterpret_cast`, never C-style casts in C++ code (see [bsp/encoder/as5600/as5600.cpp](bsp/encoder/as5600/as5600.cpp)).
+`-Wold-style-cast` is deliberately **not** enabled — CMSIS and LL headers would drown the build in warnings.
+
+### RAII
+
+Critical sections use the guards from [shared/critical_section.hpp](shared/critical_section.hpp)
+instead of the `SYS_CRITICAL_ON()` / `SYS_CRITICAL_OFF()` pair:
+
+```cpp
+#include "critical_section.hpp"
+
+RET_STATE_t Foo() {
+    sys::CriticalSection cs;          // task context
+    RETURN_IF_UNSUCCESS(Bar());       // section still closes on this early return
+    return RET_STATE_SUCCESS;
+}
+
+void ISR() {
+    sys::CriticalSectionIsr cs;       // ISR context — carries the FreeRTOS mask
+}
+```
+
+Generated code is identical to the raw macro pair (verified). **Always give the guard a name** —
+`sys::CriticalSection();` builds a temporary that dies at the end of that statement and protects
+nothing, with no compiler diagnostic.
+
+### Error handling in C++
+
+Same `RET_STATE_t` and the same rules as [Error Handling](#error-handling) below. Add `[[nodiscard]]`
+to fallible functions so an ignored error code becomes a warning.
+
+> Known inconsistency: `IModule::Init()` / `IModuleBus::Init()` in `bsp/` return `bool`, losing the
+> reason for a failure. New interfaces should return `RET_STATE_t`.
+
+### Templates
+
+Keep the number of instantiations bounded, and put logic that does not depend on the template
+parameters into a non-template base class — otherwise `Ring<256>` and `Ring<64>` become two
+independent copies of the same code. A template is not automatically smaller: a CRTP task base
+measured *larger* than one `constinit const` table walked by a single loop.
 
 ---
 
@@ -331,7 +494,7 @@ DEBUG_PRINT("value: %d\n", val);
 | `FW_OPT` | `0` / `1` | `-Og` / `-O1` |
 | `PANIC_CHECK_ENABLE` | defined / not | Enables `PANIC()` / `ASSERT_CHECK()` macros (app) |
 | `USE_FULL_LL_DRIVER` | always set | STM32 full LL driver |
-| `HSE_VALUE` | `24000000U` | External crystal frequency |
+| `HSE_VALUE` | `8000000U` | External crystal frequency |
 | `STM32G431xx` | always set | STM32G431 device family selection |
 | `USE_FULL_ASSERT` | always set | Enables STM32 assert_param checks |
 | `FLASH_BOOT_ADDR` | `0x08000000` | Boot flash base address |

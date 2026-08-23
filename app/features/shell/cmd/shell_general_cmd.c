@@ -1,4 +1,4 @@
-#include "debug.h"
+#include "log.h"
 #include "platform.h"
 #include "wsh_shell.h"
 #include "wsh_shell_cfg.h"
@@ -39,13 +39,13 @@ static WSH_SHELL_RET_STATE_t ShellCmdDebugLog(const WshShellCmd_t* pcCmd, WshShe
 				return WSH_SHELL_RET_STATE_SUCCESS;
 
 			case CMD_DEBUG_LOG_OPT_DEF: {
-				LOG_LVL_t currLvl = Debug_LogLvl_Get();
+				LOG_LVL_t currLvl = Log_Lvl_Get();
 				if (currLvl != LOG_LVL_DISABLE) {
 					savedLogLvl = currLvl;
-					Debug_LogLvl_Set(LOG_LVL_DISABLE);
+					Log_Lvl_Set(LOG_LVL_DISABLE);
 					WSH_SHELL_PRINT_INFO("Debug mode deactivated: ");
 				} else {
-					Debug_LogLvl_Set(savedLogLvl);
+					Log_Lvl_Set(savedLogLvl);
 					WSH_SHELL_PRINT_INFO("Debug mode reactivated: ");
 				}
 
@@ -87,11 +87,11 @@ static WSH_SHELL_RET_STATE_t ShellCmdDebugLog(const WshShellCmd_t* pcCmd, WshShe
 						return WSH_SHELL_RET_STATE_ERROR;
 				}
 
-				LOG_LVL_t currLvl = Debug_LogLvl_Get();
+				LOG_LVL_t currLvl = Log_Lvl_Get();
 				if (currLvl == reqLvl) {
 					WSH_SHELL_PRINT_INFO("The same lvl selected: ");
 				} else {
-					Debug_LogLvl_Set(reqLvl);
+					Log_Lvl_Set(reqLvl);
 					WSH_SHELL_PRINT_INFO("New lvl selected: ");
 				}
 
@@ -103,8 +103,8 @@ static WSH_SHELL_RET_STATE_t ShellCmdDebugLog(const WshShellCmd_t* pcCmd, WshShe
 		}
 	}
 
-	WSH_SHELL_PRINT_INFO("[%s%s%s]\r\n", Debug_LogLvl_GetColor(Debug_LogLvl_Get()),
-						 Debug_LogLvl_GetStr(Debug_LogLvl_Get()), ESC_RESET_STYLE);
+	WSH_SHELL_PRINT_INFO("[%s%s%s]\r\n", Log_Lvl_GetColor(Log_Lvl_Get()),
+						 Log_Lvl_GetStr(Log_Lvl_Get()), TERM_RESET_STYLE);
 
 	return WSH_SHELL_RET_STATE_SUCCESS;
 }

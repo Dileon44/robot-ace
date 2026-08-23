@@ -27,6 +27,44 @@ void Pl_Stub_HardFaultClbk(u32 pcVal) {
 	DISCARD_UNUSED(pcVal);
 }
 
+static void Pl_Stub_OsDelayMsClbk(u32 ms) {
+	DISCARD_UNUSED(ms);
+}
+
+static u32 Pl_Stub_OsGetMsClbk(void) {
+	return 0;
+}
+
+static struct {
+	Pl_OsDelayMs_t DelayMs;
+	Pl_OsGetMs_t GetMs;
+} OsClbks = {
+	Pl_Stub_OsDelayMsClbk,
+	Pl_Stub_OsGetMsClbk,
+};
+
+void Pl_SetOsClbks(Pl_OsDelayMs_t pDelayMsClbk, Pl_OsGetMs_t pGetMsClbk) {
+	if (pDelayMsClbk)
+		OsClbks.DelayMs = pDelayMsClbk;
+	if (pGetMsClbk)
+		OsClbks.GetMs = pGetMsClbk;
+}
+
+void Pl_OsDelayMs(u32 ms) {
+	if (SYS_OS_IS_RUNNING()) {
+		OsClbks.DelayMs(ms);
+	} else {
+		PL_DELAY_MS(ms);
+	}
+}
+
+u32 Pl_OsGetMs(void) {
+	if (SYS_OS_IS_RUNNING())
+		return OsClbks.GetMs();
+
+	return PL_GET_MS_CNT();
+}
+
 Pl_IsInit_t Pl_IsInit;
 Pl_SysClock_t Pl_SysClk;
 

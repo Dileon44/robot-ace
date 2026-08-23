@@ -2,7 +2,7 @@
 
 #if SHELL_INTERFACE
 
-#include "debug.h"
+#include "log_root.h"
 #include "platform.h"
 #include "shell_commands.h"
 #include "shell_users.h"
@@ -32,7 +32,7 @@ bool ShellRoot_SendCommand(char* pCmd, u32 waitTmo) {
 	if (!WshShell_IsAuth(&ShellRoot))
 		return false;
 
-	return Debug_SendString(pCmd, waitTmo);
+	return Log_SendString(pCmd, waitTmo);
 }
 
 static WshShellHistory_t PL_SHELL_HISTORY_DATA ShellRoot_HistoryStorage;
@@ -48,8 +48,8 @@ static void ShellRootHistory_Write(WshShellHistory_t history) {
 static void ShellRoot_AuthClbk(void* pCtx) {
 	DISCARD_UNUSED(pCtx);
 
-	Shell_PrevLogLvl = Debug_LogLvl_Get();
-	Debug_LogLvl_Set(LOG_LVL_ERROR);
+	Shell_PrevLogLvl = Log_Lvl_Get();
+	Log_Lvl_Set(LOG_LVL_ERROR);
 	xTimerStart(ShellExit_Timer, 0);
 }
 
@@ -57,7 +57,7 @@ static void ShellRoot_DeAuthClbk(void* pCtx) {
 	DISCARD_UNUSED(pCtx);
 
 	xTimerStop(ShellExit_Timer, 0);
-	Debug_LogLvl_Set(Shell_PrevLogLvl);
+	Log_Lvl_Set(Shell_PrevLogLvl);
 }
 
 static void ShellRoot_SymInClbk(void* pCtx) {
@@ -97,7 +97,7 @@ void ShellRoot_Init(void) {
 
 static void vTask_Shell_Process(void* pvParameters) {
 	vTaskDelay(2000);
-	while (!Debug_HardwareIsInit())
+	while (!Log_HardwareIsInit())
 		vTaskDelay(100);
 
 	ShellRoot_Init();
@@ -108,7 +108,7 @@ static void vTask_Shell_Process(void* pvParameters) {
 
 	for (;;) {
 		char symbol = 0;
-		symbol		= Debug_ReceiveSymbol(DELAY_1_SECOND);
+		symbol		= Log_ReceiveSymbol(DELAY_1_SECOND);
 		if (symbol)
 			WshShell_InsertChar(&ShellRoot, symbol);
 
